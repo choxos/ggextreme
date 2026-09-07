@@ -13,6 +13,7 @@ ggrace(
   duration = 25,
   fps = 60,
   end_pause = 2,
+  swap = 0.2,
   palette = NULL,
   title = NULL,
   caption = NULL,
@@ -40,6 +41,11 @@ label, and the time point. \code{time} may be numeric or a \code{Date}. Each
 \item{fps}{Frames per second.}
 
 \item{end_pause}{Seconds to hold the final frame.}
+
+\item{swap}{Seconds a bar takes to move to a new rank. The reference
+settles a swap in about a fifth of a second, so bars hold their slot and
+change places in a quick eased move rather than drifting the whole way
+between one time point and the next.}
 
 \item{palette}{Colors for the bars. Either an unnamed vector, recycled over
 the entities in alphabetical order, or a vector named by entity. Defaults
@@ -81,10 +87,16 @@ row per entity per frame. Draw a single frame with \code{\link[=race_frame]{race
 the whole animation with \code{\link[=animate_race]{animate_race()}}.
 }
 \details{
-Ranks are clamped to \code{top_n + 1} before interpolation. An entity far down
-the field therefore waits just below the visible window and slides in from
-the bottom edge instead of flying up from off screen, which is what makes
-entries and exits read cleanly.
+Values move linearly and ranks do not. Every frame is ranked on its own
+interpolated values, and a bar whose rank changes eases into its new slot
+over \code{swap} seconds, which is how the reference behaves: bars sit still in
+their slot and trade places in one quick move rather than drifting for a
+whole time step.
+
+Ranks are clamped to \code{top_n + 1}. An entity far down the field therefore
+waits just below the visible window and slides in from the bottom edge
+instead of flying up from off screen, which is what makes entries and
+exits read cleanly.
 
 The x axis carries no headroom: the longest bar always reaches the right
 edge of the bar area and the axis maximum is the largest value in the

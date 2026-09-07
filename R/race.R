@@ -7,10 +7,16 @@
 #' row per entity per frame. Draw a single frame with [race_frame()] or write
 #' the whole animation with [animate_race()].
 #'
-#' Ranks are clamped to `top_n + 1` before interpolation. An entity far down
-#' the field therefore waits just below the visible window and slides in from
-#' the bottom edge instead of flying up from off screen, which is what makes
-#' entries and exits read cleanly.
+#' Values move linearly and ranks do not. Every frame is ranked on its own
+#' interpolated values, and a bar whose rank changes eases into its new slot
+#' over `swap` seconds, which is how the reference behaves: bars sit still in
+#' their slot and trade places in one quick move rather than drifting for a
+#' whole time step.
+#'
+#' Ranks are clamped to `top_n + 1`. An entity far down the field therefore
+#' waits just below the visible window and slides in from the bottom edge
+#' instead of flying up from off screen, which is what makes entries and
+#' exits read cleanly.
 #'
 #' The x axis carries no headroom: the longest bar always reaches the right
 #' edge of the bar area and the axis maximum is the largest value in the
@@ -25,6 +31,10 @@
 #' @param duration Length of the animation in seconds, excluding `end_pause`.
 #' @param fps Frames per second.
 #' @param end_pause Seconds to hold the final frame.
+#' @param swap Seconds a bar takes to move to a new rank. The reference
+#'   settles a swap in about a fifth of a second, so bars hold their slot and
+#'   change places in a quick eased move rather than drifting the whole way
+#'   between one time point and the next.
 #' @param palette Colors for the bars. Either an unnamed vector, recycled over
 #'   the entities in alphabetical order, or a vector named by entity. Defaults
 #'   to [race_palette()].
@@ -70,6 +80,7 @@ ggrace <- function(data, value, name, time,
                    duration = 25,
                    fps = 60,
                    end_pause = 2,
+                   swap = 0.2,
                    palette = NULL,
                    title = NULL,
                    caption = NULL,
@@ -106,17 +117,15 @@ ggrace <- function(data, value, name, time,
                    dimnames = list(entities, NULL))
   values[cbind(match(name, entities), match(time_num, keys))] <- value
 
-  ranks <- vapply(seq_along(keys), function(j) {
-    column <- values[, j]
-    out <- rep(top_n + 1, length(column))
-    seen <- !is.na(column)
-    out[seen] <- rank(-column[seen], ties.method = "first")
-    pmin(out, top_n + 1)
-  }, numeric(length(entities)))
-  dimnames(ranks) <- dimnames(values)
-
   values_i <- interpolate_rows(values, keys, grid_t)
-  ranks_i <- interpolate_rows(ranks, keys, grid_t)
+  targets <- apply(values_i, 2, function(v) {
+    out <- rep(top_n + 1, length(v))
+    seen <- !is.na(v)
+    out[seen] <- pmin(rank(-v[seen], ties.method = "first"), top_n + 1)
+    out
+  })
+  window <- max(1L, as.integer(round(swap * fps)))
+  ranks_i <- t(apply(targets, 1, tween_steps, window = window))
 
   frames <- data.frame(
     frame = rep(seq_len(n_frames), each = length(entities)),
@@ -138,6 +147,7 @@ ggrace <- function(data, value, name, time,
       top_n = top_n,
       fps = fps,
       end_pause = end_pause,
+      swap = swap,
       colors = assign_colors(entities, palette),
       title = title,
       caption = caption,
@@ -149,6 +159,7 @@ ggrace <- function(data, value, name, time,
       width = width,
       res = res,
       family = family,
+      date = inherits(time, "Date"),
       layout = race_layout(top_n),
       theme = theme_race(if (card) race_ink$page else race_ink$card)
     ),
@@ -337,6 +348,7 @@ animate_race <- function(x, file = "race.mp4", loop = TRUE,
     on.exit(grDevices::dev.off(), add = TRUE)
     print(race_frame(x, order[i]))
   }
+  if (.Platform$OS.type == "windows" || is.na(cores)) cores <- 1L
   if (cores > 1) {
     parallel::mclapply(seq_along(order), draw, mc.cores = cores)
   } else {
@@ -367,6 +379,27 @@ print.ggrace <- function(x, ...) {
 }
 
 # Internals -------------------------------------------------------------
+
+# A bar holds its slot, then eases into a new one over `window` frames. Cubic
+# in and out, so it leaves and lands softly, matching the reference.
+tween_steps <- function(target, window) {
+  out <- numeric(length(target))
+  pos <- goal <- from <- target[1]
+  step <- window
+  for (i in seq_along(target)) {
+    if (target[i] != goal) {
+      from <- pos
+      goal <- target[i]
+      step <- 0L
+    }
+    step <- min(step + 1L, window)
+    u <- step / window
+    pos <- from + (goal - from) *
+      if (u < 0.5) 4 * u^3 else 1 - (-2 * u + 2)^3 / 2
+    out[i] <- pos
+  }
+  out
+}
 
 interpolate_rows <- function(m, keys, grid_t) {
   out <- t(apply(m, 1, function(y) {
@@ -461,7 +494,7 @@ timeline_at <- function(x, lay) {
 
 timeline_rects <- function(x, lay, rects) {
   at <- timeline_at(x, lay)
-  labels <- timeline_breaks(x$keys)
+  labels <- timeline_breaks(x$keys, !x$date)
   ends <- range(x$keys)
   tick <- function(ts, len) {
     if (!length(ts)) return(NULL)
@@ -482,7 +515,7 @@ timeline_rects <- function(x, lay, rects) {
 # The last label is pulled back inside the axis, as the reference does.
 timeline_text <- function(x, lay, texts) {
   at <- timeline_at(x, lay)
-  labels <- timeline_breaks(x$keys)
+  labels <- timeline_breaks(x$keys, !x$date)
   last <- labels[length(labels)]
   rest <- labels[-length(labels)]
   rbind(
@@ -503,10 +536,12 @@ timeline_marker <- function(x, frame, lay, fx, fy) {
 }
 
 # Labelled ticks land on both ends of the timeline, the way the reference
-# splits 1990 to 2017 into nine steps of three years.
-timeline_breaks <- function(keys) {
+# splits 1990 to 2017 into nine steps of three years. Dates are day counts,
+# where a whole span rarely divides into anything meaningful, so they fall
+# through to pretty breaks.
+timeline_breaks <- function(keys, use_divisors = TRUE) {
   span <- diff(range(keys))
-  if (isTRUE(all.equal(span, round(span))) && span >= 2) {
+  if (use_divisors && isTRUE(all.equal(span, round(span))) && span >= 2) {
     span <- round(span)
     steps <- seq_len(span)
     steps <- steps[span %% steps == 0]

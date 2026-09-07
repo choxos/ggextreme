@@ -34,11 +34,26 @@ test_that("ranks stay inside the visible window plus one", {
   expect_true(all(race$frames$rank <= 4))
 })
 
-test_that("ranks move continuously between frames", {
+test_that("a rank change is a short eased move, not a jump or a drift", {
+  race <- ggrace(phones, phones, region, year, top_n = 7, duration = 5,
+                 fps = 20, swap = 0.5)
+  window <- 0.5 * 20
+  moved <- tapply(race$frames$rank, race$frames$name, function(r) {
+    busy <- abs(diff(r)) > 1e-8
+    if (!any(busy)) return(NULL)
+    c(steps = max(abs(diff(r))), run = max(rle(busy)$lengths[rle(busy)$values]))
+  })
+  moved <- do.call(rbind, moved)
+  expect_gt(nrow(moved), 0)
+  # No bar teleports, and none takes much longer than the swap window.
+  expect_lt(max(moved[, "steps"]), 0.5)
+  expect_lte(max(moved[, "run"]), window + 1)
+})
+
+test_that("bars rest on whole ranks between swaps", {
   race <- ggrace(phones, phones, region, year, top_n = 7, duration = 5, fps = 20)
-  steps <- tapply(race$frames$rank, race$frames$name, function(r) max(abs(diff(r))))
-  # One frame is a hundredth of the run, so no bar may jump a whole rank.
-  expect_lt(max(steps), 1)
+  r <- race$frames$rank
+  expect_gt(mean(abs(r - round(r)) < 1e-8), 0.8)
 })
 
 test_that("bad input is rejected", {
@@ -67,9 +82,13 @@ test_that("a frame is a ggplot and its geometry does not move", {
 })
 
 test_that("timeline labels land on both ends", {
-  breaks <- timeline_breaks(1990:2017)
+  breaks <- ggextreme:::timeline_breaks(1990:2017)
   expect_equal(breaks, seq(1990, 2017, by = 3))
   expect_equal(range(breaks), c(1990, 2017))
+
+  days <- as.numeric(seq(as.Date("2000-01-01"), as.Date("2010-01-01"), "year"))
+  dated <- ggextreme:::timeline_breaks(days, use_divisors = FALSE)
+  expect_true(all(diff(dated) > 300))
 })
 
 test_that("colors are stable across the whole field", {
