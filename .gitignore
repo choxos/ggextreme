@@ -1,0 +1,11 @@
+documentation/
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.DS_Store
+inst/doc
+docs/
+*.gif
+*.mp4

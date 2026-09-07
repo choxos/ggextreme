@@ -1,0 +1,36 @@
+Package: ggextreme
+Type: Package
+Title: Flourish Style Animated Charts for 'ggplot2'
+Version: 0.1.0
+Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
+    role = c("aut", "cre"))
+Description: A small collection of presentation grade charts that 'ggplot2'
+    does not ship with. The first is a bar chart race that reproduces the
+    'flourish.studio' bar race design down to its measured geometry: values
+    and ranks are interpolated on a uniform time grid, every frame is drawn
+    as an ordinary 'ggplot2' plot, and the frames are encoded to GIF or MP4.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    ggplot2 (>= 3.5.0),
+    grDevices,
+    parallel,
+    ragg,
+    rlang,
+    scales,
+    stats,
+    systemfonts,
+    tools,
+    utils
+Suggests:
+    av,
+    gifski,
+    magick,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://github.com/choxos/ggextreme
+BugReports: https://github.com/choxos/ggextreme/issues
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0

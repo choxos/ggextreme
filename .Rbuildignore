@@ -1,0 +1,9 @@
+^documentation$
+^LICENSE\.md$
+^README\.Rmd$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^ggextreme\.Rcheck$
+^ggextreme_.*\.tar\.gz$
+^\.DS_Store$
