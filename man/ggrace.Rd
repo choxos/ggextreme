@@ -9,12 +9,15 @@ ggrace(
   value,
   name,
   time,
+  group = NULL,
   top_n = 10,
   duration = 25,
   fps = 60,
   end_pause = 2,
   swap = 0.2,
   palette = NULL,
+  legend = TRUE,
+  legend_title = NULL,
   title = NULL,
   caption = NULL,
   breaks = scales::breaks_extended(4),
@@ -37,6 +40,12 @@ ggrace(
 label, and the time point. \code{time} may be numeric or a \code{Date}. Each
 \code{name} and \code{time} pair must be unique.}
 
+\item{group}{Optional bare column naming a category for each entity, such
+as a continent. Bars are then coloured by category rather than
+individually, and a legend is drawn above the axis. Each entity must
+belong to exactly one category. A factor keeps the legend in the order of
+its levels.}
+
 \item{top_n}{Number of bars visible at once.}
 
 \item{duration}{Length of the animation in seconds, excluding \code{end_pause}.}
@@ -49,9 +58,15 @@ label, and the time point. \code{time} may be numeric or a \code{Date}. Each
 position and change places in one quick eased move rather than drifting
 the whole way between one time point and the next.}
 
-\item{palette}{Colors for the bars. Either an unnamed vector, recycled over
-the entities in alphabetical order, or a vector named by entity. Defaults
-to \code{\link[=race_palette]{race_palette()}}.}
+\item{palette}{Colors for the bars. Either an unnamed vector, recycled in
+alphabetical order, or a named vector. Names are entities, or categories
+when \code{group} is given. Defaults to \code{\link[=race_palette]{race_palette()}}.}
+
+\item{legend}{Draw the legend when \code{group} is given. The card grows to
+make room for it, wrapping onto more rows if the categories do not fit
+across the card.}
+
+\item{legend_title}{Text in front of the legend, such as \code{"Continent"}.}
 
 \item{title, caption}{Card title and the source note under the timeline.}
 

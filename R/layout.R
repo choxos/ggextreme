@@ -11,8 +11,8 @@
 CARD_W <- 710
 BAR_PITCH <- 569 / 31
 
-race_layout <- function(top_n) {
-  bars_top <- 112
+race_layout <- function(top_n, legend_h = 0) {
+  bars_top <- 112 + legend_h
   bars_bottom <- bars_top + top_n * BAR_PITCH
 
   list(
@@ -28,8 +28,19 @@ race_layout <- function(top_n) {
     rule_y = 72,
     rule_h = 2,
 
-    axis_mid = 92,
+    axis_mid = 92 + legend_h,
     axis_pt = 16,
+
+    legend_h = legend_h,
+    legend_top = 78,
+    legend_row_h = 22,
+    legend_pt = 13,
+    legend_swatch_w = 9,
+    legend_swatch_h = 12.5,
+    legend_swatch_r = 2,
+    legend_gap_swatch = 5,
+    legend_gap_item = 16,
+    legend_gap_title = 12,
 
     bars_top = bars_top,
     bars_bottom = bars_bottom,

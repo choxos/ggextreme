@@ -2,6 +2,8 @@
 #'
 #' A qualitative palette of muted teals, greens, blues, purples and warm
 #' earth tones, chosen to stay readable side by side in a dense stack of bars.
+#' Consecutive colours are far apart in hue, so the first few remain easy to
+#' tell apart when only a handful are used, as with `group` in [ggrace()].
 #'
 #' @param n Number of colors to return. The palette is recycled when `n` is
 #'   larger than the number of base colors.
@@ -12,13 +14,15 @@
 #' @examples
 #' race_palette(5)
 race_palette <- function(n = 26) {
+  # Ordered so that colours taken in sequence stay far apart in hue, which
+  # matters when a handful of groups share the top of the palette.
   base <- c(
-    "#22928F", "#B66399", "#BF6662", "#757CC6", "#4BAAA9",
-    "#C36284", "#568E4F", "#238FB2", "#5D7FCA", "#7A5178",
-    "#9B4979", "#249195", "#C16275", "#398965", "#B16F51",
-    "#C28A4A", "#89AC70", "#6A8B8B", "#9887BD", "#598390",
-    "#C76253", "#2B8BB5", "#A87546", "#2588C6", "#717171",
-    "#957D3C"
+    "#22928F", "#B66399", "#757CC6", "#568E4F", "#C76253",
+    "#C28A4A", "#7A5178", "#4BAAA9", "#C16275", "#2588C6",
+    "#89AC70", "#B16F51", "#717171", "#9B4979", "#249195",
+    "#5D7FCA", "#398965", "#BF6662", "#957D3C", "#9887BD",
+    "#598390", "#C36284", "#2B8BB5", "#6A8B8B", "#A87546",
+    "#238FB2"
   )
   rep_len(base, n)
 }

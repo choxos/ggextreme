@@ -30,9 +30,18 @@
 #' @param swap Seconds a bar takes to move to a new rank. Bars hold their
 #'   position and change places in one quick eased move rather than drifting
 #'   the whole way between one time point and the next.
-#' @param palette Colors for the bars. Either an unnamed vector, recycled over
-#'   the entities in alphabetical order, or a vector named by entity. Defaults
-#'   to [race_palette()].
+#' @param group Optional bare column naming a category for each entity, such
+#'   as a continent. Bars are then coloured by category rather than
+#'   individually, and a legend is drawn above the axis. Each entity must
+#'   belong to exactly one category. A factor keeps the legend in the order of
+#'   its levels.
+#' @param palette Colors for the bars. Either an unnamed vector, recycled in
+#'   alphabetical order, or a named vector. Names are entities, or categories
+#'   when `group` is given. Defaults to [race_palette()].
+#' @param legend Draw the legend when `group` is given. The card grows to
+#'   make room for it, wrapping onto more rows if the categories do not fit
+#'   across the card.
+#' @param legend_title Text in front of the legend, such as `"Continent"`.
 #' @param title,caption Card title and the source note under the timeline.
 #' @param breaks A function taking the axis range and returning the gridline
 #'   positions, or a numeric vector of fixed positions. Breaks past the
@@ -78,12 +87,15 @@
 #' animate_race(race, tempfile(fileext = ".gif"), cores = 1)
 #' }
 ggrace <- function(data, value, name, time,
+                   group = NULL,
                    top_n = 10,
                    duration = 25,
                    fps = 60,
                    end_pause = 2,
                    swap = 0.2,
                    palette = NULL,
+                   legend = TRUE,
+                   legend_title = NULL,
                    title = NULL,
                    caption = NULL,
                    breaks = scales::breaks_extended(4),
@@ -100,6 +112,7 @@ ggrace <- function(data, value, name, time,
   value <- rlang::eval_tidy(rlang::enquo(value), data)
   name <- as.character(rlang::eval_tidy(rlang::enquo(name), data))
   time <- rlang::eval_tidy(rlang::enquo(time), data)
+  group <- rlang::eval_tidy(rlang::enquo(group), data)
 
   if (!is.numeric(value)) rlang::abort("`value` must be numeric.")
   if (top_n < 1) rlang::abort("`top_n` must be at least 1.")
@@ -123,7 +136,26 @@ ggrace <- function(data, value, name, time,
   if (is.null(label_time)) label_time <- default_time_label(time)
 
   entities <- sort(unique(name))
-  layout <- race_layout(top_n)
+  groups <- group_key(name, group, entities)
+  if (is.null(groups)) {
+    colors <- assign_colors(entities, palette)
+    legend_by <- NULL
+  } else {
+    by_group <- assign_colors(groups$levels, palette)
+    colors <- stats::setNames(unname(by_group[groups$of]), entities)
+    legend_by <- if (isTRUE(legend)) by_group else NULL
+  }
+
+  bare <- race_layout(top_n)
+  scale <- (width / res * 72) / (bare$card_w + 2 * bare$page_pad)
+  legend_layout <- if (is.null(legend_by)) {
+    NULL
+  } else {
+    legend_layout(names(legend_by), legend_by, legend_title, bare, family,
+                  scale)
+  }
+  layout <- race_layout(top_n, legend_h = if (is.null(legend_layout)) 0 else
+                                 legend_layout$height)
   n_frames <- max(2L, as.integer(round(duration * fps)))
   grid_t <- seq(min(keys), max(keys), length.out = n_frames)
 
@@ -165,7 +197,8 @@ ggrace <- function(data, value, name, time,
       fps = fps,
       end_pause = end_pause,
       swap = swap,
-      colors = assign_colors(entities, palette),
+      colors = colors,
+      legend = legend_layout,
       title = title,
       caption = caption,
       breaks = breaks,
@@ -318,6 +351,7 @@ race_frame <- function(x, frame = 1L) {
     ))
   }
   if (x$timeline) writing <- rbind(writing, timeline_text(x, lay, texts))
+  writing <- rbind(writing, legend_text(x$legend, lay, texts))
 
   pictures <- labelled[labelled$name %in% names(x$images), ]
   if (nrow(pictures)) {
@@ -335,6 +369,7 @@ race_frame <- function(x, frame = 1L) {
   shapes <- NULL
   if (x$play_button) shapes <- button_circle(lay, fx, fy)
   if (x$timeline) shapes <- rbind(shapes, timeline_marker(x, frame, lay, fx, fy))
+  shapes <- rbind(shapes, legend_shapes(x$legend, lay, fx, fy))
 
   p <- ggplot() +
     x$theme +

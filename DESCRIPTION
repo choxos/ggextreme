@@ -25,7 +25,7 @@ Imports:
     rlang,
     scales,
     stats,
-    systemfonts,
+    systemfonts (>= 1.2.4),
     tools,
     utils
 Suggests:

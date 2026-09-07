@@ -14,6 +14,8 @@ race <- ggrace(
   fps = 20,
   end_pause = 1.5,
   images = flags,
+  group = region,
+  legend_title = "Region",
   breaks = scales::breaks_extended(6),
   title = "Quality of care for orofacial clefts",
   caption = "Source: Sofi-Mahmudi et al. 2025, PLOS ONE 20(1): e0317267",

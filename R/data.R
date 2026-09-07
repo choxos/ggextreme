@@ -11,10 +11,11 @@
 #' [ggrace()]. Country names are shortened for plotting, and `iso` matches the
 #' codes [race_flags()] uses.
 #'
-#' @format A data frame with 450 rows and 4 columns:
+#' @format A data frame with 450 rows and 5 columns:
 #' \describe{
 #'   \item{country}{Country name.}
 #'   \item{iso}{ISO 3166-1 alpha-2 country code, lower case.}
+#'   \item{region}{World region, a factor with five levels.}
 #'   \item{year}{Year, 1990 to 2019.}
 #'   \item{qci}{Quality of Care Index, 0 to 100.}
 #' }

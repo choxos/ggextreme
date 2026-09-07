@@ -161,3 +161,66 @@ test_that("drawing falls back to one core where it must", {
   expect_equal(ggextreme:::resolve_cores(integer(0), "unix"), 1L)
   expect_equal(ggextreme:::resolve_cores(4, "unix"), 4L)
 })
+
+test_that("grouping colours bars by category and builds a legend", {
+  race <- ggrace(clefts_qci, qci, country, year, group = region,
+                 top_n = 15, duration = 1, fps = 4, legend_title = "Region")
+
+  expect_equal(length(unique(race$colors)), nlevels(clefts_qci$region))
+  # Level order drives the legend, not alphabetical order.
+  expect_equal(race$legend$items$label, levels(clefts_qci$region))
+  expect_equal(race$legend$rows, 1L)
+  expect_equal(race$legend$title, "Region")
+
+  key <- unique(clefts_qci[c("country", "region")])
+  by_country <- race$colors[key$country]
+  expect_equal(length(unique(by_country[key$region == "Africa"])), 1)
+  expect_false(unname(race$colors["Germany"]) == unname(race$colors["China"]))
+
+  expect_silent(ggplot2::ggplot_build(race_frame(race, 2)))
+})
+
+test_that("the legend makes room for itself and can be turned off", {
+  with <- ggrace(clefts_qci, qci, country, year, group = region, top_n = 5,
+                 duration = 1, fps = 4)
+  without <- ggrace(clefts_qci, qci, country, year, group = region, top_n = 5,
+                    duration = 1, fps = 4, legend = FALSE)
+  none <- ggrace(clefts_qci, qci, country, year, top_n = 5, duration = 1,
+                 fps = 4)
+
+  expect_equal(with$layout$card_h - without$layout$card_h, with$legend$height)
+  expect_equal(without$layout$card_h, none$layout$card_h)
+  expect_null(without$legend)
+  # Colours still follow the group even with the legend hidden.
+  expect_equal(length(unique(without$colors)), 5)
+})
+
+test_that("a long legend wraps onto more rows", {
+  d <- clefts_qci
+  d$region <- factor(paste("A rather long category name", d$region))
+  race <- ggrace(d, qci, country, year, group = region, top_n = 5,
+                 duration = 1, fps = 4)
+  expect_gt(race$legend$rows, 1L)
+  expect_equal(race$legend$height, race$legend$rows * race$layout$legend_row_h)
+  expect_equal(max(race$legend$items$row), race$legend$rows - 1L)
+  expect_silent(ggplot2::ggplot_build(race_frame(race, 2)))
+})
+
+test_that("an entity may only belong to one group", {
+  d <- clefts_qci
+  d$region <- as.character(d$region)
+  d$region[d$country == "Brazil" & d$year > 2000] <- "Asia"
+  expect_error(ggrace(d, qci, country, year, group = region),
+               "belong to one")
+})
+
+test_that("group colours come from the palette by category", {
+  race <- ggrace(clefts_qci, qci, country, year, group = region, top_n = 5,
+                 duration = 1, fps = 4,
+                 palette = c(Asia = "#111111", Africa = "#222222",
+                             "Latin America" = "#333333",
+                             "North America" = "#444444", Europe = "#555555"))
+  expect_equal(unname(race$colors["Germany"]), "#555555")
+  expect_equal(race$legend$items$color,
+               c("#111111", "#222222", "#333333", "#444444", "#555555"))
+})
