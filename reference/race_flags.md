@@ -3,9 +3,10 @@
 Returns file paths to circular flag images, ready to hand to the
 `images` argument of
 [`ggrace()`](https://choxos.github.io/ggextreme/reference/ggrace.md).
-The package ships one flag per ISO 3166-1 country, plus Kurdistan, drawn
-from the same artwork
+The package ships one flag per ISO 3166-1 country, plus Kurdistan,
+mostly drawn from the same artwork
 [`gt::fmt_flag()`](https://gt.rstudio.com/reference/fmt_flag.html) uses.
+See `inst/extdata/flags/SOURCE.txt` for the provenance.
 
 ## Usage
 

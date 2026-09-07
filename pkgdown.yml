@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   ggextreme: ggextreme.html
   how-the-animation-works: how-the-animation-works.html
-last_built: 2026-09-07T11:08Z
+last_built: 2026-09-07T11:12Z
 urls:
   reference: https://choxos.github.io/ggextreme/reference
   article: https://choxos.github.io/ggextreme/articles
