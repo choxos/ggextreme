@@ -15,7 +15,8 @@ A character vector of file paths, named by the input.
 \description{
 Returns file paths to circular flag images, ready to hand to the \code{images}
 argument of \code{\link[=ggrace]{ggrace()}}. The package ships one flag per ISO 3166-1 country,
-plus Kurdistan, drawn from the same artwork \code{\link[gt:fmt_flag]{gt::fmt_flag()}} uses.
+plus Kurdistan, mostly drawn from the same artwork \code{gt::fmt_flag()} uses.
+See \code{inst/extdata/flags/SOURCE.txt} for the provenance.
 }
 \details{
 Lookup tries, in order: the two letter code, the three letter code, the

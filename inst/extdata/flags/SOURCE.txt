@@ -1,0 +1,16 @@
+Flag artwork
+============
+
+One circular SVG per ISO 3166-1 alpha-2 country code, plus Kurdistan.
+countries.csv maps codes and country names to those files.
+
+Most of the artwork comes from the flag-icons project
+(https://github.com/lipis/flag-icons), by way of the gt package, which
+uses the same set for gt::fmt_flag(). flag-icons is released under the MIT
+License, Copyright (c) 2013 Panayiotis Lipiridis.
+
+Two files differ. krd.svg is the flag of Kurdistan, from Wikimedia
+Commons, cropped to a square and masked with a circle. ir.svg is the plain
+green, white and red tricolour of Iran, drawn for this package.
+
+See data-raw/flags.R for the script that generates all of them.

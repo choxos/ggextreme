@@ -2,7 +2,8 @@
 #'
 #' Returns file paths to circular flag images, ready to hand to the `images`
 #' argument of [ggrace()]. The package ships one flag per ISO 3166-1 country,
-#' plus Kurdistan, drawn from the same artwork [gt::fmt_flag()] uses.
+#' plus Kurdistan, mostly drawn from the same artwork `gt::fmt_flag()` uses.
+#' See `inst/extdata/flags/SOURCE.txt` for the provenance.
 #'
 #' Lookup tries, in order: the two letter code, the three letter code, the
 #' full country name, and finally a unique partial match on the name. Names

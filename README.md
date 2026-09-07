@@ -117,4 +117,5 @@ principal component analysis and rescaled from 0 to 100.
 
 MIT. The package bundles the Lato typeface under the SIL Open Font License
 (`inst/fonts/OFL.txt`) and country flag artwork from the flag-icons project
-under the MIT License.
+under the MIT License, with two exceptions noted in
+`inst/extdata/flags/SOURCE.txt`.
