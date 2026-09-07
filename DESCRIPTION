@@ -1,16 +1,20 @@
 Package: ggextreme
 Type: Package
-Title: Flourish Style Animated Charts for 'ggplot2'
+Title: Animated Bar Chart Races and Other Presentation Charts
 Version: 0.1.0
 Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
     role = c("aut", "cre"))
-Description: A small collection of presentation grade charts that 'ggplot2'
-    does not ship with. The first is a bar chart race that reproduces the
-    'flourish.studio' bar race design down to its measured geometry: values
-    and ranks are interpolated on a uniform time grid, every frame is drawn
-    as an ordinary 'ggplot2' plot, and the frames are encoded to GIF or MP4.
+Description: Presentation quality charts built on 'ggplot2' that the package
+    itself does not provide. The bar chart race interpolates values on a
+    uniform time grid, ranks every frame on its own values and eases bars
+    into new positions, so a reordering field stays readable. Frames are
+    ordinary 'ggplot2' objects laid out on a fixed pixel grid, which keeps
+    the axis and label column from drifting between them, and are encoded to
+    GIF or MP4. Circular images, such as the bundled country flags, can be
+    placed at the end of each bar.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Depends:
     R (>= 4.1)
 Imports:
@@ -27,10 +31,16 @@ Imports:
 Suggests:
     av,
     gifski,
+    gt,
+    knitr,
     magick,
+    rmarkdown,
+    rsvg,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/choxos/ggextreme
+VignetteBuilder: knitr
+URL: https://choxos.github.io/ggextreme/,
+    https://github.com/choxos/ggextreme
 BugReports: https://github.com/choxos/ggextreme/issues
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0

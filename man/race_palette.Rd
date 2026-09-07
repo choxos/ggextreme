@@ -14,9 +14,8 @@ larger than the number of base colors.}
 A character vector of \code{n} hex colors.
 }
 \description{
-A qualitative palette sampled straight off the reference recording: muted
-teals, greens, blues, purples and warm earth tones that stay readable side
-by side in a dense stack of bars.
+A qualitative palette of muted teals, greens, blues, purples and warm
+earth tones, chosen to stay readable side by side in a dense stack of bars.
 }
 \examples{
 race_palette(5)

@@ -7,3 +7,8 @@
 ^ggextreme\.Rcheck$
 ^ggextreme_.*\.tar\.gz$
 ^\.DS_Store$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^data-raw$
+^cran-comments\.md$

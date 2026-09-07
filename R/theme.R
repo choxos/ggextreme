@@ -1,8 +1,7 @@
 #' Colors used by the bar chart race
 #'
-#' A qualitative palette sampled straight off the reference recording: muted
-#' teals, greens, blues, purples and warm earth tones that stay readable side
-#' by side in a dense stack of bars.
+#' A qualitative palette of muted teals, greens, blues, purples and warm
+#' earth tones, chosen to stay readable side by side in a dense stack of bars.
 #'
 #' @param n Number of colors to return. The palette is recycled when `n` is
 #'   larger than the number of base colors.

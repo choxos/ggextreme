@@ -3,7 +3,7 @@
   invisible()
 }
 
-# The reference chart is set in Lato, so the package ships it. Registration is
+# The charts are set in Lato, so the package ships it. Registration is
 # skipped when Lato is already available, either as a real system font or
 # because another package registered it first.
 register_lato <- function(dir) {

@@ -1,96 +1,120 @@
 # ggextreme
 
-Presentation grade charts that ggplot2 does not ship with. The first one is a
-bar chart race built to match the [flourish.studio](https://flourish.studio)
-design: smooth continuous overtaking, a fixed label column, a top axis that
-rescales with the field, the big translucent year in the corner and a
-timeline with a moving marker.
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/choxos/ggextreme/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/choxos/ggextreme/actions/workflows/R-CMD-check.yaml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
-Every frame is an ordinary `ggplot` object, so nothing is hidden behind a
-rendering engine you cannot inspect.
+Presentation quality charts built on **ggplot2** that the package itself does
+not provide. The first is a bar chart race: an animation of a ranking that
+changes over time, of the kind used to summarise long panels in talks,
+teaching material and journal supplements.
 
-## Install
+Every frame is an ordinary `ggplot` object. Nothing is hidden behind a
+separate rendering engine, so a frame can be inspected, modified or saved on
+its own.
+
+![A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019](man/figures/README-race.gif)
+
+## Installation
 
 ```r
 # install.packages("remotes")
 remotes::install_github("choxos/ggextreme")
 ```
 
-Writing output needs an encoder: `gifski` or `magick` for GIF, `av` or an
-`ffmpeg` binary for MP4.
+Writing output requires an encoder: **gifski** or **magick** for GIF, **av**
+or an `ffmpeg` binary for MP4. Images on the bars require **magick**.
 
-## Use
+## Usage
+
+`ggrace()` takes long data with one row per entity per time point, and three
+bare column names for the value, the label and the time.
 
 ```r
 library(ggextreme)
 
-phones <- as.data.frame.table(datasets::WorldPhones, responseName = "phones")
-names(phones)[1:2] <- c("year", "region")
-phones$year <- as.numeric(as.character(phones$year))
-
 race <- ggrace(
-  phones, value = phones, name = region, time = year,
-  top_n = 7,
-  duration = 20,
-  title = "Telephones in use, 1951 to 1961",
-  caption = "Source: AT&T"
+  clefts_qci,
+  value = qci,
+  name = country,
+  time = year,
+  top_n = 15,
+  duration = 15,
+  title = "Quality of care for orofacial clefts",
+  caption = "Source: Sofi-Mahmudi et al. 2025, PLOS ONE 20(1): e0317267"
 )
 
-race_frame(race, 200)          # inspect one frame
-animate_race(race, "phones.mp4")
+race_frame(race, 200)          # one frame, as a ggplot
+animate_race(race, "race.mp4") # draw every frame and encode
 ```
 
-`ggrace()` takes long data: one row per entity per time point, with bare
-column names for the value, the label and the time. `time` may be numeric or
-a `Date`. Everything else has a default that reproduces the reference design.
+`time` may be numeric or a `Date`. Each entity and time pair must appear
+once; a repeat is an error rather than a silent average. The encoder is
+chosen from the file extension, and frames are drawn across cores by default.
 
-Useful arguments:
+Selected arguments:
 
-| argument | what it does |
+| argument | effect |
 | --- | --- |
-| `top_n` | how many bars are visible at once |
-| `duration`, `fps`, `end_pause` | length in seconds, frame rate, hold on the last frame |
+| `top_n` | number of bars visible at once |
+| `duration`, `fps`, `end_pause` | length in seconds, frame rate, hold on the final frame |
 | `swap` | seconds a bar takes to move into a new rank |
-| `palette` | a color vector, or one named by entity |
-| `label_value`, `label_time` | formatters for the bar numbers and the big time label |
-| `timeline`, `play_button`, `card` | turn off the timeline strip, the pause button, or the card and its shadow |
-| `width`, `res` | output size; the whole layout scales with `width` |
+| `palette`, `breaks` | bar colours; gridline positions |
+| `label_value`, `label_time` | formatters for the bar numbers and the time label |
+| `images` | pictures placed at the end of the bars |
+| `timeline`, `play_button`, `card` | optional chrome around the plot |
+| `width`, `res` | output size; the layout scales with `width` |
 
-`animate_race()` picks its encoder from the file extension and draws frames
-across cores by default, about a third of a second per frame on eight cores.
-A 30 second race at 30 fps is 900 frames, so roughly four minutes.
+## Images on the bars
 
-## How the motion works
+`images` takes image file paths named by entity. Pictures are cropped to a
+circle and right aligned just inside the end of each bar; entities without an
+image simply get none. A circular flag for every ISO 3166-1 country, plus
+Kurdistan, is bundled, so country races need no extra files.
 
-The reference does two different things, and copying only one of them is
-what makes most R bar races look wrong. `ggrace()` does both:
+```r
+key <- unique(clefts_qci[c("country", "iso")])
+flags <- setNames(race_flags(key$iso), key$country)
 
-* Values are interpolated on a **uniform real time grid**, so bars grow at a
-  steady rate and the timeline marker moves at constant speed even when the
-  keyframes are unevenly spaced.
-* **Position is tweened, not interpolated.** Every frame is ranked on its own
-  values, and a bar that changes rank eases into the new slot over `swap`
-  seconds, defaulting to the fifth of a second the reference takes. Bars hold
-  their slot and trade places in one quick move instead of drifting between
-  slots for a whole time step.
-* Ranks are **clamped to `top_n + 1`**, so an entity far down the field waits
-  just below the visible window and enters from the bottom edge rather than
-  flying in from off screen.
-* The label column has a **fixed width** and the panel geometry never depends
-  on which entities are currently visible, so nothing drifts sideways between
-  frames.
-* Colors are assigned once over the whole field, so an entity keeps its color
-  when it leaves and comes back.
+ggrace(clefts_qci, qci, country, year, top_n = 15, images = flags)
+```
 
-## Design provenance
+Any image works, not only flags. Pass paths to logos, portraits or crests in
+the same way.
 
-The layout is not an approximation. Card width, bar pitch, gutters, rule
-weights, tick lengths, ink colors and font sizes were all measured off a
-reference recording frame by frame, and the package ships Lato, the font the
-reference uses. `R/layout.R` holds those measurements in one place; change
-the numbers there to restyle the whole chart.
+## Design notes
+
+Three choices govern how the animation reads. They are set out in full in
+`vignette("how-the-animation-works")`.
+
+* **Values are interpolated on a uniform time grid.** Bars grow at a steady
+  rate, and unevenly spaced observations play at their true relative speed.
+* **Rank is not interpolated.** Every frame is ranked on its own values, and
+  a bar that changes rank eases into the new position over `swap` seconds.
+  Bars therefore rest in place and trade positions in one short move rather
+  than drifting for a whole time step.
+* **The geometry is fixed.** The label column has a constant width and the
+  panel edges are constants, so the chart does not shift sideways when the
+  longest name enters or leaves the visible window. Colours are assigned once
+  across the whole field, so an entity keeps its colour when it drops out and
+  returns.
+
+## Bundled data
+
+`clefts_qci` gives the Quality of Care Index for orofacial clefts in fifteen
+countries from 1990 to 2019. The index is a composite of four secondary
+indices derived from Global Burden of Disease estimates, summarised by
+principal component analysis and rescaled from 0 to 100.
+
+> Sofi-Mahmudi A, Shamsoddin E, Khademioore S, Khazaei Y, Vahdati A,
+> Tovani-Palone MR (2025). Global, regional, and national survey on burden
+> and Quality of Care Index (QCI) of orofacial clefts: Global burden of
+> disease systematic analysis 1990-2019. *PLOS ONE* 20(1): e0317267.
+> <https://doi.org/10.1371/journal.pone.0317267>
 
 ## License
 
-MIT. Lato is bundled under the SIL Open Font License, see
-`inst/fonts/OFL.txt`.
+MIT. The package bundles the Lato typeface under the SIL Open Font License
+(`inst/fonts/OFL.txt`) and country flag artwork from the flag-icons project
+under the MIT License.

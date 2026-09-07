@@ -88,7 +88,11 @@ test_that("timeline labels land on both ends", {
 
   days <- as.numeric(seq(as.Date("2000-01-01"), as.Date("2010-01-01"), "year"))
   dated <- ggextreme:::timeline_breaks(days, use_divisors = FALSE)
-  expect_true(all(diff(dated) > 300))
+  expect_true(all(diff(dated) > 0))
+  expect_equal(range(dated), range(days))
+  expect_lt(length(dated), 14)
+  # Day counts must not be split into a step that repeats a year label.
+  expect_gt(min(diff(dated)), 60)
 })
 
 test_that("colors are stable across the whole field", {

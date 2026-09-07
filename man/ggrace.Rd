@@ -17,8 +17,11 @@ ggrace(
   palette = NULL,
   title = NULL,
   caption = NULL,
+  breaks = scales::breaks_extended(4),
   label_value = scales::label_comma(accuracy = 1),
   label_time = NULL,
+  images = NULL,
+  image_size = 0.87,
   timeline = TRUE,
   play_button = TRUE,
   card = TRUE,
@@ -42,10 +45,9 @@ label, and the time point. \code{time} may be numeric or a \code{Date}. Each
 
 \item{end_pause}{Seconds to hold the final frame.}
 
-\item{swap}{Seconds a bar takes to move to a new rank. The reference
-settles a swap in about a fifth of a second, so bars hold their slot and
-change places in a quick eased move rather than drifting the whole way
-between one time point and the next.}
+\item{swap}{Seconds a bar takes to move to a new rank. Bars hold their
+position and change places in one quick eased move rather than drifting
+the whole way between one time point and the next.}
 
 \item{palette}{Colors for the bars. Either an unnamed vector, recycled over
 the entities in alphabetical order, or a vector named by entity. Defaults
@@ -53,55 +55,61 @@ to \code{\link[=race_palette]{race_palette()}}.}
 
 \item{title, caption}{Card title and the source note under the timeline.}
 
+\item{breaks}{A function taking the axis range and returning the gridline
+positions, or a numeric vector of fixed positions. Breaks past the
+current maximum are dropped, so the axis fills in as the field grows.}
+
 \item{label_value}{A function formatting the number printed after each bar.}
 
 \item{label_time}{A function formatting the large time label in the corner.
 Defaults to the floor of the interpolated time for numeric input and the
-year for dates, which is what the reference shows.}
+year for dates.}
+
+\item{images}{Pictures to sit at the end of each bar, as a character
+vector of image file paths named by entity. Entities with no image get
+none. \code{\link[=race_flags]{race_flags()}} returns paths to the bundled country flags. Needs
+the magick package.}
+
+\item{image_size}{Image diameter as a fraction of the bar height. Images
+are cropped to a circle and right aligned just inside the end of the bar.}
 
 \item{timeline}{Draw the timeline strip with the moving marker.}
 
-\item{play_button}{Draw the round pause button next to the timeline, as the
-reference player does.}
+\item{play_button}{Draw the round pause button next to the timeline.}
 
-\item{card}{Draw the white card and its drop shadow on a light page. Set to
-\code{FALSE} for a plain white background.}
+\item{card}{Draw the chart on a white card with a drop shadow over a light
+page. Set to \code{FALSE} for a plain white background.}
 
 \item{width}{Output width in pixels. Frames are laid out for this width, so
 it also fixes every font size.}
 
 \item{res}{Output resolution in pixels per inch.}
 
-\item{family}{Font family. The package ships Lato, the font the reference
-uses, and registers it on load.}
+\item{family}{Font family. The package ships Lato and registers it on load.}
 }
 \value{
 An object of class \code{ggrace}.
 }
 \description{
 Turns a long panel of \code{name}, \code{time}, \code{value} observations into a bar chart
-race that reproduces the 'flourish.studio' design. Values and ranks are
-both interpolated on a uniform real time grid, so bars glide past each
-other instead of jumping between ranks, and the returned object holds one
-row per entity per frame. Draw a single frame with \code{\link[=race_frame]{race_frame()}} or write
-the whole animation with \code{\link[=animate_race]{animate_race()}}.
+race and returns one row per entity per frame. Draw a single frame with
+\code{\link[=race_frame]{race_frame()}} or write the whole animation with \code{\link[=animate_race]{animate_race()}}.
 }
 \details{
 Values move linearly and ranks do not. Every frame is ranked on its own
 interpolated values, and a bar whose rank changes eases into its new slot
-over \code{swap} seconds, which is how the reference behaves: bars sit still in
-their slot and trade places in one quick move rather than drifting for a
-whole time step.
+over \code{swap} seconds. Bars therefore rest in place and trade positions in
+one short move, rather than drifting for a whole time step, which is what
+keeps a crowded field readable while it reorders.
 
 Ranks are clamped to \code{top_n + 1}. An entity far down the field therefore
 waits just below the visible window and slides in from the bottom edge
 instead of flying up from off screen, which is what makes entries and
 exits read cleanly.
 
-The x axis carries no headroom: the longest bar always reaches the right
-edge of the bar area and the axis maximum is the largest value in the
-current frame, exactly as the reference does. Gridlines therefore drift as
-the field grows.
+The x axis carries no headroom. The longest bar always reaches the right
+edge of the plotting area and the axis maximum is the largest value in the
+current frame, so gridlines drift as the field grows.
 }
 \examples{
 phones <- as.data.frame.table(datasets::WorldPhones, responseName = "phones")

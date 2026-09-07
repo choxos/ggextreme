@@ -1,11 +1,9 @@
-# Layout of the reference design, in card units.
+# The chart layout, in card units.
 #
-# Every number here was measured off the reference recording in
-# documentation/refs, which shows a card 710 units wide holding 31 bars. Font
-# sizes were fitted by rendering the same strings in Lato and matching their
-# ink boxes to the recording. Distances stay in card units so the design
-# scales with the output width, and anything below the bar block is an offset
-# from the bottom of that block so the card grows with `top_n`.
+# Positions are given on a card 710 units wide. Distances stay in card units
+# so the design scales with the output width, and anything below the bar block
+# is an offset from the bottom of that block so the card grows with `top_n`.
+# Font sizes are in the same units and are converted to points at draw time.
 #
 # Text is positioned by the vertical center of its ink, which is what
 # `vjust = 0.5` gives, so no baseline arithmetic is needed anywhere.
@@ -42,6 +40,7 @@ race_layout <- function(top_n) {
     grid_w = 1,
     grid_dx = 1,
 
+    image_gap = 1,
     name_gap = 11.5,
     name_pt = 10.5,
     value_gap = 12,
@@ -76,7 +75,7 @@ race_layout <- function(top_n) {
   )
 }
 
-# Ink colors, also measured off the reference frames.
+# Ink colors.
 race_ink <- list(
   page = "#F7F7F7",
   shadow = "#E4E4E4",

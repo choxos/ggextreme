@@ -1,27 +1,23 @@
 #' Build a bar chart race
 #'
 #' Turns a long panel of `name`, `time`, `value` observations into a bar chart
-#' race that reproduces the 'flourish.studio' design. Values and ranks are
-#' both interpolated on a uniform real time grid, so bars glide past each
-#' other instead of jumping between ranks, and the returned object holds one
-#' row per entity per frame. Draw a single frame with [race_frame()] or write
-#' the whole animation with [animate_race()].
+#' race and returns one row per entity per frame. Draw a single frame with
+#' [race_frame()] or write the whole animation with [animate_race()].
 #'
 #' Values move linearly and ranks do not. Every frame is ranked on its own
 #' interpolated values, and a bar whose rank changes eases into its new slot
-#' over `swap` seconds, which is how the reference behaves: bars sit still in
-#' their slot and trade places in one quick move rather than drifting for a
-#' whole time step.
+#' over `swap` seconds. Bars therefore rest in place and trade positions in
+#' one short move, rather than drifting for a whole time step, which is what
+#' keeps a crowded field readable while it reorders.
 #'
 #' Ranks are clamped to `top_n + 1`. An entity far down the field therefore
 #' waits just below the visible window and slides in from the bottom edge
 #' instead of flying up from off screen, which is what makes entries and
 #' exits read cleanly.
 #'
-#' The x axis carries no headroom: the longest bar always reaches the right
-#' edge of the bar area and the axis maximum is the largest value in the
-#' current frame, exactly as the reference does. Gridlines therefore drift as
-#' the field grows.
+#' The x axis carries no headroom. The longest bar always reaches the right
+#' edge of the plotting area and the axis maximum is the largest value in the
+#' current frame, so gridlines drift as the field grows.
 #'
 #' @param data A data frame in long format.
 #' @param value,name,time Bare column names holding the bar length, the bar
@@ -31,28 +27,34 @@
 #' @param duration Length of the animation in seconds, excluding `end_pause`.
 #' @param fps Frames per second.
 #' @param end_pause Seconds to hold the final frame.
-#' @param swap Seconds a bar takes to move to a new rank. The reference
-#'   settles a swap in about a fifth of a second, so bars hold their slot and
-#'   change places in a quick eased move rather than drifting the whole way
-#'   between one time point and the next.
+#' @param swap Seconds a bar takes to move to a new rank. Bars hold their
+#'   position and change places in one quick eased move rather than drifting
+#'   the whole way between one time point and the next.
 #' @param palette Colors for the bars. Either an unnamed vector, recycled over
 #'   the entities in alphabetical order, or a vector named by entity. Defaults
 #'   to [race_palette()].
 #' @param title,caption Card title and the source note under the timeline.
+#' @param breaks A function taking the axis range and returning the gridline
+#'   positions, or a numeric vector of fixed positions. Breaks past the
+#'   current maximum are dropped, so the axis fills in as the field grows.
 #' @param label_value A function formatting the number printed after each bar.
 #' @param label_time A function formatting the large time label in the corner.
 #'   Defaults to the floor of the interpolated time for numeric input and the
-#'   year for dates, which is what the reference shows.
+#'   year for dates.
+#' @param images Pictures to sit at the end of each bar, as a character
+#'   vector of image file paths named by entity. Entities with no image get
+#'   none. [race_flags()] returns paths to the bundled country flags. Needs
+#'   the magick package.
+#' @param image_size Image diameter as a fraction of the bar height. Images
+#'   are cropped to a circle and right aligned just inside the end of the bar.
 #' @param timeline Draw the timeline strip with the moving marker.
-#' @param play_button Draw the round pause button next to the timeline, as the
-#'   reference player does.
-#' @param card Draw the white card and its drop shadow on a light page. Set to
-#'   `FALSE` for a plain white background.
+#' @param play_button Draw the round pause button next to the timeline.
+#' @param card Draw the chart on a white card with a drop shadow over a light
+#'   page. Set to `FALSE` for a plain white background.
 #' @param width Output width in pixels. Frames are laid out for this width, so
 #'   it also fixes every font size.
 #' @param res Output resolution in pixels per inch.
-#' @param family Font family. The package ships Lato, the font the reference
-#'   uses, and registers it on load.
+#' @param family Font family. The package ships Lato and registers it on load.
 #'
 #' @return An object of class `ggrace`.
 #' @export
@@ -84,8 +86,11 @@ ggrace <- function(data, value, name, time,
                    palette = NULL,
                    title = NULL,
                    caption = NULL,
+                   breaks = scales::breaks_extended(4),
                    label_value = scales::label_comma(accuracy = 1),
                    label_time = NULL,
+                   images = NULL,
+                   image_size = 0.87,
                    timeline = TRUE,
                    play_button = TRUE,
                    card = TRUE,
@@ -97,12 +102,20 @@ ggrace <- function(data, value, name, time,
   time <- rlang::eval_tidy(rlang::enquo(time), data)
 
   if (!is.numeric(value)) rlang::abort("`value` must be numeric.")
-  if (anyDuplicated(paste(name, time))) {
-    rlang::abort("Each `name` and `time` pair must appear at most once.")
-  }
   if (top_n < 1) rlang::abort("`top_n` must be at least 1.")
+  width <- unname(width)
+  res <- unname(res)
+  if (any(value < 0, na.rm = TRUE)) {
+    rlang::abort(c(
+      "`value` cannot be negative: a bar has no length to draw.",
+      i = "Shift or clip the values before racing them."
+    ))
+  }
 
   time_num <- as.numeric(time)
+  if (anyDuplicated(data.frame(name = name, time = time_num))) {
+    rlang::abort("Each `name` and `time` pair must appear at most once.")
+  }
   keys <- sort(unique(time_num))
   if (length(keys) < 2) {
     rlang::abort("`time` must have at least two distinct values.")
@@ -110,6 +123,7 @@ ggrace <- function(data, value, name, time,
   if (is.null(label_time)) label_time <- default_time_label(time)
 
   entities <- sort(unique(name))
+  layout <- race_layout(top_n)
   n_frames <- max(2L, as.integer(round(duration * fps)))
   grid_t <- seq(min(keys), max(keys), length.out = n_frames)
 
@@ -118,12 +132,15 @@ ggrace <- function(data, value, name, time,
   values[cbind(match(name, entities), match(time_num, keys))] <- value
 
   values_i <- interpolate_rows(values, keys, grid_t)
-  targets <- apply(values_i, 2, function(v) {
+  targets <- vapply(seq_len(n_frames), function(j) {
+    v <- values_i[, j]
     out <- rep(top_n + 1, length(v))
     seen <- !is.na(v)
     out[seen] <- pmin(rank(-v[seen], ties.method = "first"), top_n + 1)
     out
-  })
+  }, numeric(length(entities)))
+  # vapply drops to a vector when there is a single entity.
+  dim(targets) <- c(length(entities), n_frames)
   window <- max(1L, as.integer(round(swap * fps)))
   ranks_i <- t(apply(targets, 1, tween_steps, window = window))
 
@@ -151,6 +168,7 @@ ggrace <- function(data, value, name, time,
       colors = assign_colors(entities, palette),
       title = title,
       caption = caption,
+      breaks = breaks,
       label_value = label_value,
       label_time = label_time,
       timeline = timeline,
@@ -160,7 +178,14 @@ ggrace <- function(data, value, name, time,
       res = res,
       family = family,
       date = inherits(time, "Date"),
-      layout = race_layout(top_n),
+      images = prepare_images(
+        images,
+        px = 2 * ceiling(image_size * layout$bar_h * width /
+                           (layout$card_w + 2 * layout$page_pad)),
+        entities = entities
+      ),
+      image_d = image_size * layout$bar_h,
+      layout = layout,
       theme = theme_race(if (card) race_ink$page else race_ink$card)
     ),
     class = "ggrace"
@@ -171,7 +196,7 @@ ggrace <- function(data, value, name, time,
 #'
 #' The frame is a single [ggplot2::ggplot] laid out in card units, so the
 #' title, axis, bars, timeline and footer all live in one coordinate system
-#' and land on measured positions rather than wherever a layout engine puts
+#' and land on fixed positions rather than wherever a layout engine puts
 #' them. That is what keeps the panel from shifting sideways between frames.
 #'
 #' Frames are set in Lato, which the package registers with 'systemfonts'.
@@ -206,11 +231,17 @@ race_frame <- function(x, frame = 1L) {
   fx <- function(v) v + pad
   fy <- function(v) page_h - (v + pad)
   rects <- function(x0, x1, y0, y1, fill) {
+    if (!length(x0) || !length(x1) || !length(y0) || !length(y1)) {
+      return(empty_rects())
+    }
     data.frame(xmin = fx(x0), xmax = fx(x1), ymin = fy(y1), ymax = fy(y0),
                fill = fill, stringsAsFactors = FALSE)
   }
   texts <- function(label, x_card, y_card, pt, color, hjust = 0,
                     face = "plain") {
+    if (!length(label) || !length(x_card) || !length(y_card)) {
+      return(empty_texts())
+    }
     data.frame(x = fx(x_card), y = fy(y_card), label = label,
                size = pt * scale / .pt, colour = color, hjust = hjust,
                fontface = face, stringsAsFactors = FALSE)
@@ -223,7 +254,7 @@ race_frame <- function(x, frame = 1L) {
   unit_w <- (lay$bar_x1 - lay$bar_x0) / top
   d$end <- lay$bar_x0 + d$value * unit_w
 
-  breaks <- scales::breaks_extended(4)(c(0, top))
+  breaks <- if (is.function(x$breaks)) x$breaks(c(0, top)) else x$breaks
   breaks <- breaks[breaks >= 0 & breaks <= top]
   break_x <- lay$bar_x0 + lay$grid_dx + breaks * unit_w
 
@@ -288,6 +319,17 @@ race_frame <- function(x, frame = 1L) {
   }
   if (x$timeline) writing <- rbind(writing, timeline_text(x, lay, texts))
 
+  pictures <- labelled[labelled$name %in% names(x$images), ]
+  if (nrow(pictures)) {
+    pictures <- data.frame(
+      key = pictures$name,
+      x = fx(pmax(pictures$end - lay$image_gap - x$image_d / 2,
+                  lay$bar_x0 + x$image_d / 2)),
+      y = fy(pictures$center),
+      stringsAsFactors = FALSE
+    )
+  }
+
   behind <- texts(x$label_time(x$times[frame]), lay$year_right, lay$year_mid,
                   lay$year_pt, race_ink$year, hjust = 1, face = "bold")
   shapes <- NULL
@@ -301,9 +343,34 @@ race_frame <- function(x, frame = 1L) {
     draw_rects(ink) +
     draw_shapes(shapes) +
     draw_rects(fore) +
+    image_layer(pictures, x$images, x$image_d, page_w, page_h) +
     draw_text(writing, x$family)
   p + coord_cartesian(xlim = c(0, page_w), ylim = c(0, page_h),
                       expand = FALSE, clip = "off")
+}
+
+#' The pixel size of a race frame
+#'
+#' A frame has a fixed aspect ratio, set by the width and by how many bars are
+#' visible. [animate_race()] uses this to size its device; use it when drawing
+#' a single frame yourself, so the layout is not stretched.
+#'
+#' @param x A `ggrace` object from [ggrace()].
+#' @param width Output width in pixels. Defaults to the width the race was
+#'   built for.
+#'
+#' @return A named numeric vector with the `width` and `height` in pixels.
+#' @export
+#'
+#' @examples
+#' race <- ggrace(clefts_qci, qci, country, year, top_n = 10)
+#' race_size(race)
+race_size <- function(x, width = x$width) {
+  stopifnot(inherits(x, "ggrace"))
+  page_w <- x$layout$card_w + 2 * x$layout$page_pad
+  page_h <- x$layout$card_h + 2 * x$layout$page_pad
+  width <- unname(width)
+  c(width = round(width), height = round(width * page_h / page_w))
 }
 
 #' Render a bar chart race to a file
@@ -328,11 +395,9 @@ animate_race <- function(x, file = "race.mp4", loop = TRUE,
                          cores = max(1L, parallel::detectCores() - 1L),
                          quiet = FALSE) {
   stopifnot(inherits(x, "ggrace"))
-  lay <- x$layout
-  page_w <- lay$card_w + 2 * lay$page_pad
-  page_h <- lay$card_h + 2 * lay$page_pad
-  width <- round(x$width)
-  height <- round(width * page_h / page_w)
+  size <- race_size(x)
+  width <- unname(size[["width"]])
+  height <- unname(size[["height"]])
 
   dir <- tempfile("ggextreme")
   dir.create(dir)
@@ -381,7 +446,7 @@ print.ggrace <- function(x, ...) {
 # Internals -------------------------------------------------------------
 
 # A bar holds its slot, then eases into a new one over `window` frames. Cubic
-# in and out, so it leaves and lands softly, matching the reference.
+# in and out, so it leaves and lands softly.
 tween_steps <- function(target, window) {
   out <- numeric(length(target))
   pos <- goal <- from <- target[1]
@@ -435,6 +500,17 @@ default_time_label <- function(time) {
 
 format_break <- function(b) {
   format(b, trim = TRUE, drop0trailing = TRUE, scientific = FALSE)
+}
+
+empty_rects <- function() {
+  data.frame(xmin = numeric(0), xmax = numeric(0), ymin = numeric(0),
+             ymax = numeric(0), fill = character(0), stringsAsFactors = FALSE)
+}
+
+empty_texts <- function() {
+  data.frame(x = numeric(0), y = numeric(0), label = character(0),
+             size = numeric(0), colour = character(0), hjust = numeric(0),
+             fontface = character(0), stringsAsFactors = FALSE)
 }
 
 draw_rects <- function(df) {
@@ -512,7 +588,7 @@ timeline_rects <- function(x, lay, rects) {
   )
 }
 
-# The last label is pulled back inside the axis, as the reference does.
+# The last label is pulled back inside the axis so it cannot overhang.
 timeline_text <- function(x, lay, texts) {
   at <- timeline_at(x, lay)
   labels <- timeline_breaks(x$keys, !x$date)
@@ -535,33 +611,53 @@ timeline_marker <- function(x, frame, lay, fx, fy) {
   )
 }
 
-# Labelled ticks land on both ends of the timeline, the way the reference
-# splits 1990 to 2017 into nine steps of three years. Dates are day counts,
-# where a whole span rarely divides into anything meaningful, so they fall
-# through to pretty breaks.
+# Labelled ticks land on both ends of the timeline, preferring a whole number
+# step that divides the span into nine or so intervals. Dates are day counts,
+# where a span rarely divides into anything meaningful, so they fall through
+# to pretty breaks.
 timeline_breaks <- function(keys, use_divisors = TRUE) {
-  span <- diff(range(keys))
-  if (use_divisors && isTRUE(all.equal(span, round(span))) && span >= 2) {
-    span <- round(span)
-    steps <- seq_len(span)
-    steps <- steps[span %% steps == 0]
-    n <- steps[which.min(abs(steps - 9))]
-    return(seq(min(keys), max(keys), length.out = n + 1))
+  lo <- min(keys)
+  hi <- max(keys)
+  span <- hi - lo
+  if (span <= 0) return(lo)
+  whole <- isTRUE(all.equal(span, round(span))) && span <= 1000
+  if (use_divisors && whole && span >= 2) {
+    steps <- seq_len(round(span))
+    steps <- steps[round(span) %% steps == 0]
+    steps <- steps[steps >= 6 & steps <= 13]
+    if (length(steps)) {
+      n <- steps[which.min(abs(steps - 9))]
+      return(seq(lo, hi, length.out = n + 1))
+    }
   }
-  breaks <- scales::breaks_pretty(9)(range(keys))
-  breaks[breaks >= min(keys) & breaks <= max(keys)]
+  # No whole number step divides the span, so fall back to pretty breaks and
+  # keep the last time point labelled, dropping any break that would crowd it.
+  breaks <- scales::breaks_pretty(9)(c(lo, hi))
+  # A whole number span must not be split into fractions, or two labels round
+  # to the same thing.
+  if (whole) breaks <- unique(round(breaks))
+  breaks <- breaks[breaks > lo + span / 40 & breaks < hi - span / 40]
+  sort(unique(c(lo, breaks, hi)))
 }
 
 encode_frames <- function(files, file, fps, loop, width, height) {
   ext <- tolower(tools::file_ext(file))
+  # Absolute, so an encoder never reads a leading dash as an option.
+  file <- file.path(normalizePath(dirname(file), mustWork = FALSE),
+                    basename(file))
   if (ext == "gif") {
     if (requireNamespace("gifski", quietly = TRUE)) {
       gifski::gifski(files, file, width = width, height = height,
                      delay = 1 / fps, loop = loop, progress = FALSE)
     } else if (requireNamespace("magick", quietly = TRUE)) {
+      # magick can only hold whole centisecond delays, so resample the frames
+      # to the nearest rate it can hit and keep the animation its true length.
+      rate <- magick_fps(fps)
+      keep <- unique(round(seq(1, length(files),
+                               length.out = max(1, round(length(files) * rate / fps)))))
       anim <- magick::image_animate(
-        magick::image_read(files),
-        fps = magick_fps(fps), loop = if (loop) 0 else 1, optimize = TRUE
+        magick::image_read(files[keep]),
+        fps = rate, loop = if (loop) 0 else 1, optimize = TRUE
       )
       magick::image_write(anim, file)
     } else {

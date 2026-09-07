@@ -17,7 +17,7 @@ A \link[ggplot2:ggplot]{ggplot2::ggplot} object.
 \description{
 The frame is a single \link[ggplot2:ggplot]{ggplot2::ggplot} laid out in card units, so the
 title, axis, bars, timeline and footer all live in one coordinate system
-and land on measured positions rather than wherever a layout engine puts
+and land on fixed positions rather than wherever a layout engine puts
 them. That is what keeps the panel from shifting sideways between frames.
 }
 \details{

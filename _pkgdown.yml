@@ -1,0 +1,54 @@
+url: https://choxos.github.io/ggextreme/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#22928F"
+    base_font: {google: "Lato"}
+    heading_font: {google: "Lato"}
+    code_font: {google: "JetBrains Mono"}
+
+home:
+  title: Animated bar chart races for ggplot2
+  description: >
+    Build presentation quality animated charts on top of ggplot2. Values are
+    interpolated on a uniform time grid, every frame is ranked on its own
+    values, and bars ease into new positions so a reordering field stays
+    readable.
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+
+reference:
+- title: Building a race
+  desc: Turn a panel of observations into frames, then draw or encode them.
+  contents:
+  - ggrace
+  - race_frame
+  - race_size
+  - animate_race
+
+- title: Appearance
+  desc: Colours, theme and the images that sit on the bars.
+  contents:
+  - race_palette
+  - theme_race
+  - race_flags
+  - race_flag_codes
+
+- title: Data
+  contents:
+  - clefts_qci
+
+- title: Package
+  contents:
+  - ggextreme-package
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - ggextreme
+  - how-the-animation-works
