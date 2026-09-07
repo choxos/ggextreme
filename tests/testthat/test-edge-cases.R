@@ -153,3 +153,11 @@ test_that("breaks accept a fixed vector or an empty result", {
                  breaks = function(range) numeric(0))
   expect_silent(ggplot2::ggplot_build(race_frame(none, 2)))
 })
+
+test_that("drawing falls back to one core where it must", {
+  expect_equal(ggextreme:::resolve_cores(4, "windows"), 1L)
+  expect_equal(ggextreme:::resolve_cores(NA_integer_, "unix"), 1L)
+  expect_equal(ggextreme:::resolve_cores(0, "unix"), 1L)
+  expect_equal(ggextreme:::resolve_cores(integer(0), "unix"), 1L)
+  expect_equal(ggextreme:::resolve_cores(4, "unix"), 4L)
+})

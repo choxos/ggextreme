@@ -413,7 +413,7 @@ animate_race <- function(x, file = "race.mp4", loop = TRUE,
     on.exit(grDevices::dev.off(), add = TRUE)
     print(race_frame(x, order[i]))
   }
-  if (.Platform$OS.type == "windows" || is.na(cores)) cores <- 1L
+  cores <- resolve_cores(cores)
   if (cores > 1) {
     parallel::mclapply(seq_along(order), draw, mc.cores = cores)
   } else {
@@ -500,6 +500,13 @@ default_time_label <- function(time) {
 
 format_break <- function(b) {
   format(b, trim = TRUE, drop0trailing = TRUE, scientific = FALSE)
+}
+
+# mclapply cannot fork on Windows, and detectCores() can return NA.
+resolve_cores <- function(cores, os = .Platform$OS.type) {
+  if (identical(os, "windows")) return(1L)
+  if (length(cores) != 1 || is.na(cores) || cores < 1) return(1L)
+  as.integer(cores)
 }
 
 empty_rects <- function() {
