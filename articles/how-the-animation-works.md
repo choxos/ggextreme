@@ -116,7 +116,7 @@ comes back.
 
 head(race$colors, 4)
 #>    Brazil     Chile     China     Egypt 
-#> "#22928F" "#B66399" "#BF6662" "#757CC6"
+#> "#22928F" "#B66399" "#757CC6" "#568E4F"
 ```
 
 ## What a frame is made of

@@ -64,11 +64,33 @@ Selected arguments:
 | `top_n` | number of bars visible at once |
 | `duration`, `fps`, `end_pause` | length in seconds, frame rate, hold on the final frame |
 | `swap` | seconds a bar takes to move into a new rank |
+| `group` | colour bars by category and draw a legend |
 | `palette`, `breaks` | bar colours; gridline positions |
 | `label_value`, `label_time` | formatters for the bar numbers and the time label |
 | `images` | pictures placed at the end of the bars |
 | `timeline`, `play_button`, `card` | optional chrome around the plot |
 | `width`, `res` | output size; the layout scales with `width` |
+
+## Colouring by group
+
+Passing a `group` column colours the bars by category rather than
+individually and draws a legend above the axis. Each entity must belong
+to exactly one category; a factor keeps the legend in the order of its
+levels.
+
+``` r
+
+ggrace(
+  clefts_qci, qci, country, year,
+  group = region,
+  legend_title = "Region",
+  top_n = 15
+)
+```
+
+The card grows to make room for the legend, wrapping onto more rows when
+the categories do not fit across it. `legend = FALSE` keeps the
+colouring and drops the legend.
 
 ## Images on the bars
 

@@ -14,7 +14,7 @@ clefts_qci
 
 ## Format
 
-A data frame with 450 rows and 4 columns:
+A data frame with 450 rows and 5 columns:
 
 - country:
 
@@ -23,6 +23,10 @@ A data frame with 450 rows and 4 columns:
 - iso:
 
   ISO 3166-1 alpha-2 country code, lower case.
+
+- region:
+
+  World region, a factor with five levels.
 
 - year:
 
@@ -55,28 +59,28 @@ uses.
 
 ``` r
 head(clefts_qci)
-#>   country iso year       qci
-#> 1  Brazil  br 1990  0.000000
-#> 2  Brazil  br 1991  2.922546
-#> 3  Brazil  br 1992  6.361471
-#> 4  Brazil  br 1993 12.062058
-#> 5  Brazil  br 1994 19.362466
-#> 6  Brazil  br 1995 29.275937
+#>   country iso        region year       qci
+#> 1  Brazil  br Latin America 1990  0.000000
+#> 2  Brazil  br Latin America 1991  2.922546
+#> 3  Brazil  br Latin America 1992  6.361471
+#> 4  Brazil  br Latin America 1993 12.062058
+#> 5  Brazil  br Latin America 1994 19.362466
+#> 6  Brazil  br Latin America 1995 29.275937
 subset(clefts_qci, year == 2019)[order(-subset(clefts_qci, year == 2019)$qci), ]
-#>           country iso year      qci
-#> 150       Germany  de 2019 99.34695
-#> 60          Chile  cl 2019 99.28937
-#> 390   South Korea  kr 2019 98.92488
-#> 450 United States  us 2019 98.50286
-#> 120         Egypt  eg 2019 96.51796
-#> 240          Iran  ir 2019 95.89016
-#> 180         India  in 2019 92.31184
-#> 420        Turkey  tr 2019 92.04578
-#> 90          China  cn 2019 91.51940
-#> 270         Kenya  ke 2019 89.84286
-#> 300        Mexico  mx 2019 89.66448
-#> 360  South Africa  za 2019 87.23564
-#> 30         Brazil  br 2019 87.10227
-#> 210     Indonesia  id 2019 85.21461
-#> 330       Nigeria  ng 2019 82.95918
+#>           country iso        region year      qci
+#> 150       Germany  de        Europe 2019 99.34695
+#> 60          Chile  cl Latin America 2019 99.28937
+#> 390   South Korea  kr          Asia 2019 98.92488
+#> 450 United States  us North America 2019 98.50286
+#> 120         Egypt  eg        Africa 2019 96.51796
+#> 240          Iran  ir          Asia 2019 95.89016
+#> 180         India  in          Asia 2019 92.31184
+#> 420        Turkey  tr          Asia 2019 92.04578
+#> 90          China  cn          Asia 2019 91.51940
+#> 270         Kenya  ke        Africa 2019 89.84286
+#> 300        Mexico  mx Latin America 2019 89.66448
+#> 360  South Africa  za        Africa 2019 87.23564
+#> 30         Brazil  br Latin America 2019 87.10227
+#> 210     Indonesia  id          Asia 2019 85.21461
+#> 330       Nigeria  ng        Africa 2019 82.95918
 ```

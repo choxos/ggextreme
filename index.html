@@ -121,6 +121,10 @@
 <td>seconds a bar takes to move into a new rank</td>
 </tr>
 <tr>
+<td><code>group</code></td>
+<td>colour bars by category and draw a legend</td>
+</tr>
+<tr>
 <td>
 <code>palette</code>, <code>breaks</code>
 </td>
@@ -153,10 +157,23 @@
 </table>
 </div>
 <div class="section level2">
+<h2 id="colouring-by-group">Colouring by group<a class="anchor" aria-label="anchor" href="#colouring-by-group"></a>
+</h2>
+<p>Passing a <code>group</code> column colours the bars by category rather than individually and draws a legend above the axis. Each entity must belong to exactly one category; a factor keeps the legend in the order of its levels.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggrace.html">ggrace</a></span><span class="op">(</span></span>
+<span>  <span class="va">clefts_qci</span>, <span class="va">qci</span>, <span class="va">country</span>, <span class="va">year</span>,</span>
+<span>  group <span class="op">=</span> <span class="va">region</span>,</span>
+<span>  legend_title <span class="op">=</span> <span class="st">"Region"</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">15</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The card grows to make room for the legend, wrapping onto more rows when the categories do not fit across it. <code>legend = FALSE</code> keeps the colouring and drops the legend.</p>
+</div>
+<div class="section level2">
 <h2 id="images-on-the-bars">Images on the bars<a class="anchor" aria-label="anchor" href="#images-on-the-bars"></a>
 </h2>
 <p><code>images</code> takes image file paths named by entity. Pictures are cropped to a circle and right aligned just inside the end of each bar; entities without an image simply get none. A circular flag for every ISO 3166-1 country, plus Kurdistan, is bundled, so country races need no extra files.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">clefts_qci</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>, <span class="st">"iso"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="reference/race_flags.html">race_flags</a></span><span class="op">(</span><span class="va">key</span><span class="op">$</span><span class="va">iso</span><span class="op">)</span>, <span class="va">key</span><span class="op">$</span><span class="va">country</span><span class="op">)</span></span>
 <span></span>

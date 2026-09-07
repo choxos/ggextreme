@@ -82,13 +82,13 @@ time point and three bare column names: the value that sets the bar
 length, the label, and the time.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clefts_qci</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   country iso year       qci</span></span>
-<span><span class="co">#&gt; 1  Brazil  br 1990  0.000000</span></span>
-<span><span class="co">#&gt; 2  Brazil  br 1991  2.922546</span></span>
-<span><span class="co">#&gt; 3  Brazil  br 1992  6.361471</span></span>
-<span><span class="co">#&gt; 4  Brazil  br 1993 12.062058</span></span>
-<span><span class="co">#&gt; 5  Brazil  br 1994 19.362466</span></span>
-<span><span class="co">#&gt; 6  Brazil  br 1995 29.275937</span></span></code></pre></div>
+<span><span class="co">#&gt;   country iso        region year       qci</span></span>
+<span><span class="co">#&gt; 1  Brazil  br Latin America 1990  0.000000</span></span>
+<span><span class="co">#&gt; 2  Brazil  br Latin America 1991  2.922546</span></span>
+<span><span class="co">#&gt; 3  Brazil  br Latin America 1992  6.361471</span></span>
+<span><span class="co">#&gt; 4  Brazil  br Latin America 1993 12.062058</span></span>
+<span><span class="co">#&gt; 5  Brazil  br Latin America 1994 19.362466</span></span>
+<span><span class="co">#&gt; 6  Brazil  br Latin America 1995 29.275937</span></span></code></pre></div>
 <p><code>clefts_qci</code> holds the Quality of Care Index for orofacial
 clefts in fifteen countries from 1990 to 2019, taken from Sofi-Mahmudi
 et al. (2025). Higher is better care. Each country appears once per
@@ -184,31 +184,35 @@ happens on Windows.</p>
 <td>seconds a bar takes to move into a new rank</td>
 </tr>
 <tr class="even">
-<td><code>palette</code></td>
-<td>a colour vector, or one named by entity</td>
+<td><code>group</code></td>
+<td>colour bars by category and draw a legend</td>
 </tr>
 <tr class="odd">
+<td><code>palette</code></td>
+<td>a colour vector, or one named by entity or category</td>
+</tr>
+<tr class="even">
 <td><code>breaks</code></td>
 <td>gridline positions, a function or a fixed vector</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>label_value</code>, <code>label_time</code>
 </td>
 <td>formatters for the bar numbers and the large time label</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>images</code></td>
 <td>pictures to sit at the end of the bars</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>timeline</code>, <code>play_button</code>,
 <code>card</code>
 </td>
 <td>turn off the timeline strip, the button, or the card</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>width</code>, <code>res</code>
 </td>
@@ -232,6 +236,33 @@ in when they qualify.</p>
 <p><img src="ggextreme_files/figure-html/top-ten-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
+<h2 id="colouring-by-group">Colouring by group<a class="anchor" aria-label="anchor" href="#colouring-by-group"></a>
+</h2>
+<p>By default each entity gets its own colour. When entities fall into
+categories, pass the column that names them as <code>group</code>: bars
+are then coloured by category and a legend appears above the axis.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ggrace.html">ggrace</a></span><span class="op">(</span></span>
+<span>  <span class="va">clefts_qci</span>, <span class="va">qci</span>, <span class="va">country</span>, <span class="va">year</span>,</span>
+<span>  group <span class="op">=</span> <span class="va">region</span>,</span>
+<span>  legend_title <span class="op">=</span> <span class="st">"Region"</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  duration <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_extended.html" class="external-link">breaks_extended</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Quality of care for orofacial clefts"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/race_frame.html">race_frame</a></span><span class="op">(</span><span class="va">regional</span>, <span class="va">regional</span><span class="op">$</span><span class="va">n_frames</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ggextreme_files/figure-html/groups-1.png" class="r-plt" alt="" width="100%"></p>
+<p>Each entity must belong to exactly one category, or the colouring
+would be ambiguous and the function stops. A factor keeps the legend in
+the order of its levels; anything else is sorted. The card grows to make
+room for the legend and wraps onto further rows when the categories do
+not fit across it, so nothing is pushed off the edge. Set
+<code>legend = FALSE</code> to keep the colouring and drop the
+legend.</p>
+</div>
+<div class="section level2">
 <h2 id="images-on-the-bars">Images on the bars<a class="anchor" aria-label="anchor" href="#images-on-the-bars"></a>
 </h2>
 <p><code>images</code> takes a character vector of image file paths
@@ -240,7 +271,7 @@ inside the end of the bar. Entities with no image simply get none.</p>
 <p>The package bundles a circular flag for every ISO 3166-1 country,
 plus Kurdistan, so country races need no extra files.
 <code><a href="../reference/race_flags.html">race_flags()</a></code> maps names or codes to those paths.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">clefts_qci</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>, <span class="st">"iso"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="../reference/race_flags.html">race_flags</a></span><span class="op">(</span><span class="va">key</span><span class="op">$</span><span class="va">iso</span><span class="op">)</span>, <span class="va">key</span><span class="op">$</span><span class="va">country</span><span class="op">)</span></span>
 <span></span>
@@ -259,7 +290,7 @@ plus Kurdistan, so country races need no extra files.
 country name, then a unique partial match. The names follow the World
 Bank style, so a few common spellings do not match and the code is the
 reliable key.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fu"><a href="../reference/race_flag_codes.html">race_flag_codes</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Korea|Turk"</span>, <span class="va">country</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     code code3                   country</span></span>
 <span><span class="co">#&gt; 117   kp   prk Korea, Dem. People's Rep.</span></span>

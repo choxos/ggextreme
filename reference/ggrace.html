@@ -54,12 +54,15 @@ race and returns one row per entity per frame. Draw a single frame with
 <span>  <span class="va">value</span>,</span>
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">time</span>,</span>
+<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  duration <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  fps <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  end_pause <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  swap <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  caption <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_extended.html" class="external-link">breaks_extended</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span>,</span>
@@ -90,6 +93,14 @@ label, and the time point. <code>time</code> may be numeric or a <code>Date</cod
 <code>name</code> and <code>time</code> pair must be unique.</p></dd>
 
 
+<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
+<dd><p>Optional bare column naming a category for each entity, such
+as a continent. Bars are then coloured by category rather than
+individually, and a legend is drawn above the axis. Each entity must
+belong to exactly one category. A factor keeps the legend in the order of
+its levels.</p></dd>
+
+
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
 <dd><p>Number of bars visible at once.</p></dd>
 
@@ -113,9 +124,19 @@ the whole way between one time point and the next.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Colors for the bars. Either an unnamed vector, recycled over
-the entities in alphabetical order, or a vector named by entity. Defaults
-to <code><a href="race_palette.html">race_palette()</a></code>.</p></dd>
+<dd><p>Colors for the bars. Either an unnamed vector, recycled in
+alphabetical order, or a named vector. Names are entities, or categories
+when <code>group</code> is given. Defaults to <code><a href="race_palette.html">race_palette()</a></code>.</p></dd>
+
+
+<dt id="arg-legend">legend<a class="anchor" aria-label="anchor" href="#arg-legend"></a></dt>
+<dd><p>Draw the legend when <code>group</code> is given. The card grows to
+make room for it, wrapping onto more rows if the categories do not fit
+across the card.</p></dd>
+
+
+<dt id="arg-legend-title">legend_title<a class="anchor" aria-label="anchor" href="#arg-legend-title"></a></dt>
+<dd><p>Text in front of the legend, such as <code>"Continent"</code>.</p></dd>
 
 
 <dt id="arg-title-caption">title, caption<a class="anchor" aria-label="anchor" href="#arg-title-caption"></a></dt>
@@ -216,8 +237,8 @@ current frame, so gridlines drift as the field grows.</p>
 <span class="r-in"><span>               res <span class="op">=</span> <span class="va">race</span><span class="op">$</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="race_frame.html">race_frame</a></span><span class="op">(</span><span class="va">race</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> agg_record_1e7c4a4aeb5e </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                       2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> agg_record_1f38b7fde0a </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      2 </span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="animate_race.html">animate_race</a></span><span class="op">(</span><span class="va">race</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".gif"</span><span class="op">)</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%</span>

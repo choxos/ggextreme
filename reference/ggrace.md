@@ -15,12 +15,15 @@ ggrace(
   value,
   name,
   time,
+  group = NULL,
   top_n = 10,
   duration = 25,
   fps = 60,
   end_pause = 2,
   swap = 0.2,
   palette = NULL,
+  legend = TRUE,
+  legend_title = NULL,
   title = NULL,
   caption = NULL,
   breaks = scales::breaks_extended(4),
@@ -49,6 +52,14 @@ ggrace(
   point. `time` may be numeric or a `Date`. Each `name` and `time` pair
   must be unique.
 
+- group:
+
+  Optional bare column naming a category for each entity, such as a
+  continent. Bars are then coloured by category rather than
+  individually, and a legend is drawn above the axis. Each entity must
+  belong to exactly one category. A factor keeps the legend in the order
+  of its levels.
+
 - top_n:
 
   Number of bars visible at once.
@@ -73,10 +84,20 @@ ggrace(
 
 - palette:
 
-  Colors for the bars. Either an unnamed vector, recycled over the
-  entities in alphabetical order, or a vector named by entity. Defaults
-  to
+  Colors for the bars. Either an unnamed vector, recycled in
+  alphabetical order, or a named vector. Names are entities, or
+  categories when `group` is given. Defaults to
   [`race_palette()`](https://choxos.github.io/ggextreme/reference/race_palette.md).
+
+- legend:
+
+  Draw the legend when `group` is given. The card grows to make room for
+  it, wrapping onto more rows if the categories do not fit across the
+  card.
+
+- legend_title:
+
+  Text in front of the legend, such as `"Continent"`.
 
 - title, caption:
 
@@ -178,8 +199,8 @@ ragg::agg_png(file, width = race$width, height = 500, units = "px",
                res = race$res)
 print(race_frame(race, 60))
 dev.off()
-#> agg_record_1e7c4a4aeb5e 
-#>                       2 
+#> agg_record_1f38b7fde0a 
+#>                      2 
 # \donttest{
 animate_race(race, tempfile(fileext = ".gif"), cores = 1)
 #>   |                                                                              |                                                                      |   0%
