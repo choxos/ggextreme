@@ -105,13 +105,13 @@ link_reference <- function(ref) {
 }
 
 # Display names for columns: a `label` attribute when there is one, as set
-# by the labelled, Hmisc or haven packages, otherwise the name with
+# by the labelled, Hmisc or haven packages, otherwise the name with dots and
 # underscores as spaces and a capital first letter.
 column_labels <- function(data, cols) {
   vapply(cols, function(col) {
     label <- attr(data[[col]], "label", exact = TRUE)
     if (is.character(label) && length(label) == 1 && nzchar(label)) return(label)
-    capitalize(gsub("_", " ", col, fixed = TRUE))
+    capitalize(gsub("[._]", " ", col))
   }, character(1), USE.NAMES = FALSE)
 }
 
@@ -237,7 +237,8 @@ panel_html <- function(title, sub, body, fields, refs) {
       if (nzchar(sub[i])) paste0('<div class="ggx-sub">', esc(sub[i]), "</div>"),
       if (nzchar(body[i])) paste0("<p>", esc(body[i]), "</p>"),
       if (length(f)) paste0("<dl>", paste0("<dt>", esc(names(f)), "</dt><dd>",
-                                          esc(f), "</dd>", collapse = ""), "</dl>"),
+                                          vapply(f, link_reference, character(1)),
+                                          "</dd>", collapse = ""), "</dl>"),
       if (length(r)) paste0(
         '<div class="ggx-refs-head">References</div><ol>',
         paste0("<li>", vapply(r, link_reference, character(1)), "</li>",
@@ -246,6 +247,13 @@ panel_html <- function(title, sub, body, fields, refs) {
       )
     )
   }, character(1))
+}
+
+# Label and value pairs for a hover card, one line each.
+tip_rows <- function(values) {
+  if (!length(values)) return("")
+  paste0('<div class="ggx-tip-row"><span>', esc(names(values)), "</span><span>",
+         esc(values), "</span></div>", collapse = "")
 }
 
 pin_js <- function(key, html) {
@@ -408,8 +416,8 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()] or [ggnma()] prints as an interactive
-#' widget. These
+#' A graph built by [ggcausal()], [ggnma()], [ggmeta()] or [ggleague()]
+#' prints as an interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -422,7 +430,7 @@ graph_dependency <- function() {
 #' `graph_save()` does. The widget embeds a web copy of Lato, so it looks the
 #' same on machines without the font.
 #'
-#' @param x A graph from [ggcausal()] or [ggnma()].
+#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()] or [ggleague()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.
@@ -448,7 +456,8 @@ graph_widget <- function(x) {
     # box's fill and border on hover.
     text = paste0("fill:", graph_ink$text, " !important;stroke:none !important;"),
     line = paste0("stroke:", graph_ink$hover, ";"),
-    area = paste0("fill:", graph_ink$hover, ";stroke:", graph_ink$hover, ";")
+    # Shapes keep their own fill and gain an outline.
+    area = paste0("stroke:", graph_ink$hover, ";stroke-width:1.5px;")
   )
   w <- ggiraph::girafe(
     ggobj = x$plot,
@@ -469,7 +478,8 @@ graph_widget <- function(x) {
   # follow, so the widget never crops the diagram or leaves a gap under it.
   w$width <- "100%"
   w$height <- paste0(round(x$height * 96), "px")
-  htmlwidgets::onRender(w, "function(el) { ggextremeFit(el); }")
+  htmlwidgets::onRender(w, paste0("function(el) { ggextremeFit(el); ",
+                                  if (!is.null(x$on_render)) x$on_render, " }"))
 }
 
 #' @rdname graph_widget

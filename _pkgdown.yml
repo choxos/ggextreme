@@ -49,8 +49,15 @@ reference:
   contents:
   - ggnma
 
+- title: Meta-analysis
+  desc: Forest plots and league tables for fitted models.
+  contents:
+  - ggmeta
+  - animate_meta
+  - ggleague
+
 - title: Using a graph
-  desc: Turn a causal diagram or network plot into a widget, a ggplot or a file.
+  desc: Turn any of the interactive graphs into a widget, a ggplot or a file.
   contents:
   - graph_widget
 
@@ -72,3 +79,5 @@ articles:
   - how-the-animation-works
   - causal-diagrams
   - network-plots
+  - forest-plots
+  - league-tables

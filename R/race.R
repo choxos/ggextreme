@@ -434,26 +434,35 @@ animate_race <- function(x, file = "race.mp4", loop = TRUE,
   width <- unname(size[["width"]])
   height <- unname(size[["height"]])
 
-  dir <- tempfile("ggextreme")
-  dir.create(dir)
-  on.exit(unlink(dir, recursive = TRUE), add = TRUE)
-
   order <- c(seq_len(x$n_frames),
              rep(x$n_frames, round(x$end_pause * x$fps)))
-  files <- file.path(dir, sprintf("frame%05d.png", seq_along(order)))
+  dir <- tempfile("ggextreme")
+  on.exit(unlink(dir, recursive = TRUE), add = TRUE)
+  files <- render_frames(dir, length(order), function(i) race_frame(x, order[i]),
+                         width, height, x$res, race_ink$page, cores, quiet)
+  encode_frames(files, file, fps = x$fps, loop = loop,
+                width = width, height = height)
+  invisible(file)
+}
 
+# Draw `n` frames into numbered PNGs in `dir`, `frame(i)` giving the ggplot
+# for frame i. Frames are independent, so they are drawn across cores.
+render_frames <- function(dir, n, frame, width, height, res, background,
+                          cores, quiet) {
+  dir.create(dir, showWarnings = FALSE, recursive = TRUE)
+  files <- file.path(dir, sprintf("frame%05d.png", seq_len(n)))
   draw <- function(i) {
     ragg::agg_png(files[i], width = width, height = height, units = "px",
-                  res = x$res, background = race_ink$page)
+                  res = res, background = background)
     on.exit(grDevices::dev.off(), add = TRUE)
-    print(race_frame(x, order[i]))
+    print(frame(i))
   }
   cores <- resolve_cores(cores)
   if (cores > 1) {
-    parallel::mclapply(seq_along(order), draw, mc.cores = cores)
+    parallel::mclapply(seq_len(n), draw, mc.cores = cores)
   } else {
-    bar <- if (quiet) NULL else utils::txtProgressBar(max = length(order), style = 3)
-    for (i in seq_along(order)) {
+    bar <- if (quiet) NULL else utils::txtProgressBar(max = n, style = 3)
+    for (i in seq_len(n)) {
       draw(i)
       if (!is.null(bar)) utils::setTxtProgressBar(bar, i)
     }
@@ -463,10 +472,7 @@ animate_race <- function(x, file = "race.mp4", loop = TRUE,
   if (length(missing)) {
     rlang::abort(paste0(length(missing), " frames failed to draw."))
   }
-
-  encode_frames(files, file, fps = x$fps, loop = loop,
-                width = width, height = height)
-  invisible(file)
+  files
 }
 
 #' @export

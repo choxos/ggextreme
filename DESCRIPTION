@@ -1,6 +1,6 @@
 Package: ggextreme
 Type: Package
-Title: Bar Chart Races, Causal Diagrams and Network Plots
+Title: Bar Chart Races, Causal Diagrams and Evidence Synthesis Plots
 Version: 0.1.0
 Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
     role = c("aut", "cre"))
@@ -17,7 +17,11 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     through 'ggiraph'; the same diagram is also available as a static
     'ggplot2' object. Network plots for network meta-analysis are drawn
     from arm level data, with the baseline characteristics and outcomes of
-    every arm shown side by side on click.
+    every arm shown side by side on click. Forest plots for 'metafor' and
+    'meta' fits carry each study's record and risk of bias traffic lights,
+    and replay a cumulative meta-analysis as an animation; league tables for
+    'netmeta' fits show the direct and indirect evidence behind every
+    estimate.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -47,6 +51,10 @@ Suggests:
     gt,
     knitr,
     magick,
+    meta,
+    metadat,
+    metafor,
+    netmeta,
     rmarkdown,
     rsvg,
     testthat (>= 3.0.0)

@@ -1,0 +1,143 @@
+---
+title: "Interactive forest plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Interactive forest plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = requireNamespace("metafor", quietly = TRUE)
+)
+```
+
+A forest plot summarizes a meta-analysis in one figure, but the judgements
+behind it, what each trial measured, how it was run and how far it can be
+trusted, live in an extraction sheet the reader never sees. `ggmeta()` draws
+the forest plot of a fitted model and keeps that sheet with it. Hovering
+over a study shows its effect, weight and chosen columns; clicking it opens
+its full record; and risk of bias judgements sit beside each study as
+traffic lights.
+
+```{r setup}
+library(ggextreme)
+```
+
+## A first forest plot
+
+The example is the review by Chiarito et al. (2020) of P2Y12 inhibitors
+against aspirin for secondary prevention in atherosclerosis, which ships with
+metafor. It includes their risk of bias assessment with the RoB 2 tool.
+
+```{r}
+dat <- metafor::escalc(
+  measure = "OR",
+  ai = p2y12.mi, n1i = p2y12.total,
+  ci = aspirin.mi, n2i = aspirin.total,
+  data = metadat::dat.chiarito2020,
+  slab = paste(study, year)
+)
+dat <- dat[!is.na(dat$yi), ]
+dat$p2y12 <- paste0(dat$p2y12.mi, "/", dat$p2y12.total)
+dat$aspirin <- paste0(dat$aspirin.mi, "/", dat$aspirin.total)
+
+fit <- metafor::rma(yi, vi, data = dat)
+
+ggmeta(
+  fit,
+  columns = c("P2Y12 inhibitor" = "p2y12", Aspirin = "aspirin"),
+  rob = c(R = "rob.R", D = "rob.D", Mi = "rob.Mi", Me = "rob.Me",
+          S = "rob.S", Overall = "rob.overall"),
+  favors = c("Favors P2Y12 inhibitor", "Favors aspirin"),
+  title = "Myocardial infarction"
+)
+```
+
+Hover over a study for its effect, weight and risk of bias in each domain,
+and click it for every column of the data. Hover over the diamond for the
+heterogeneity statistics and the prediction interval.
+
+## The input
+
+`ggmeta()` takes a fitted model rather than raw numbers, so the estimates
+are the ones the analysis reports:
+
+* an `rma.uni` fit from `metafor::rma()`, without moderators, or
+* a `meta` object from the meta package, such as `meta::metabin()` or
+  `meta::metagen()`.
+
+The extraction record comes from the data stored in the fit, which metafor
+keeps when the model is fitted with a `data` argument. Pass `data` to use a
+separate sheet instead, with one row per study in the order of the model.
+
+| argument | effect |
+| --- | --- |
+| `columns` | columns printed beside the study labels, named to set the headers |
+| `rob` | risk of bias columns, one per domain, drawn as traffic lights |
+| `hover` | columns shown in each study's hover card; defaults to `columns` |
+| `favors` | labels for the two sides of the null line |
+| `xlim` | axis limits; intervals that run past them end in an arrow |
+| `exponentiate` | show ratio measures on the ratio scale, the default for them |
+
+## Risk of bias
+
+`rob` names the columns that hold judgements, one per domain, in the order
+they should appear. Judgements are matched by their wording, so the RoB 2,
+RoB 1 and ROBINS-I scales all work as written:
+
+| wording | light |
+| --- | --- |
+| low, low risk | green, + |
+| some concerns, moderate | amber, − |
+| unclear | amber, ? |
+| high, serious | red, × |
+| critical | dark red, ! |
+| no information | grey, ? |
+
+Each light carries its own hover card, and a key of the judgements in use is
+drawn above the plot. A wording outside these is refused with a message
+naming it, rather than drawn in a color that might mislead.
+
+## Cumulative meta-analysis
+
+With `cumulative = TRUE`, each row shows the pooled estimate from the
+studies up to and including it. Sort the data by year before fitting the
+model to see how the evidence built up over time. The BCG vaccine trials,
+published between 1948 and 1980, show the pooled estimate moving as each
+trial was added.
+
+```{r}
+bcg <- metafor::escalc(
+  measure = "RR", ai = tpos, bi = tneg, ci = cpos, di = cneg,
+  data = metadat::dat.bcg, slab = paste(author, year)
+)
+bcg <- bcg[order(bcg$year), ]
+bcg_fit <- metafor::rma(yi, vi, data = bcg)
+
+ggmeta(bcg_fit, cumulative = TRUE, favors = c("Favors BCG", "Favors control"))
+```
+
+`animate_meta()` replays the same sequence for a talk or a supplement. Each
+trial fades in as it is added and the pooled diamond eases to its new
+position, the same motion as the bar chart race, with the year shown behind
+the plot:
+
+```{r, eval = FALSE}
+animate_meta(ggmeta(bcg_fit), "bcg.gif", time = bcg$year)
+```
+
+```{r, echo = FALSE, eval = TRUE, out.width = "100%"}
+knitr::include_graphics("../man/figures/README-meta-cumulative.gif")
+```
+
+## Other forms
+
+The forest plot prints as a widget in the RStudio viewer, in R Markdown and
+Quarto documents, and on 'pkgdown' sites. `graph_widget()` returns the
+htmlwidget for 'shiny', `graph_plot()` the underlying ggplot, and
+`graph_save()` a single `.html` file or a static `.png` at the plot's
+natural size.

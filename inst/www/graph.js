@@ -29,6 +29,31 @@
     el.style.height = 'auto';
   };
 
+  // In a league table, hovering a treatment (id t<p>, on the diagonal or in
+  // the ranking) lights the cells of its row and column (ids c<row>_<col>).
+  window.ggextremeLeague = function (el) {
+    var svg = el.querySelector('svg');
+    if (!svg) return;
+    var cells = [].slice.call(svg.querySelectorAll('[data-id^="c"]'));
+    function treatmentOf(target) {
+      var id = target && target.getAttribute && target.getAttribute('data-id');
+      var m = id && /^t(\d+)$/.exec(id);
+      return m ? m[1] : null;
+    }
+    svg.addEventListener('pointerover', function (ev) {
+      var p = treatmentOf(ev.target);
+      if (p === null) return;
+      cells.forEach(function (c) {
+        var q = /^c(\d+)_(\d+)$/.exec(c.getAttribute('data-id'));
+        if (q) c.style.opacity = (q[1] === p || q[2] === p) ? '1' : '0.25';
+      });
+    });
+    svg.addEventListener('pointerout', function (ev) {
+      if (treatmentOf(ev.target) === null) return;
+      cells.forEach(function (c) { c.style.opacity = ''; });
+    });
+  };
+
   window.ggextremePin = function (el, key, html) {
     var host = hostOf(el);
     var panel = panelFor(host);

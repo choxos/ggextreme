@@ -16,7 +16,7 @@ graph_save(x, file, res = 300)
 \method{knit_print}{ggx_graph}(x, ...)
 }
 \arguments{
-\item{x}{A graph from \code{\link[=ggcausal]{ggcausal()}} or \code{\link[=ggnma]{ggnma()}}.}
+\item{x}{A graph from \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}} or \code{\link[=ggleague]{ggleague()}}.}
 
 \item{file}{Output path. \code{.html} writes the widget as a single file, which
 needs 'pandoc'; \code{.png} writes a static image with 'ragg'.}
@@ -30,8 +30,8 @@ needs 'pandoc'; \code{.png} writes a static image with 'ragg'.}
 ggplot. \code{graph_save()} returns \code{file}, invisibly.
 }
 \description{
-A graph built by \code{\link[=ggcausal]{ggcausal()}} or \code{\link[=ggnma]{ggnma()}} prints as an interactive
-widget. These
+A graph built by \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}} or \code{\link[=ggleague]{ggleague()}}
+prints as an interactive widget. These
 functions give the other forms it can take. \code{graph_widget()} returns the
 'htmlwidgets' object, for use in 'shiny' or to save with
 \code{\link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget()}}. \code{graph_plot()} returns the underlying

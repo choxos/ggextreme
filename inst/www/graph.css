@@ -212,3 +212,34 @@
   max-width: 7em;
   white-space: normal;
 }
+
+.ggx-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-tip-row span:first-child {
+  color: #6B6B6B;
+}
+
+.ggx-share {
+  height: 6px;
+  margin: 5px 0 2px;
+  border-radius: 3px;
+  background: #EEF2F2;
+  overflow: hidden;
+}
+
+.ggx-share i {
+  display: block;
+  height: 100%;
+  background: #22928F;
+}
+
+/* Text without its own handlers lets the pointer through to the shape
+   under it, so a label never interrupts a hover. */
+svg.ggiraph-svg text:not([data-id]) {
+  pointer-events: none;
+}
