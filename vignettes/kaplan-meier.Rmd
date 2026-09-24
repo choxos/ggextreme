@@ -1,0 +1,129 @@
+---
+title: "Kaplan-Meier plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Kaplan-Meier plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = requireNamespace("survival", quietly = TRUE)
+)
+```
+
+A Kaplan-Meier plot answers one question at a glance, and a dozen more only
+if the reader can read values off it: what survival was at two years, how
+many patients were still being followed, and whether the hazard ratio
+reported with it holds across follow-up. `ggkm()` puts those answers under
+the pointer. Hovering anywhere along the time axis reads every group at that
+time, with the hazard ratio at that time, and the table under the plot
+reports the proportional hazards tests alongside the hazard ratios.
+
+```{r setup}
+library(ggextreme)
+```
+
+## A first plot
+
+The example is the Intergroup trial of adjuvant levamisole and fluorouracil
+in stage C colon cancer, which ships with the survival package.
+
+```{r}
+colon <- subset(survival::colon, etype == 2)
+colon$years <- colon$time / 365.25
+colon$arm <- factor(colon$rx,
+                    labels = c("Observation", "Levamisole",
+                               "Levamisole + fluorouracil"))
+
+km <- ggkm(
+  survival::Surv(years, status) ~ arm,
+  data = colon,
+  xlab = "Years since randomization",
+  title = "Overall survival, stage C colon cancer"
+)
+km
+```
+
+Move the pointer along the plot. The card gives each arm's survival with its
+95% confidence interval, the number still at risk and the events so far,
+then the hazard ratio against observation at that time, while the matching
+column of the risk table lights up. Click to open the full readout for that
+time, which compares the hazard ratio from every method. Hover over a curve
+for the arm's summary, and click it for survival at each time on the axis.
+
+## The hazard ratio over time
+
+A Cox model reports one hazard ratio for the whole of follow-up, which holds
+only if the hazards are proportional. `hr_time` sets how the hazard ratio at
+each time is estimated:
+
+| `hr_time` | estimate at time t |
+| --- | --- |
+| `"schoenfeld"` | the smoothed scaled Schoenfeld residuals, the curve `survival::plot.cox.zph()` draws; the default |
+| `"log"` | a Cox model with a group by log time interaction |
+| `"linear"` | a Cox model with a group by time interaction |
+| `"constant"` | the Cox estimate, the same at every time |
+| `"none"` | no hazard ratio in the hover card |
+
+The scaled Schoenfeld residuals estimate the log hazard ratio at each event
+time (Grambsch and Therneau 1994), and smoothing them with a natural spline
+gives its course over follow-up with a confidence band. The two interaction
+models impose a shape instead: a log hazard ratio that changes linearly in
+time or in log time. Where they agree, the answer does not hang on the
+method.
+
+## Proportional hazards tests
+
+The table under the plot is returned as a data frame:
+
+```{r}
+km$ph
+```
+
+* **Cox model**: the hazard ratio for each arm against the reference, with
+  its Wald test.
+* **Log-rank test**: whether survival differs between the arms at all.
+* **Schoenfeld residuals**: the Grambsch and Therneau test of a trend in the
+  scaled Schoenfeld residuals over time, on the Kaplan-Meier time scale, for
+  each comparison and overall.
+* **Group × time** and **Group × log time**: the interaction coefficient for
+  each comparison, how much the log hazard ratio changes per unit of time or
+  log time, with a joint Wald test of all of them.
+
+Hover over a row for what the test asks, and click it for the full result.
+Here none of the tests is significant at the 5% level; the closest is the
+log time interaction for levamisole plus fluorouracil, at p = 0.08. The Cox
+hazard ratio of 0.69 for that arm is a reasonable summary of follow-up, and
+the hover card shows how far the estimate at each time strays from it.
+
+The interaction models are fitted on data split at every event time, so they
+grow with the size of the study; for very large data they are skipped with a
+message.
+
+## Options
+
+| argument | effect |
+| --- | --- |
+| `type` | `"survival"`, or `"risk"` for the cumulative incidence |
+| `reference` | the group the hazard ratios compare against |
+| `breaks` | times for the axis and the risk table |
+| `risk_table`, `ph_tests`, `conf_int` | show the risk table, the tests and the bands |
+| `palette` | group colors; the reference group defaults to grey |
+
+## Drawing the curves over follow-up
+
+`animate_km()` draws the curves as though the trial were being watched, with
+the numbers at risk appearing as each time on the axis is reached, and writes
+a GIF or MP4 for a talk:
+
+```{r, eval = FALSE}
+animate_km(km, "colon.gif")
+```
+
+```{r, echo = FALSE, eval = TRUE, out.width = "100%"}
+knitr::include_graphics("../man/figures/README-km.gif")
+```

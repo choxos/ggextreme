@@ -56,6 +56,12 @@ reference:
   - animate_meta
   - ggleague
 
+- title: Survival
+  desc: Kaplan-Meier plots with a linked risk table and proportional hazards tests.
+  contents:
+  - ggkm
+  - animate_km
+
 - title: Using a graph
   desc: Turn any of the interactive graphs into a widget, a ggplot or a file.
   contents:
@@ -81,3 +87,4 @@ articles:
   - network-plots
   - forest-plots
   - league-tables
+  - kaplan-meier

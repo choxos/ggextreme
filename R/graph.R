@@ -416,8 +416,8 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()], [ggnma()], [ggmeta()] or [ggleague()]
-#' prints as an interactive widget. These
+#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggleague()] or
+#' [ggkm()] prints as an interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -430,7 +430,8 @@ graph_dependency <- function() {
 #' `graph_save()` does. The widget embeds a web copy of Lato, so it looks the
 #' same on machines without the font.
 #'
-#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()] or [ggleague()].
+#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggleague()]
+#'   or [ggkm()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.
@@ -468,7 +469,7 @@ graph_widget <- function(x) {
     options = list(
       ggiraph::opts_tooltip(css = tip_css, opacity = 1, delay_mouseout = 120),
       ggiraph::opts_hover(css = hover),
-      ggiraph::opts_hover_inv(css = "opacity:0.4;"),
+      ggiraph::opts_hover_inv(css = if (is.null(x$hover_inv)) "opacity:0.4;" else x$hover_inv),
       ggiraph::opts_selection(type = "none"),
       ggiraph::opts_toolbar(saveaspng = FALSE, hidden = c("selection", "zoom", "misc")),
       ggiraph::opts_sizing(rescale = TRUE, width = 1)

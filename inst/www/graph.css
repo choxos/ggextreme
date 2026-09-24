@@ -243,3 +243,11 @@
 svg.ggiraph-svg text:not([data-id]) {
   pointer-events: none;
 }
+
+.ggx-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+}

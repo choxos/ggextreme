@@ -1,6 +1,6 @@
 Package: ggextreme
 Type: Package
-Title: Bar Chart Races, Causal Diagrams and Evidence Synthesis Plots
+Title: Bar Chart Races and Interactive Plots for Clinical Research
 Version: 0.1.0
 Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
     role = c("aut", "cre"))
@@ -21,7 +21,9 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     'meta' fits carry each study's record and risk of bias traffic lights,
     and replay a cumulative meta-analysis as an animation; league tables for
     'netmeta' fits show the direct and indirect evidence behind every
-    estimate.
+    estimate. Kaplan-Meier plots read survival and the hazard ratio at any
+    time under the pointer, beside a risk table and proportional hazards
+    tests.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -57,6 +59,7 @@ Suggests:
     netmeta,
     rmarkdown,
     rsvg,
+    survival,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

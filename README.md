@@ -6,7 +6,7 @@
 <!-- badges: end -->
 
 Presentation quality charts built on **ggplot2** that the package itself does
-not provide. There are five so far:
+not provide. There are six so far:
 
 * **Bar chart races**: an animation of a ranking that changes over time, of
   the kind used to summarize long panels in talks, teaching material and
@@ -21,8 +21,11 @@ not provide. There are five so far:
   risk of bias traffic lights, and a cumulative replay as an animation.
 * **League tables**: every estimate of a network meta-analysis, with its
   direct and indirect evidence and a ranking of the treatments.
+* **Kaplan-Meier plots**: survival curves that read every group, and the
+  hazard ratio, at any time under the pointer, with a linked risk table and
+  proportional hazards tests.
 
-All five are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
+All six are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
 separate rendering engine, so a frame or a diagram can be inspected, modified
 or saved on its own.
 
@@ -224,6 +227,28 @@ ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable")
 ```
 
 [![A league table of five treatments for plaque psoriasis](man/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
+
+## Kaplan-Meier plots
+
+`ggkm()` draws Kaplan-Meier curves by group from a `Surv(time, status) ~
+group` formula. Hovering anywhere along the time axis shows each group's
+survival with its confidence interval, the number at risk and the events so
+far, and the hazard ratio against the reference group at that time, from the
+smoothed Schoenfeld residuals or a time interaction model, while the matching
+column of the risk table lights up. Below the plot, a table gives the Cox
+hazard ratios, the log-rank test, the Grambsch and Therneau test and the
+group by time and group by log time interactions.
+
+```r
+ggkm(Surv(years, status) ~ arm, data = colon,
+     xlab = "Years since randomization")
+```
+
+[![Kaplan-Meier curves for the colon cancer trial with the risk table and proportional hazards tests](man/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
+
+`animate_km()` draws the curves over follow-up as a GIF or MP4:
+
+![Kaplan-Meier curves drawn over follow-up](man/figures/README-km.gif)
 
 ## Bundled data
 
