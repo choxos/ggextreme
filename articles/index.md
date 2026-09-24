@@ -14,3 +14,5 @@
   plots](https://choxos.github.io/ggextreme/articles/forest-plots.md):
 - [League
   tables](https://choxos.github.io/ggextreme/articles/league-tables.md):
+- [Kaplan-Meier
+  plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):

@@ -54,6 +54,31 @@
     });
   };
 
+  // In a Kaplan-Meier plot, hovering a time slice (id t<slice>_<column>)
+  // lights the matching column of the risk table (ids r<column>_<arm>).
+  window.ggextremeKm = function (el) {
+    var svg = el.querySelector('svg');
+    if (!svg) return;
+    var cells = [].slice.call(svg.querySelectorAll('[data-id^="r"]'));
+    function columnOf(target) {
+      var id = target && target.getAttribute && target.getAttribute('data-id');
+      var m = id && /^t\d+_(\d+)$/.exec(id);
+      return m ? m[1] : null;
+    }
+    svg.addEventListener('pointerover', function (ev) {
+      var col = columnOf(ev.target);
+      if (col === null) return;
+      cells.forEach(function (c) {
+        var q = /^r(\d+)_\d+$/.exec(c.getAttribute('data-id'));
+        if (q) c.style.opacity = q[1] === col ? '1' : '0.3';
+      });
+    });
+    svg.addEventListener('pointerout', function (ev) {
+      if (columnOf(ev.target) === null) return;
+      cells.forEach(function (c) { c.style.opacity = ''; });
+    });
+  };
+
   window.ggextremePin = function (el, key, html) {
     var host = hostOf(el);
     var panel = panelFor(host);

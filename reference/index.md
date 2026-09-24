@@ -51,6 +51,16 @@ Forest plots and league tables for fitted models.
 - [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
   : Draw an interactive league table for a network meta-analysis
 
+## Survival
+
+Kaplan-Meier plots with a linked risk table and proportional hazards
+tests.
+
+- [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) :
+  Draw an interactive Kaplan-Meier plot
+- [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
+  : Animate a Kaplan-Meier plot
+
 ## Using a graph
 
 Turn any of the interactive graphs into a widget, a ggplot or a file.
@@ -75,5 +85,5 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
 
 - [`ggextreme`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
   [`ggextreme-package`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
-  : ggextreme: Bar Chart Races, Causal Diagrams and Evidence Synthesis
-  Plots
+  : ggextreme: Bar Chart Races and Interactive Plots for Clinical
+  Research

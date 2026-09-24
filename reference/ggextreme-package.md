@@ -1,4 +1,4 @@
-# ggextreme: Bar Chart Races, Causal Diagrams and Evidence Synthesis Plots
+# ggextreme: Bar Chart Races and Interactive Plots for Clinical Research
 
 Presentation quality charts built on 'ggplot2' that the package itself
 does not provide. The bar chart race interpolates values on a uniform
@@ -17,6 +17,8 @@ side by side on click. Forest plots for 'metafor' and 'meta' fits carry
 each study's record and risk of bias traffic lights, and replay a
 cumulative meta-analysis as an animation; league tables for 'netmeta'
 fits show the direct and indirect evidence behind every estimate.
+Kaplan-Meier plots read survival and the hazard ratio at any time under
+the pointer, beside a risk table and proportional hazards tests.
 
 ## See also
 
