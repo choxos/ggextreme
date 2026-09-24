@@ -2,7 +2,7 @@
 #'
 #' A qualitative palette of muted teals, greens, blues, purples and warm
 #' earth tones, chosen to stay readable side by side in a dense stack of bars.
-#' Consecutive colours are far apart in hue, so the first few remain easy to
+#' Consecutive colors are far apart in hue, so the first few remain easy to
 #' tell apart when only a handful are used, as with `group` in [ggrace()].
 #'
 #' @param n Number of colors to return. The palette is recycled when `n` is
@@ -14,7 +14,7 @@
 #' @examples
 #' race_palette(5)
 race_palette <- function(n = 26) {
-  # Ordered so that colours taken in sequence stay far apart in hue, which
+  # Ordered so that colors taken in sequence stay far apart in hue, which
   # matters when a handful of groups share the top of the palette.
   base <- c(
     "#22928F", "#B66399", "#757CC6", "#568E4F", "#C76253",

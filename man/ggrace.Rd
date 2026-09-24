@@ -41,7 +41,7 @@ label, and the time point. \code{time} may be numeric or a \code{Date}. Each
 \code{name} and \code{time} pair must be unique.}
 
 \item{group}{Optional bare column naming a category for each entity, such
-as a continent. Bars are then coloured by category rather than
+as a continent. Bars are then colored by category rather than
 individually, and a legend is drawn above the axis. Each entity must
 belong to exactly one category. A factor keeps the legend in the order of
 its levels.}

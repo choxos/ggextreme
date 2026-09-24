@@ -162,7 +162,7 @@ test_that("drawing falls back to one core where it must", {
   expect_equal(ggextreme:::resolve_cores(4, "unix"), 4L)
 })
 
-test_that("grouping colours bars by category and builds a legend", {
+test_that("grouping colors bars by category and builds a legend", {
   race <- ggrace(clefts_qci, qci, country, year, group = region,
                  top_n = 15, duration = 1, fps = 4, legend_title = "Region")
 
@@ -191,7 +191,7 @@ test_that("the legend makes room for itself and can be turned off", {
   expect_equal(with$layout$card_h - without$layout$card_h, with$legend$height)
   expect_equal(without$layout$card_h, none$layout$card_h)
   expect_null(without$legend)
-  # Colours still follow the group even with the legend hidden.
+  # Colors still follow the group even with the legend hidden.
   expect_equal(length(unique(without$colors)), 5)
 })
 
@@ -214,7 +214,7 @@ test_that("an entity may only belong to one group", {
                "belong to one")
 })
 
-test_that("group colours come from the palette by category", {
+test_that("group colors come from the palette by category", {
   race <- ggrace(clefts_qci, qci, country, year, group = region, top_n = 5,
                  duration = 1, fps = 4,
                  palette = c(Asia = "#111111", Africa = "#222222",

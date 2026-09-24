@@ -31,7 +31,7 @@
 #'   position and change places in one quick eased move rather than drifting
 #'   the whole way between one time point and the next.
 #' @param group Optional bare column naming a category for each entity, such
-#'   as a continent. Bars are then coloured by category rather than
+#'   as a continent. Bars are then colored by category rather than
 #'   individually, and a legend is drawn above the axis. Each entity must
 #'   belong to exactly one category. A factor keeps the legend in the order of
 #'   its levels.
@@ -329,14 +329,14 @@ race_frame <- function(x, frame = 1L) {
   if (x$play_button) fore <- rbind(fore, button_bars(lay, rects))
   if (x$timeline) fore <- rbind(fore, timeline_rects(x, lay, rects))
 
-  labelled <- d[d$center > lay$bars_top & d$center < lay$bars_bottom, ]
-  label_y <- labelled$center + lay$label_dy
+  labeled <- d[d$center > lay$bars_top & d$center < lay$bars_bottom, ]
+  label_y <- labeled$center + lay$label_dy
   writing <- rbind(
     texts(format_break(breaks), break_x, lay$axis_mid, lay$axis_pt,
           race_ink$axis, hjust = 0.5),
-    texts(labelled$name, lay$bar_x0 - lay$name_gap, label_y, lay$name_pt,
+    texts(labeled$name, lay$bar_x0 - lay$name_gap, label_y, lay$name_pt,
           race_ink$name, hjust = 1),
-    texts(x$label_value(labelled$value), labelled$end + lay$value_gap,
+    texts(x$label_value(labeled$value), labeled$end + lay$value_gap,
           label_y, lay$value_pt, race_ink$value, hjust = 0)
   )
   if (!is.null(x$title)) {
@@ -353,7 +353,7 @@ race_frame <- function(x, frame = 1L) {
   if (x$timeline) writing <- rbind(writing, timeline_text(x, lay, texts))
   writing <- rbind(writing, legend_text(x$legend, lay, texts))
 
-  pictures <- labelled[labelled$name %in% names(x$images), ]
+  pictures <- labeled[labeled$name %in% names(x$images), ]
   if (nrow(pictures)) {
     pictures <- data.frame(
       key = pictures$name,
@@ -673,7 +673,7 @@ timeline_breaks <- function(keys, use_divisors = TRUE) {
     }
   }
   # No whole number step divides the span, so fall back to pretty breaks and
-  # keep the last time point labelled, dropping any break that would crowd it.
+  # keep the last time point labeled, dropping any break that would crowd it.
   breaks <- scales::breaks_pretty(9)(c(lo, hi))
   # A whole number span must not be split into fractions, or two labels round
   # to the same thing.

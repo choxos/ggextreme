@@ -16,7 +16,7 @@ A character vector of \code{n} hex colors.
 \description{
 A qualitative palette of muted teals, greens, blues, purples and warm
 earth tones, chosen to stay readable side by side in a dense stack of bars.
-Consecutive colours are far apart in hue, so the first few remain easy to
+Consecutive colors are far apart in hue, so the first few remain easy to
 tell apart when only a handful are used, as with \code{group} in \code{\link[=ggrace]{ggrace()}}.
 }
 \examples{

@@ -1,10 +1,10 @@
-# Colouring bars by group, and the legend that explains it.
+# Coloring bars by group, and the legend that explains it.
 #
 # The legend is laid out once, when the race is built, because the groups and
 # the output width are both fixed by then. Positions are card units, so the
 # renderer only has to draw what it is handed.
 
-# Entities keep one group each, or the colouring would be ambiguous.
+# Entities keep one group each, or the coloring would be ambiguous.
 group_key <- function(name, group, entities) {
   if (is.null(group)) return(NULL)
   if (length(group) != length(name)) {

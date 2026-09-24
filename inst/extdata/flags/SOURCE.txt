@@ -11,6 +11,6 @@ License, Copyright (c) 2013 Panayiotis Lipiridis.
 
 Two files differ. krd.svg is the flag of Kurdistan, from Wikimedia
 Commons, cropped to a square and masked with a circle. ir.svg is the plain
-green, white and red tricolour of Iran, drawn for this package.
+green, white and red tricolor of Iran, drawn for this package.
 
 See data-raw/flags.R for the script that generates all of them.

@@ -19,7 +19,7 @@ for (i in seq_len(nrow(flags))) {
              file.path(dir, paste0(tolower(flags$country_code_2[i]), ".svg")))
 }
 
-# Iran, as a plain green, white and red tricolour without the central emblem
+# Iran, as a plain green, white and red tricolor without the central emblem
 # or the marginal script.
 writeLines(paste0(
   '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" ',
@@ -83,7 +83,7 @@ writeLines(c(
   "",
   "Two files differ. krd.svg is the flag of Kurdistan, from Wikimedia",
   "Commons, cropped to a square and masked with a circle. ir.svg is the plain",
-  "green, white and red tricolour of Iran, drawn for this package.",
+  "green, white and red tricolor of Iran, drawn for this package.",
   "",
   "See data-raw/flags.R for the script that generates all of them."
 ), file.path(dir, "SOURCE.txt"))
