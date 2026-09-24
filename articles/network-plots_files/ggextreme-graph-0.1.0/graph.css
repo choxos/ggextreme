@@ -386,8 +386,118 @@ svg.ggiraph-svg text:not([data-id]) {
   pointer-events: none;
 }
 
+/* The widget's height follows its content. htmlwidgets sets a fixed height
+   on a page of its own, which would let the controls, sections and panels
+   under the plot overlap what follows. */
+.html-widget.ggx-graph {
+  height: auto !important;
+}
+
 /* Inside a widget, a section or panel lines up with the plot's own margin. */
 .ggx-graph > .ggx-details,
 .ggx-graph > .ggx-panel {
   margin: 4px 24px 8px;
+}
+
+/* A choropleth: the regions change shade in place, and the controls under
+   the maps choose the time. */
+.ggx-map svg.ggiraph-svg path[data-id^="g"] {
+  transition: fill 0.35s ease, fill-opacity 0.35s ease;
+}
+
+svg.ggiraph-svg text[data-id="yr"] {
+  pointer-events: none;
+}
+
+.ggx-map-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 24px 12px;
+  color: var(--ggx-muted, #6B6B6B);
+  font-family: Lato, sans-serif;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-map-controls input[type="range"] {
+  flex: 1;
+  min-width: 80px;
+  margin: 0;
+  accent-color: #22928F;
+  cursor: pointer;
+}
+
+.ggx-play {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 50%;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-title, #1F1F1F);
+  cursor: pointer;
+}
+
+.ggx-play:hover {
+  border-color: #22928F;
+}
+
+.ggx-play:focus-visible,
+.ggx-map-controls input[type="range"]:focus-visible {
+  outline: 2px solid #22928F;
+  outline-offset: 2px;
+}
+
+.ggx-play svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.ggx-tip-row .ggx-rank {
+  margin-left: 4px;
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 0.9em;
+}
+
+.ggx-panel .ggx-series {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0 28px;
+}
+
+.ggx-panel .ggx-spark {
+  display: block;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  margin: 2px 0 2px;
+  overflow: visible;
+}
+
+.ggx-spark text {
+  fill: var(--ggx-muted, #6B6B6B);
+  font-family: Lato, sans-serif;
+  font-size: 11px;
+}
+
+.ggx-spark line {
+  stroke: var(--ggx-rule, #DADADA);
+  stroke-width: 1;
+}
+
+.ggx-spark-now {
+  stroke: var(--ggx-card, #FFFFFF);
+  stroke-width: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ggx-map svg.ggiraph-svg path[data-id^="g"] {
+    transition: none;
+  }
 }

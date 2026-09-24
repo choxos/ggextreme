@@ -19,6 +19,8 @@ cumulative meta-analysis as an animation; league tables for 'netmeta'
 fits show the direct and indirect evidence behind every estimate.
 Kaplan-Meier plots read survival and the hazard ratio at any time under
 the pointer, beside a risk table and proportional hazards tests.
+Choropleth maps of the world or of any 'sf' map step or play through the
+years, with several measures side by side for the same year.
 
 ## See also
 

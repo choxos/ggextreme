@@ -16,3 +16,5 @@
   tables](https://choxos.github.io/ggextreme/articles/league-tables.md):
 - [Kaplan-Meier
   plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):
+- [Choropleth maps over
+  time](https://choxos.github.io/ggextreme/articles/choropleth-maps.md):

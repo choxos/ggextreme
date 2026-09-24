@@ -46,6 +46,7 @@
     <li><a class="dropdown-item" href="articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="articles/league-tables.html">League tables</a></li>
     <li><a class="dropdown-item" href="articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
+    <li><a class="dropdown-item" href="articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul>
 </li>
       </ul>
@@ -66,7 +67,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are six so far:</p>
+<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are seven so far:</p>
 <ul>
 <li>
 <strong>Bar chart races</strong>: an animation of a ranking that changes over time, of the kind used to summarize long panels in talks, teaching material and journal supplements.</li>
@@ -80,8 +81,10 @@
 <strong>League tables</strong>: every estimate of a network meta-analysis, with its direct and indirect evidence and a ranking of the treatments.</li>
 <li>
 <strong>Kaplan-Meier plots</strong>: survival curves that read every group, and the hazard ratio, at any time under the pointer, with a linked risk table and proportional hazards tests.</li>
+<li>
+<strong>Choropleth maps</strong>: a map of the world, or of any ‘sf’ map, that steps or plays through the years, with several measures side by side for the same year.</li>
 </ul>
-<p>All six are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
+<p>All seven are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
 <img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
@@ -275,6 +278,25 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="choropleth-maps">Choropleth maps<a class="anchor" aria-label="anchor" href="#choropleth-maps"></a>
+</h2>
+<p><code><a href="reference/ggchoropleth.html">ggchoropleth()</a></code> colors every country by a measure, one map per measure side by side, with a slider and a play button under them that step through the years. All the maps show the same year: hovering over a country outlines it on every map and lists its value and rank on each measure, and clicking it opens its whole series. Countries match by ISO code or by name, including the forms the WHO and the Global Burden of Disease study use, and any ‘sf’ map of polygons can replace the bundled world map.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">qci</span> <span class="op">&lt;-</span> <span class="va">clefts_qci_world</span></span>
+<span><span class="va">first</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">qci</span><span class="op">$</span><span class="va">iso3</span>, <span class="va">qci</span><span class="op">$</span><span class="va">iso3</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">qci</span><span class="op">$</span><span class="va">change</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span> <span class="op">-</span> <span class="va">first</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/ggchoropleth.html">ggchoropleth</a></span><span class="op">(</span><span class="va">qci</span>, <span class="va">iso3</span>, <span class="va">year</span>,</span>
+<span>             values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quality of Care Index"</span> <span class="op">=</span> <span class="st">"qci"</span>,</span>
+<span>                        <span class="st">"Change since 1990"</span> <span class="op">=</span> <span class="st">"change"</span><span class="op">)</span>,</span>
+<span>             title <span class="op">=</span> <span class="st">"Quality of care for orofacial clefts"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/choropleth-maps.html"><img src="reference/figures/README-map.png" alt="Two world maps of the Quality of Care Index for orofacial clefts and its change since 1990"></a></p>
+<p><code><a href="reference/animate_choropleth.html">animate_choropleth()</a></code> plays the years as a GIF or MP4:</p>
+<div class="float">
+<img src="reference/figures/README-map.gif" alt="The Quality of Care Index for orofacial clefts from 1990 to 2019"><div class="figcaption">The Quality of Care Index for orofacial clefts from 1990 to 2019</div>
+</div>
+</div>
+<div class="section level2">
 <h2 id="dark-pages">Dark pages<a class="anchor" aria-label="anchor" href="#dark-pages"></a>
 </h2>
 <p>Every interactive graph follows the page it sits on. On a dark ‘pkgdown’ or ‘bslib’ page, a dark Quarto theme or a saved page viewed in dark mode, the background, text, lines and neutral fills take dark counterparts, colors that carry meaning keep their hue, and the hover cards and panels follow, even when the page switches theme while it is open. <code>graph_widget(x, theme = "dark")</code> fixes the theme, and <code>graph_save(x, "plot.png", theme = "dark")</code> writes a dark static copy.</p>
@@ -286,13 +308,14 @@
 <blockquote>
 <p>Sofi-Mahmudi A, Shamsoddin E, Khademioore S, Khazaei Y, Vahdati A, Tovani-Palone MR (2025). Global, regional, and national survey on burden and Quality of Care Index (QCI) of orofacial clefts: Global burden of disease systematic analysis 1990-2019. <em>PLOS ONE</em> 20(1): e0317267. <a href="https://doi.org/10.1371/journal.pone.0317267" class="external-link uri">https://doi.org/10.1371/journal.pone.0317267</a></p>
 </blockquote>
+<p><code>clefts_qci_world</code> holds the full country panel of the same analysis: 195 countries and territories, named as the Global Burden of Disease study names them and with their ISO 3166-1 alpha-3 codes.</p>
 <p><code>psoriasis_nma</code> gives arm level baseline characteristics and PASI 75 response for five randomized trials in plaque psoriasis (CLEAR, ERASURE, FEATURE, FIXTURE and JUNCTURE), as compiled by Phillippo (2019) and distributed with the ‘multinma’ package. They were analyzed in Phillippo et al. (2020), <em>Journal of the Royal Statistical Society Series A</em> 183(3): 1189-1210, <a href="https://doi.org/10.1111/rssa.12579" class="external-link uri">https://doi.org/10.1111/rssa.12579</a>.</p>
 <p><code>cleft_dag</code> is a small illustrative causal diagram for maternal smoking and orofacial clefts. Its rationales were written for the package as a teaching example, and every reference it cites was checked against PubMed.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT. The package bundles the Lato typeface, and a web subset of it for the interactive graphs, under the SIL Open Font License (<code>inst/fonts/OFL.txt</code>), and country flag artwork from the flag-icons project under the MIT License, with two exceptions noted in <code>inst/extdata/flags/SOURCE.txt</code>.</p>
+<p>MIT. The package bundles the Lato typeface, and a web subset of it for the interactive graphs, under the SIL Open Font License (<code>inst/fonts/OFL.txt</code>), and country flag artwork from the flag-icons project under the MIT License, with two exceptions noted in <code>inst/extdata/flags/SOURCE.txt</code>. The world map is simplified from Natural Earth’s 1:50m countries, which are in the public domain.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

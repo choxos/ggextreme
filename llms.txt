@@ -1,7 +1,7 @@
 # ggextreme
 
 Presentation quality charts built on **ggplot2** that the package itself
-does not provide. There are six so far:
+does not provide. There are seven so far:
 
 - **Bar chart races**: an animation of a ranking that changes over time,
   of the kind used to summarize long panels in talks, teaching material
@@ -20,10 +20,13 @@ does not provide. There are six so far:
 - **Kaplan-Meier plots**: survival curves that read every group, and the
   hazard ratio, at any time under the pointer, with a linked risk table
   and proportional hazards tests.
+- **Choropleth maps**: a map of the world, or of any ‘sf’ map, that
+  steps or plays through the years, with several measures side by side
+  for the same year.
 
-All six are drawn as ordinary `ggplot` objects. Nothing is hidden behind
-a separate rendering engine, so a frame or a diagram can be inspected,
-modified or saved on its own.
+All seven are drawn as ordinary `ggplot` objects. Nothing is hidden
+behind a separate rendering engine, so a frame or a diagram can be
+inspected, modified or saved on its own.
 
 ![A bar chart race of the Quality of Care Index for orofacial clefts in
 fifteen countries, 1990 to 2019](reference/figures/README-race.gif)
@@ -290,6 +293,41 @@ follow-up](reference/figures/README-km.gif)
 
 Kaplan-Meier curves drawn over follow-up
 
+## Choropleth maps
+
+[`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
+colors every country by a measure, one map per measure side by side,
+with a slider and a play button under them that step through the years.
+All the maps show the same year: hovering over a country outlines it on
+every map and lists its value and rank on each measure, and clicking it
+opens its whole series. Countries match by ISO code or by name,
+including the forms the WHO and the Global Burden of Disease study use,
+and any ‘sf’ map of polygons can replace the bundled world map.
+
+``` r
+
+qci <- clefts_qci_world
+first <- qci$qci[qci$year == 1990][match(qci$iso3, qci$iso3[qci$year == 1990])]
+qci$change <- qci$qci - first
+
+ggchoropleth(qci, iso3, year,
+             values = c("Quality of Care Index" = "qci",
+                        "Change since 1990" = "change"),
+             title = "Quality of care for orofacial clefts")
+```
+
+[![Two world maps of the Quality of Care Index for orofacial clefts and
+its change since
+1990](reference/figures/README-map.png)](https://choxos.github.io/ggextreme/articles/choropleth-maps.html)
+
+[`animate_choropleth()`](https://choxos.github.io/ggextreme/reference/animate_choropleth.md)
+plays the years as a GIF or MP4:
+
+![The Quality of Care Index for orofacial clefts from 1990 to
+2019](reference/figures/README-map.gif)
+
+The Quality of Care Index for orofacial clefts from 1990 to 2019
+
 ## Dark pages
 
 Every interactive graph follows the page it sits on. On a dark ‘pkgdown’
@@ -313,6 +351,10 @@ summarized by principal component analysis and rescaled from 0 to 100.
 > burden of disease systematic analysis 1990-2019. *PLOS ONE* 20(1):
 > e0317267. <https://doi.org/10.1371/journal.pone.0317267>
 
+`clefts_qci_world` holds the full country panel of the same analysis:
+195 countries and territories, named as the Global Burden of Disease
+study names them and with their ISO 3166-1 alpha-3 codes.
+
 `psoriasis_nma` gives arm level baseline characteristics and PASI 75
 response for five randomized trials in plaque psoriasis (CLEAR, ERASURE,
 FEATURE, FIXTURE and JUNCTURE), as compiled by Phillippo (2019) and
@@ -331,7 +373,8 @@ MIT. The package bundles the Lato typeface, and a web subset of it for
 the interactive graphs, under the SIL Open Font License
 (`inst/fonts/OFL.txt`), and country flag artwork from the flag-icons
 project under the MIT License, with two exceptions noted in
-`inst/extdata/flags/SOURCE.txt`.
+`inst/extdata/flags/SOURCE.txt`. The world map is simplified from
+Natural Earth’s 1:50m countries, which are in the public domain.
 
 # Package index
 
@@ -396,6 +439,16 @@ tests.
 - [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
   : Animate a Kaplan-Meier plot
 
+## Maps
+
+Choropleth maps that step or play through the years, with measures side
+by side.
+
+- [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
+  : Draw an interactive choropleth map over time
+- [`animate_choropleth()`](https://choxos.github.io/ggextreme/reference/animate_choropleth.md)
+  : Animate a choropleth map
+
 ## Using a graph
 
 Turn any of the interactive graphs into a widget, a ggplot or a file.
@@ -410,6 +463,9 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
 
 - [`clefts_qci`](https://choxos.github.io/ggextreme/reference/clefts_qci.md)
   : Quality of Care Index for orofacial clefts, 1990 to 2019
+- [`clefts_qci_world`](https://choxos.github.io/ggextreme/reference/clefts_qci_world.md)
+  : Quality of Care Index for orofacial clefts in every country, 1990 to
+  2019
 - [`cleft_dag`](https://choxos.github.io/ggextreme/reference/cleft_dag.md)
   : An illustrative causal diagram for maternal smoking and orofacial
   clefts
@@ -441,3 +497,5 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
   tables](https://choxos.github.io/ggextreme/articles/league-tables.md):
 - [Kaplan-Meier
   plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):
+- [Choropleth maps over
+  time](https://choxos.github.io/ggextreme/articles/choropleth-maps.md):

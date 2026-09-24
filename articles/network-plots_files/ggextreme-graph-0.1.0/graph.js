@@ -162,6 +162,215 @@
     });
   };
 
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var icons = {
+    play: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.2l8 4.8-8 4.8z"/></svg>',
+    pause: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>'
+  };
+
+  // A choropleth. Every region is a path with id g<region> on each map, and
+  // each map is its own layer, so a region's paths come in map order. The
+  // slider and play button choose the time; each path then takes its fill
+  // for that time from `data`, and its hover card is rewritten.
+  window.ggextremeMap = function (el, data) {
+    var svg = el.querySelector('svg');
+    if (!svg || !data) return;
+    el.classList.add('ggx-map');
+    var panels = data.panels;
+    var times = data.times;
+    var last = times.length - 1;
+    var shapes = [];
+    [].forEach.call(svg.querySelectorAll('[data-id^="g"]'), function (p) {
+      var r = regionOf(p);
+      if (r !== null) (shapes[r] = shapes[r] || []).push(p);
+    });
+    var stamps = [].slice.call(svg.querySelectorAll('[data-id="yr"]'));
+    var has = data.names.map(function (_, r) {
+      return panels.some(function (p) {
+        return p.value.some(function (row) { return row[r] !== null; });
+      });
+    });
+    var current = data.start;
+    var hovered = null;
+    var timer = null;
+    var slider = null;
+    var button = null;
+
+    function regionOf(node) {
+      var id = node && node.getAttribute && node.getAttribute('data-id');
+      var m = id && /^g(\d+)$/.exec(id);
+      return m ? parseInt(m[1], 10) - 1 : null;
+    }
+
+    function number(p, v) {
+      if (v === null || v === undefined) return 'No data';
+      return v.toLocaleString('en-US', {
+        minimumFractionDigits: p.digits, maximumFractionDigits: p.digits,
+        useGrouping: !!p.grouping
+      });
+    }
+
+    // Rank 1 is the highest value at that time; ties share a rank.
+    function ranks(row) {
+      var order = [];
+      row.forEach(function (v, r) { if (v !== null) order.push(r); });
+      order.sort(function (a, b) { return row[b] - row[a]; });
+      var at = {};
+      order.forEach(function (r, i) {
+        at[r] = i > 0 && row[order[i - 1]] === row[r] ? at[order[i - 1]] : i + 1;
+      });
+      return { at: at, n: order.length };
+    }
+
+    function tip(r, t, rk) {
+      var rows = panels.map(function (p, k) {
+        var v = p.value[t][r];
+        return '<div class="ggx-tip-row"><span>' + escapeHtml(p.label) + '</span><span>' +
+          number(p, v) + (v === null ? '' : ' <span class="ggx-rank">#' + rk[k].at[r] +
+          ' of ' + rk[k].n + '</span>') + '</span></div>';
+      }).join('');
+      return '<div class="ggx-tip-title">' + escapeHtml(data.names[r]) + '</div>' +
+        '<div class="ggx-tip-sub">' + escapeHtml(times[t]) + '</div>' + rows +
+        (has[r] ? '<div class="ggx-tip-hint">Click for the whole series.</div>' : '');
+    }
+
+    function show(t) {
+      current = t;
+      var rk = panels.map(function (p) { return ranks(p.value[t]); });
+      var box = hovered === null ? null : document.querySelector('div.tooltip_' + svg.id);
+      shapes.forEach(function (paths, r) {
+        var html = tip(r, t, rk);
+        // ggiraph decodes the title once before showing it.
+        var title = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        paths.forEach(function (path, k) {
+          var p = panels[k];
+          if (!p) return;
+          path.setAttribute('fill', p.tones[p.fill[t][r]]);
+          path.setAttribute('fill-opacity', p.alpha[t][r]);
+          path.setAttribute('title', title);
+        });
+        // The card showing now is refreshed, since ggiraph only reads the
+        // title when the pointer enters a region.
+        if (box && r === hovered) box.innerHTML = html;
+      });
+      stamps.forEach(function (s) { s.textContent = times[t]; });
+      if (slider) {
+        slider.value = t;
+        slider.setAttribute('aria-valuetext', times[t]);
+      }
+    }
+
+    function spark(ys, p) {
+      var W = 360, H = 78, L = 46, R = 12, T = 8, B = 22;
+      var seen = ys.filter(function (v) { return v !== null; });
+      if (!seen.length) return '<p class="ggx-sub">No data.</p>';
+      var min = Math.min.apply(null, seen);
+      var max = Math.max.apply(null, seen);
+      var lo = min, hi = max;
+      if (lo === hi) { lo -= 1; hi += 1; }
+      function x(i) { return (L + (last ? i / last : 0.5) * (W - L - R)).toFixed(1); }
+      function y(v) { return (T + (hi - v) / (hi - lo) * (H - T - B)).toFixed(1); }
+      function text(s, tx, ty, anchor) {
+        return '<text x="' + tx + '" y="' + ty + '" text-anchor="' + anchor + '">' +
+          escapeHtml(s) + '</text>';
+      }
+      var runs = [], run = [];
+      ys.forEach(function (v, i) {
+        if (v === null) { if (run.length) runs.push(run); run = []; }
+        else run.push([x(i), y(v)]);
+      });
+      if (run.length) runs.push(run);
+      var marks = runs.map(function (pts) {
+        if (pts.length === 1) {
+          return '<circle cx="' + pts[0][0] + '" cy="' + pts[0][1] + '" r="2" fill="' + p.line + '"/>';
+        }
+        return '<polyline points="' + pts.map(function (q) { return q.join(','); }).join(' ') +
+          '" fill="none" stroke="' + p.line + '" stroke-width="2" stroke-linejoin="round"/>';
+      }).join('');
+      var now = ys[current] === null ? '' : '<circle cx="' + x(current) + '" cy="' + y(ys[current]) +
+        '" r="3.5" fill="' + p.line + '" class="ggx-spark-now"/>';
+      var first = ys.findIndex(function (v) { return v !== null; });
+      var end = ys.length - 1 - ys.slice().reverse().findIndex(function (v) { return v !== null; });
+      return '<svg class="ggx-spark" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+        escapeHtml(p.label + ', ' + times[0] + ' to ' + times[last]) + '">' +
+        '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '"/>' +
+        marks + now +
+        text(number(p, max), L - 7, Number(y(max)) + 4, 'end') +
+        (max === min ? '' : text(number(p, min), L - 7, Number(y(min)) + 4, 'end')) +
+        text(times[0], L, H - 6, 'start') + text(times[last], W - R, H - 6, 'end') + '</svg>' +
+        '<p class="ggx-sub">' + number(p, ys[first]) + ' in ' + escapeHtml(times[first]) +
+        (end > first ? ', ' + number(p, ys[end]) + ' in ' + escapeHtml(times[end]) : '') +
+        (ys[current] === null ? '' : '. The dot marks ' + escapeHtml(times[current])) + '.</p>';
+    }
+
+    function series(r) {
+      return '<div class="ggx-title">' + escapeHtml(data.names[r]) + '</div>' +
+        '<div class="ggx-sub">' + escapeHtml(times[0]) + ' to ' + escapeHtml(times[last]) + '</div>' +
+        '<div class="ggx-series">' + panels.map(function (p) {
+          return '<div><div class="ggx-refs-head">' + escapeHtml(p.label) + '</div>' +
+            spark(p.value.map(function (row) { return row[r]; }), p) + '</div>';
+        }).join('') + '</div>';
+    }
+
+    svg.addEventListener('pointerover', function (ev) {
+      var r = regionOf(ev.target);
+      if (r === null) return;
+      hovered = r;
+      // Bring the region forward so its outline is not hidden by neighbors.
+      shapes[r].forEach(function (p) { if (p.nextElementSibling) p.parentNode.appendChild(p); });
+    });
+    svg.addEventListener('pointerout', function (ev) {
+      if (regionOf(ev.target) === hovered) hovered = null;
+    });
+    svg.addEventListener('click', function (ev) {
+      var r = regionOf(ev.target);
+      if (r !== null && has[r]) window.ggextremePin(ev.target, 'g' + r, series(r));
+    });
+    stamps.forEach(function (s) { s.style.pointerEvents = 'none'; });
+
+    function stop() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      if (button) {
+        button.innerHTML = icons.play;
+        button.setAttribute('aria-label', 'Play');
+      }
+    }
+    function play() {
+      if (current >= last) show(0);
+      button.innerHTML = icons.pause;
+      button.setAttribute('aria-label', 'Pause');
+      timer = setInterval(function () {
+        if (current >= last) stop();
+        else show(current + 1);
+      }, data.interval);
+    }
+
+    if (last > 0) {
+      var bar = document.createElement('div');
+      bar.className = 'ggx-map-controls';
+      bar.innerHTML = '<button type="button" class="ggx-play" aria-label="Play">' + icons.play +
+        '</button><span>' + escapeHtml(times[0]) + '</span>' +
+        '<input type="range" min="0" max="' + last + '" step="1" value="' + current +
+        '" aria-label="Time"><span>' + escapeHtml(times[last]) + '</span>';
+      var section = el.querySelector(':scope > .ggx-details');
+      if (section) el.insertBefore(bar, section);
+      else el.appendChild(bar);
+      button = bar.querySelector('button');
+      slider = bar.querySelector('input');
+      button.addEventListener('click', function () { if (timer) stop(); else play(); });
+      slider.addEventListener('input', function () {
+        stop();
+        show(parseInt(slider.value, 10));
+      });
+    }
+    show(current);
+  };
+
   window.ggextremePin = function (el, key, html) {
     var host = hostOf(el);
     var panel = panelFor(host);

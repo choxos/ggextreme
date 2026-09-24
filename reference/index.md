@@ -61,6 +61,16 @@ tests.
 - [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
   : Animate a Kaplan-Meier plot
 
+## Maps
+
+Choropleth maps that step or play through the years, with measures side
+by side.
+
+- [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
+  : Draw an interactive choropleth map over time
+- [`animate_choropleth()`](https://choxos.github.io/ggextreme/reference/animate_choropleth.md)
+  : Animate a choropleth map
+
 ## Using a graph
 
 Turn any of the interactive graphs into a widget, a ggplot or a file.
@@ -75,6 +85,9 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
 
 - [`clefts_qci`](https://choxos.github.io/ggextreme/reference/clefts_qci.md)
   : Quality of Care Index for orofacial clefts, 1990 to 2019
+- [`clefts_qci_world`](https://choxos.github.io/ggextreme/reference/clefts_qci_world.md)
+  : Quality of Care Index for orofacial clefts in every country, 1990 to
+  2019
 - [`cleft_dag`](https://choxos.github.io/ggextreme/reference/cleft_dag.md)
   : An illustrative causal diagram for maternal smoking and orofacial
   clefts
