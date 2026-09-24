@@ -31,6 +31,12 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
+      # The CRAN macOS binary of gdtools, which ggiraph needs, links against
+      # the X11 libraries that XQuartz provides.
+      - name: Install XQuartz
+        if: runner.os == 'macOS'
+        run: brew install --cask xquartz
+
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
