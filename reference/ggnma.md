@@ -21,6 +21,8 @@ ggnma(
   n = NULL,
   group = NULL,
   hover = NULL,
+  multiarm = TRUE,
+  positions = NULL,
   palette = NULL,
   legend = TRUE,
   legend_title = NULL,
@@ -60,6 +62,18 @@ ggnma(
   `character(0)` for a card that only lists the studies. The click panel
   always shows every column.
 
+- multiarm:
+
+  Shade a polygon for each set of treatments compared in a study with
+  more than two arms.
+
+- positions:
+
+  Optional data frame placing the nodes by hand, with columns
+  `treatment`, `x` and `y`, one row per treatment and `y` pointing up.
+  Any units will do: the layout is scaled to fit the plot, keeping its
+  shape. Labels point away from the middle of the layout.
+
 - palette:
 
   Node colors. With `group`, a vector named by class, or an unnamed
@@ -91,17 +105,21 @@ An object of class `ggnma`, which prints as an interactive widget. Use
 or
 [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
 for the widget, a static ggplot or a file. The fields `nodes` and
-`edges` hold the treatments and comparisons with their study counts, and
+`edges` hold the treatments and comparisons with their study counts,
+`multiarm` the sets of treatments compared in multi-arm studies, and
 `width` and `height` the natural size in inches.
 
 ## Details
 
 Treatments sit on a circle, starting at the top and running clockwise in
 the order of the levels of `treatment` when it is a factor, or in order
-of first appearance otherwise. Line width follows the number of studies
-that make the comparison. When `n` is given, node area follows the total
-number of participants on that treatment. A study with more than two
-arms adds a line for every pair of its treatments.
+of first appearance otherwise; `positions` places them by hand instead.
+Line width follows the number of studies that make the comparison. When
+`n` is given, node area follows the total number of participants on that
+treatment. A study with more than two arms adds a line for every pair of
+its treatments and, with `multiarm`, a shaded polygon joining them.
+Studies that compare the same set of treatments share one polygon, which
+has its own hover card and panel.
 
 Row labels come from each column's `label` attribute when it has one, as
 set by the 'labelled', 'Hmisc' or 'haven' packages, and otherwise from

@@ -199,8 +199,8 @@ ragg::agg_png(file, width = race$width, height = 500, units = "px",
                res = race$res)
 print(race_frame(race, 60))
 dev.off()
-#> agg_record_1fc97027dea 
-#>                      2 
+#> agg_record_20a853914d60 
+#>                       2 
 # \donttest{
 animate_race(race, tempfile(fileext = ".gif"), cores = 1)
 #>   |                                                                              |                                                                      |   0%

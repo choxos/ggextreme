@@ -177,10 +177,11 @@ and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.
 the network of a network meta-analysis from arm level data, one row per
 study arm. Nodes are treatments and lines join treatments compared
 directly in at least one study; node area follows the number of
-participants and line width the number of studies. Hovering over a node
-or line shows its arms side by side, in the manner of a trial’s baseline
-table, with the columns chosen in `hover`; clicking opens the full table
-with every other column of the data as a row.
+participants, line width the number of studies, and a shaded polygon
+joins the treatments of each multi-arm study. Hovering over a node, line
+or polygon shows its arms side by side, in the manner of a trial’s
+baseline table, with the columns chosen in `hover`; clicking opens the
+full table with every other column of the data as a row.
 
 ``` r
 
@@ -195,9 +196,10 @@ psoriasis](reference/figures/README-network.png)](https://choxos.github.io/ggext
 
 The [interactive
 version](https://choxos.github.io/ggextreme/articles/network-plots.html)
-is on the package website. Rows of the arm tables are named from each
-column’s `label` attribute, text that is the same across a study, such
-as a reference, is listed once per study, and DOIs and URLs are linked.
+is on the package website. Nodes sit on a circle or wherever `positions`
+places them. Rows of the arm tables are named from each column’s `label`
+attribute, text that is the same across a study, such as a reference, is
+listed once per study, and DOIs and URLs are linked.
 
 ## Bundled data
 
