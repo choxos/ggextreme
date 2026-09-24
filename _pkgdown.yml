@@ -12,9 +12,10 @@ home:
   title: Presentation charts for ggplot2
   description: >
     Presentation quality charts built on ggplot2: animated bar chart races
-    that stay readable while the field reorders, and interactive causal
+    that stay readable while the field reorders, interactive causal
     diagrams that carry the rationale and references for every node and
-    arrow.
+    arrow, and network meta-analysis plots that show the data behind every
+    treatment and comparison.
 
 navbar:
   structure:
@@ -39,15 +40,25 @@ reference:
   - race_flag_codes
 
 - title: Causal diagrams
-  desc: Draw a DAG whose nodes and arrows explain themselves, then use it as a widget, a ggplot or a file.
+  desc: Draw a DAG whose nodes and arrows explain themselves.
   contents:
   - ggcausal
+
+- title: Network plots
+  desc: Draw the network of a network meta-analysis from arm level data.
+  contents:
+  - ggnma
+
+- title: Using a graph
+  desc: Turn a causal diagram or network plot into a widget, a ggplot or a file.
+  contents:
   - graph_widget
 
 - title: Data
   contents:
   - clefts_qci
   - cleft_dag
+  - psoriasis_nma
 
 - title: Package
   contents:
@@ -60,3 +71,4 @@ articles:
   - ggextreme
   - how-the-animation-works
   - causal-diagrams
+  - network-plots

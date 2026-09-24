@@ -1,6 +1,6 @@
 Package: ggextreme
 Type: Package
-Title: Bar Chart Races, Interactive Causal Diagrams and Other Charts
+Title: Bar Chart Races, Causal Diagrams and Network Plots
 Version: 0.1.0
 Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
     role = c("aut", "cre"))
@@ -15,7 +15,9 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     acyclic graphs whose nodes and arrows each carry a rationale and
     references, shown on hover and opened with clickable links on click,
     through 'ggiraph'; the same diagram is also available as a static
-    'ggplot2' object.
+    'ggplot2' object. Network plots for network meta-analysis are drawn
+    from arm level data, with the baseline characteristics and outcomes of
+    every arm shown side by side on click.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

@@ -33,7 +33,9 @@
     var host = hostOf(el);
     var panel = panelFor(host);
     var box = window.getComputedStyle(host);
-    panel.style.maxWidth = host.style.maxWidth;
+    // A panel with a table gets room for it even under a narrow plot.
+    var cap = parseFloat(host.style.maxWidth) || 0;
+    panel.style.maxWidth = Math.max(cap, 760) + 'px';
     panel.style.marginLeft = box.marginLeft;
     panel.style.marginRight = box.marginRight;
     if (!panel.hidden && panel.getAttribute('data-key') === key) {

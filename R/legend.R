@@ -5,7 +5,7 @@
 # renderer only has to draw what it is handed.
 
 # Entities keep one group each, or the coloring would be ambiguous.
-group_key <- function(name, group, entities) {
+group_key <- function(name, group, entities, what = "`name`") {
   if (is.null(group)) return(NULL)
   if (length(group) != length(name)) {
     rlang::abort("`group` must have one value per row of `data`.")
@@ -20,7 +20,7 @@ group_key <- function(name, group, entities) {
   clash <- key$name[duplicated(key$name)]
   if (length(clash)) {
     rlang::abort(paste0(
-      "Each `name` must belong to one `group`. These belong to more than one: ",
+      "Each ", what, " must belong to one `group`. These belong to more than one: ",
       paste(unique(clash), collapse = ", ")
     ))
   }

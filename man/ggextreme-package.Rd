@@ -4,9 +4,9 @@
 \name{ggextreme-package}
 \alias{ggextreme}
 \alias{ggextreme-package}
-\title{ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other Charts}
+\title{ggextreme: Bar Chart Races, Causal Diagrams and Network Plots}
 \description{
-Presentation quality charts built on 'ggplot2' that the package itself does not provide. The bar chart race interpolates values on a uniform time grid, ranks every frame on its own values and eases bars into new positions, so a reordering field stays readable. Frames are ordinary 'ggplot2' objects laid out on a fixed pixel grid, which keeps the axis and label column from drifting between them, and are encoded to GIF or MP4. Circular images, such as the bundled country flags, can be placed at the end of each bar. Causal diagrams are drawn as directed acyclic graphs whose nodes and arrows each carry a rationale and references, shown on hover and opened with clickable links on click, through 'ggiraph'; the same diagram is also available as a static 'ggplot2' object.
+Presentation quality charts built on 'ggplot2' that the package itself does not provide. The bar chart race interpolates values on a uniform time grid, ranks every frame on its own values and eases bars into new positions, so a reordering field stays readable. Frames are ordinary 'ggplot2' objects laid out on a fixed pixel grid, which keeps the axis and label column from drifting between them, and are encoded to GIF or MP4. Circular images, such as the bundled country flags, can be placed at the end of each bar. Causal diagrams are drawn as directed acyclic graphs whose nodes and arrows each carry a rationale and references, shown on hover and opened with clickable links on click, through 'ggiraph'; the same diagram is also available as a static 'ggplot2' object. Network plots for network meta-analysis are drawn from arm level data, with the baseline characteristics and outcomes of every arm shown side by side on click.
 }
 \seealso{
 Useful links:

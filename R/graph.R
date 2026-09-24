@@ -56,7 +56,7 @@ graph_dims <- list(
 tip_css <- paste0(
   "background:#FFFFFF;color:#2C2C2C;border:1px solid #DADADA;",
   "border-radius:6px;padding:8px 11px;font-family:Lato,sans-serif;",
-  "font-size:13px;line-height:1.4;max-width:320px;",
+  "font-size:13px;line-height:1.4;",
   "box-shadow:0 2px 8px rgba(0,0,0,0.12);"
 )
 
@@ -104,21 +104,110 @@ link_reference <- function(ref) {
   text
 }
 
+# Display names for columns: a `label` attribute when there is one, as set
+# by the labelled, Hmisc or haven packages, otherwise the name with
+# underscores as spaces and a capital first letter.
+column_labels <- function(data, cols) {
+  vapply(cols, function(col) {
+    label <- attr(data[[col]], "label", exact = TRUE)
+    if (is.character(label) && length(label) == 1 && nzchar(label)) return(label)
+    capitalize(gsub("_", " ", col, fixed = TRUE))
+  }, character(1), USE.NAMES = FALSE)
+}
+
+# Values as text, with the same number of decimals down a column. Thousands
+# are separated only from five digits up, so years read as written.
+format_values <- function(v) {
+  if (!is.numeric(v)) return(as.character(v))
+  out <- rep(NA_character_, length(v))
+  ok <- !is.na(v)
+  if (any(ok)) {
+    out[ok] <- format(v[ok], digits = 4, trim = TRUE, scientific = FALSE,
+                      big.mark = if (max(abs(v[ok])) >= 1e4) "," else "")
+  }
+  out
+}
+
 # Extra columns become labeled fields in the card and the panel.
 field_values <- function(data, reserved) {
   keep <- setdiff(names(data), reserved)
   keep <- keep[!vapply(data[keep], is.list, logical(1))]
-  cols <- lapply(data[keep], function(v) {
-    out <- if (is.numeric(v)) format(v, digits = 4, trim = TRUE) else as.character(v)
-    out[is.na(v)] <- NA_character_
-    out
-  })
-  labels <- gsub("_", " ", keep, fixed = TRUE)
-  labels <- paste0(toupper(substring(labels, 1, 1)), substring(labels, 2))
+  cols <- lapply(data[keep], format_values)
+  labels <- column_labels(data, keep)
   lapply(seq_len(nrow(data)), function(i) {
     v <- vapply(cols, `[`, character(1), i)
     stats::setNames(v[!is.na(v)], labels[!is.na(v)])
   })
+}
+
+# Arms side by side, one column each, with the characteristics down the
+# side, the way trials report their baseline tables. With `treatment`, the
+# arms are grouped under a spanning header for each study. Columns in
+# `notes` hold text that is the same for every arm of a study, such as a
+# reference, and are listed once per study under the table instead.
+arm_table <- function(arms, study, cols, labels, treatment = NULL,
+                      notes = character(0)) {
+  in_table <- !cols %in% notes
+  study_head <- if (is.null(treatment)) {
+    paste0('<th scope="col">', esc(study), "</th>", collapse = "")
+  } else {
+    runs <- rle(study)
+    paste0('<th scope="colgroup" colspan="', runs$lengths, '">',
+           esc(runs$values), "</th>", collapse = "")
+  }
+  arm_head <- if (!is.null(treatment)) {
+    paste0('<tr><td></td>',
+           paste0('<th scope="col" class="ggx-arm">', esc(treatment), "</th>",
+                  collapse = ""),
+           "</tr>")
+  }
+  rows <- vapply(which(in_table), function(j) {
+    v <- format_values(arms[[cols[j]]])
+    cells <- vapply(v, function(x) if (is.na(x)) "" else link_reference(x),
+                    character(1))
+    paste0('<tr', if (is.numeric(arms[[cols[j]]])) ' class="ggx-num"', '>',
+           '<th scope="row">', esc(labels[j]), "</th>",
+           paste0("<td>", cells, "</td>", collapse = ""), "</tr>")
+  }, character(1))
+  lists <- vapply(which(!in_table), function(j) {
+    v <- as.character(arms[[cols[j]]])
+    first <- !duplicated(study)
+    v <- v[first]
+    who <- study[first]
+    keep <- !is.na(v) & nzchar(v)
+    if (!any(keep)) return("")
+    same <- split(who[keep], factor(v[keep], levels = unique(v[keep])))
+    paste0('<div class="ggx-refs-head">', esc(labels[j]), "</div><ul class=\"ggx-notes\">",
+           paste0("<li><b>", vapply(same, function(w) esc(paste(w, collapse = ", ")),
+                                     character(1)),
+                  "</b>: ", vapply(names(same), link_reference, character(1)),
+                  "</li>", collapse = ""),
+           "</ul>")
+  }, character(1))
+  paste0('<div class="ggx-table"><table><thead><tr><td></td>', study_head,
+         "</tr>", arm_head, "</thead><tbody>", paste(rows, collapse = ""),
+         "</tbody></table></div>", paste(lists, collapse = ""))
+}
+
+# Text columns whose value never changes within a study.
+study_level <- function(data, study, cols) {
+  cols[vapply(cols, function(col) {
+    v <- data[[col]]
+    (is.character(v) || is.factor(v)) &&
+      all(tapply(as.character(v), study, function(x) length(unique(x)) == 1))
+  }, logical(1))]
+}
+
+capitalize <- function(x) {
+  x <- trimws(as.character(x))
+  paste0(toupper(substring(x, 1, 1)), substring(x, 2))
+}
+
+text_or_empty <- function(x, n) {
+  if (is.null(x)) return(rep("", n))
+  out <- as.character(x)
+  out[is.na(out)] <- ""
+  out
 }
 
 tip_html <- function(title, sub, body, fields, refs) {
@@ -228,6 +317,84 @@ trim_route <- function(pts, from, to, dims) {
   rbind(start, pts[i:j, , drop = FALSE], end, deparse.level = 0)
 }
 
+# Stack the title, legend, graph and caption down the page. `x` and `y` are
+# every point the graph occupies, in its own top down coordinates. Returns
+# the page size in points, functions that move graph coordinates onto the
+# page, and the title, caption and legend as drawable data frames.
+graph_canvas <- function(x, y, title, caption, key_labels, key_colors,
+                         key_title, dims, family) {
+  graph_w <- max(x) - min(x)
+  graph_h <- max(y) - min(y)
+  title_w <- if (is.null(title)) 0 else
+    text_width_card(title, dims$title_pt, family, 1, bold = TRUE)
+  caption_w <- if (is.null(caption)) 0 else
+    text_width_card(caption, dims$caption_pt, family, 1)
+  page_w <- max(graph_w, title_w, caption_w, dims$min_width) + 2 * dims$margin
+
+  lay <- list(
+    content_l = dims$margin, content_r = page_w - dims$margin,
+    legend_pt = dims$legend_pt, legend_row_h = dims$legend_row_h,
+    legend_swatch_w = dims$legend_swatch_w, legend_swatch_h = dims$legend_swatch_h,
+    legend_swatch_r = dims$legend_swatch_r, legend_gap_swatch = dims$legend_gap_swatch,
+    legend_gap_item = dims$legend_gap_item, legend_gap_title = dims$legend_gap_title
+  )
+  key <- if (length(key_labels)) {
+    legend_layout(key_labels, key_colors, key_title, lay, family, 1)
+  }
+
+  top <- dims$margin
+  title_y <- top + dims$title_pt * 0.6
+  if (!is.null(title)) top <- top + dims$title_pt * 1.2 + dims$gap_title
+  if (!is.null(key)) {
+    lay$legend_top <- top
+    top <- top + key$height + dims$gap_legend
+  }
+  graph_top <- top
+  top <- top + graph_h
+  caption_y <- top + dims$gap_caption + dims$caption_pt * 0.6
+  if (!is.null(caption)) top <- top + dims$gap_caption + dims$caption_pt * 1.2
+  page_h <- top + dims$margin
+
+  dx <- dims$margin + (page_w - 2 * dims$margin - graph_w) / 2 - min(x)
+  dy <- graph_top - min(y)
+  fy <- function(v) page_h - v
+  texts <- function(label, x, y, pt, color, hjust = 0, face = "plain") {
+    if (!length(label)) return(empty_texts())
+    data.frame(x = x, y = fy(y), label = label, size = pt / .pt,
+               colour = color, hjust = hjust, fontface = face,
+               stringsAsFactors = FALSE)
+  }
+
+  list(
+    width = page_w,
+    height = page_h,
+    px = function(v) v + dx,
+    py = function(v) page_h - (v + dy),
+    text = rbind(
+      if (!is.null(title)) texts(title, dims$margin, title_y, dims$title_pt,
+                                 graph_ink$title, face = "bold"),
+      if (!is.null(caption)) texts(caption, dims$margin, caption_y,
+                                   dims$caption_pt, graph_ink$muted),
+      legend_text(key, lay, texts)
+    ),
+    shapes = legend_shapes(key, lay, function(v) v, fy)
+  )
+}
+
+# The chrome, scales, coordinates and theme every graph shares.
+graph_frame <- function(canvas, family) {
+  list(
+    draw_shapes(canvas$shapes),
+    draw_text(canvas$text, family),
+    scale_fill_identity(),
+    scale_colour_identity(),
+    scale_linetype_identity(),
+    coord_cartesian(xlim = c(0, canvas$width), ylim = c(0, canvas$height),
+                    expand = FALSE, clip = "off"),
+    theme_race(page = graph_ink$page)
+  )
+}
+
 graph_dependency <- function() {
   htmltools::htmlDependency(
     name = "ggextreme-graph",
@@ -241,7 +408,8 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()] prints as an interactive widget. These
+#' A graph built by [ggcausal()] or [ggnma()] prints as an interactive
+#' widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -254,7 +422,7 @@ graph_dependency <- function() {
 #' `graph_save()` does. The widget embeds a web copy of Lato, so it looks the
 #' same on machines without the font.
 #'
-#' @param x A graph from [ggcausal()].
+#' @param x A graph from [ggcausal()] or [ggnma()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.

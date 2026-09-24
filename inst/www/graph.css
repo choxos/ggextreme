@@ -27,6 +27,7 @@
 }
 
 .ggx-tip-body {
+  max-width: 300px;
   margin-top: 4px;
 }
 
@@ -121,4 +122,93 @@
 .ggx-close:hover,
 .ggx-close:focus-visible {
   color: #1F1F1F;
+}
+
+/* Tables and lists in the panel reset the borders, margins and bullets that
+   document stylesheets put on every table and list. */
+.ggx-panel .ggx-table {
+  margin: 4px 0 0;
+  overflow-x: auto;
+}
+
+.ggx-panel .ggx-table table,
+.ggx-tip .ggx-table table {
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  background: none;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.ggx-panel .ggx-table thead,
+.ggx-tip .ggx-table thead,
+.ggx-panel .ggx-table tr,
+.ggx-tip .ggx-table tr {
+  background: none;
+}
+
+.ggx-panel .ggx-table th,
+.ggx-tip .ggx-table th,
+.ggx-panel .ggx-table td,
+.ggx-tip .ggx-table td {
+  padding: 4px 10px;
+  border: 0;
+  border-bottom: 1px solid #ECECEC;
+  line-height: 1.35;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ggx-panel .ggx-table thead th,
+.ggx-tip .ggx-table thead th {
+  border-bottom: 1px solid #D0D0D0;
+  color: #1F1F1F;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ggx-panel .ggx-table thead .ggx-arm,
+.ggx-tip .ggx-table thead .ggx-arm {
+  color: #6B6B6B;
+  font-weight: 400;
+}
+
+.ggx-panel .ggx-table tbody th,
+.ggx-tip .ggx-table tbody th {
+  color: #6B6B6B;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.ggx-panel .ggx-table .ggx-num td,
+.ggx-tip .ggx-table .ggx-num td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-panel .ggx-notes {
+  margin: 0;
+  padding-left: 0;
+}
+
+.ggx-panel .ggx-notes li {
+  margin: 3px 0;
+  list-style: none;
+}
+
+
+/* The hover card's table is a compact version of the panel's. */
+.ggx-tip .ggx-table table {
+  font-size: 12px;
+}
+
+.ggx-tip .ggx-table th,
+.ggx-tip .ggx-table td {
+  padding: 2px 7px;
+}
+
+.ggx-tip .ggx-table thead .ggx-arm {
+  max-width: 7em;
+  white-space: normal;
 }

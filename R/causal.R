@@ -98,56 +98,16 @@ ggcausal <- function(edges, nodes = NULL,
     path
   })
 
-  # Shift the diagram so its top left corner sits at the origin.
+  # Everything the diagram occupies, so the page can be sized around it.
   all_x <- c(placed$x - boxes$w / 2, placed$x + boxes$w / 2,
              unlist(lapply(routes, function(r) if (!is.null(r)) r[, 1])))
   all_y <- c(placed$y - boxes$h / 2, placed$y + boxes$h / 2,
              unlist(lapply(routes, function(r) if (!is.null(r)) r[, 2])))
-  graph_w <- max(all_x) - min(all_x)
-  graph_h <- max(all_y) - min(all_y)
-
-  title_w <- if (is.null(title)) 0 else
-    text_width_card(title, dims$title_pt, family, 1, bold = TRUE)
-  caption_w <- if (is.null(caption)) 0 else
-    text_width_card(caption, dims$caption_pt, family, 1)
-  page_w <- max(graph_w, title_w, caption_w, dims$min_width) + 2 * dims$margin
-
-  lay <- list(
-    content_l = dims$margin, content_r = page_w - dims$margin,
-    legend_pt = dims$legend_pt, legend_row_h = dims$legend_row_h,
-    legend_swatch_w = dims$legend_swatch_w, legend_swatch_h = dims$legend_swatch_h,
-    legend_swatch_r = dims$legend_swatch_r, legend_gap_swatch = dims$legend_gap_swatch,
-    legend_gap_item = dims$legend_gap_item, legend_gap_title = dims$legend_gap_title
-  )
-  key <- if (legend && length(roles$levels)) {
-    legend_layout(capitalize(roles$levels), roles$colors[roles$levels],
-                  legend_title, lay, family, 1)
-  }
-
-  # Stack the title, legend, diagram and caption down the page.
-  top <- dims$margin
-  title_y <- top + dims$title_pt * 0.6
-  if (!is.null(title)) top <- top + dims$title_pt * 1.2 + dims$gap_title
-  if (!is.null(key)) {
-    lay$legend_top <- top
-    top <- top + key$height + dims$gap_legend
-  }
-  graph_top <- top
-  top <- top + graph_h
-  caption_y <- top + dims$gap_caption + dims$caption_pt * 0.6
-  if (!is.null(caption)) top <- top + dims$gap_caption + dims$caption_pt * 1.2
-  page_h <- top + dims$margin
-
-  dx <- dims$margin + (page_w - 2 * dims$margin - graph_w) / 2 - min(all_x)
-  dy <- graph_top - min(all_y)
-  fx <- function(v) v
-  fy <- function(v) page_h - v
-  texts <- function(label, x, y, pt, color, hjust = 0, face = "plain") {
-    if (!length(label)) return(empty_texts())
-    data.frame(x = x, y = fy(y), label = label, size = pt / .pt,
-               colour = color, hjust = hjust, fontface = face,
-               stringsAsFactors = FALSE)
-  }
+  keys <- if (legend) roles$levels else character(0)
+  canvas <- graph_canvas(all_x, all_y, title, caption, capitalize(keys),
+                         roles$colors[keys], legend_title, dims, family)
+  px <- canvas$px
+  py <- canvas$py
 
   # What the hover card and the click panel say about each node and arrow.
   node_refs <- split_references(nodes[["references"]], nrow(nodes))
@@ -178,13 +138,13 @@ ggcausal <- function(edges, nodes = NULL,
   dashed <- tolower(trimws(roles$role)) %in% c("unobserved", "latent")
 
   node_df <- do.call(rbind, lapply(seq_len(nrow(nodes)), function(i) {
-    cx <- placed$x[i] + dx
-    cy <- placed$y[i] + dy
+    cx <- placed$x[i]
+    cy <- placed$y[i]
     shape <- rounded_rect(cx - boxes$w[i] / 2, cx + boxes$w[i] / 2,
                           cy - boxes$h[i] / 2, cy + boxes$h[i] / 2,
                           dims$radius, n = 6)
     data.frame(
-      x = fx(shape$x), y = fy(shape$y), id = node_ids[i],
+      x = px(shape$x), y = py(shape$y), id = node_ids[i],
       fill = fill[i], border = border[i],
       linetype = if (dashed[i]) "22" else "solid",
       tooltip = node_tip[i], onclick = node_click[i],
@@ -199,7 +159,7 @@ ggcausal <- function(edges, nodes = NULL,
     lines <- strsplit(labels[i], "\n", fixed = TRUE)[[1]]
     shift <- (seq_along(lines) - (length(lines) + 1) / 2) *
       dims$node_pt * dims$line_h
-    data.frame(x = fx(placed$x[i] + dx), y = fy(placed$y[i] + dy + shift),
+    data.frame(x = px(placed$x[i]), y = py(placed$y[i] + shift),
                label = lines, id = node_ids[i], tooltip = node_tip[i],
                onclick = node_click[i], stringsAsFactors = FALSE)
   }))
@@ -212,18 +172,10 @@ ggcausal <- function(edges, nodes = NULL,
     ))
   }
   edge_df <- do.call(rbind, lapply(which(drawn), function(k) {
-    data.frame(x = fx(routes[[k]][, 1] + dx), y = fy(routes[[k]][, 2] + dy),
+    data.frame(x = px(routes[[k]][, 1]), y = py(routes[[k]][, 2]),
                id = edge_ids[k], tooltip = edge_tip[k], onclick = edge_click[k],
                stringsAsFactors = FALSE)
   }))
-
-  chrome <- rbind(
-    if (!is.null(title)) texts(title, dims$margin, title_y, dims$title_pt,
-                               graph_ink$title, face = "bold"),
-    if (!is.null(caption)) texts(caption, dims$margin, caption_y,
-                                 dims$caption_pt, graph_ink$muted),
-    legend_text(key, lay, texts)
-  )
 
   p <- ggplot() +
     edge_layers(edge_df, dims) +
@@ -242,17 +194,11 @@ ggcausal <- function(edges, nodes = NULL,
           onclick = .data$onclick),
       size = dims$node_pt / .pt, colour = graph_ink$text, family = family
     ) +
-    draw_shapes(legend_shapes(key, lay, fx, fy)) +
-    draw_text(chrome, family) +
-    scale_fill_identity() +
-    scale_colour_identity() +
-    scale_linetype_identity() +
-    coord_cartesian(xlim = c(0, page_w), ylim = c(0, page_h),
-                    expand = FALSE, clip = "off") +
-    theme_race(page = graph_ink$page)
+    graph_frame(canvas, family)
 
   structure(
-    list(plot = p, width = page_w / 72, height = page_h / 72, title = title,
+    list(plot = p, width = canvas$width / 72, height = canvas$height / 72,
+         title = title,
          nodes = nodes, edges = edges),
     class = c("ggcausal", "ggx_graph")
   )
@@ -373,18 +319,6 @@ causal_roles <- function(role, palette, n) {
   }
   list(role = role, levels = levels, colors = colors,
        color_of = unname(colors[role]))
-}
-
-capitalize <- function(x) {
-  x <- trimws(as.character(x))
-  paste0(toupper(substring(x, 1, 1)), substring(x, 2))
-}
-
-text_or_empty <- function(x, n) {
-  if (is.null(x)) return(rep("", n))
-  out <- as.character(x)
-  out[is.na(out)] <- ""
-  out
 }
 
 # Layers from the Sugiyama method. Arrows that skip layers get dummy points
