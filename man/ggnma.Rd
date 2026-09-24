@@ -11,6 +11,8 @@ ggnma(
   n = NULL,
   group = NULL,
   hover = NULL,
+  multiarm = TRUE,
+  positions = NULL,
   palette = NULL,
   legend = TRUE,
   legend_title = NULL,
@@ -38,6 +40,14 @@ Defaults to the first four columns of the arm table. Use
 \code{character(0)} for a card that only lists the studies. The click panel
 always shows every column.}
 
+\item{multiarm}{Shade a polygon for each set of treatments compared in a
+study with more than two arms.}
+
+\item{positions}{Optional data frame placing the nodes by hand, with
+columns \code{treatment}, \code{x} and \code{y}, one row per treatment and \code{y} pointing
+up. Any units will do: the layout is scaled to fit the plot, keeping its
+shape. Labels point away from the middle of the layout.}
+
 \item{palette}{Node colors. With \code{group}, a vector named by class, or an
 unnamed vector recycled over the classes; without it, a single color.
 Defaults to \code{\link[=race_palette]{race_palette()}}.}
@@ -54,8 +64,9 @@ Defaults to \code{\link[=race_palette]{race_palette()}}.}
 An object of class \code{ggnma}, which prints as an interactive widget.
 Use \code{\link[=graph_widget]{graph_widget()}}, \code{\link[=graph_plot]{graph_plot()}} or \code{\link[=graph_save]{graph_save()}} for the widget, a
 static ggplot or a file. The fields \code{nodes} and \code{edges} hold the
-treatments and comparisons with their study counts, and \code{width} and
-\code{height} the natural size in inches.
+treatments and comparisons with their study counts, \code{multiarm} the sets
+of treatments compared in multi-arm studies, and \code{width} and \code{height}
+the natural size in inches.
 }
 \description{
 Draws the network of treatment comparisons from arm level data. Each node
@@ -72,10 +83,13 @@ were given.
 \details{
 Treatments sit on a circle, starting at the top and running clockwise in
 the order of the levels of \code{treatment} when it is a factor, or in order of
-first appearance otherwise. Line width follows the number of studies that
-make the comparison. When \code{n} is given, node area follows the total number
-of participants on that treatment. A study with more than two arms adds a
-line for every pair of its treatments.
+first appearance otherwise; \code{positions} places them by hand instead. Line
+width follows the number of studies that make the comparison. When \code{n} is
+given, node area follows the total number of participants on that
+treatment. A study with more than two arms adds a line for every pair of
+its treatments and, with \code{multiarm}, a shaded polygon joining them.
+Studies that compare the same set of treatments share one polygon, which
+has its own hover card and panel.
 
 Row labels come from each column's \code{label} attribute when it has one, as
 set by the 'labelled', 'Hmisc' or 'haven' packages, and otherwise from its

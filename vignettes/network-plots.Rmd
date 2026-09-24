@@ -99,15 +99,49 @@ panel always shows every column.
 
 * **Nodes** are treatments, placed on a circle starting at the top and
   running clockwise in the order of the factor levels of `treatment`, or in
-  order of first appearance.
+  order of first appearance. `positions` places them by hand.
 * **Node area** follows the number of participants on each treatment when
   `n` is given.
 * **Line width** follows the number of studies that make the comparison.
-* **A multi-arm study** adds a line for every pair of its treatments. The
-  counts are available on the object:
+* **A multi-arm study** adds a line for every pair of its treatments, and a
+  shaded polygon joining them. The counts are available on the object:
 
 ```{r}
 net$edges
+```
+
+## Multi-arm studies
+
+Lines alone cannot show that three treatments were compared within one
+trial rather than in three separate ones. A shaded polygon joins the
+treatments of every study with more than two arms, and studies that compare
+the same set share one polygon. Here ERASURE, FEATURE and JUNCTURE each
+compare placebo with both doses of secukinumab, and FIXTURE adds etanercept:
+
+```{r}
+net$multiarm
+```
+
+Each polygon has its own hover card and panel, with the arms of every study
+it stands for. `multiarm = FALSE` leaves the shading out.
+
+## Placing nodes by hand
+
+`positions` takes one row per treatment with `x` and `y` coordinates, `y`
+pointing up. Any units will do: the layout is scaled to fit the plot,
+keeping its shape, and labels point away from its middle. This one puts
+placebo at the top, the active comparators at the sides and the two
+secukinumab doses along the bottom:
+
+```{r}
+positions <- data.frame(
+  treatment = c("Placebo", "Etanercept", "Ustekinumab",
+                "Secukinumab 150 mg", "Secukinumab 300 mg"),
+  x = c(1, 0, 2, 0.5, 1.5),
+  y = c(1, 0, 0, -1, -1)
+)
+ggnma(psoriasis_nma, study, treatment, n = n, group = class,
+      positions = positions, legend = FALSE)
 ```
 
 ## Colors

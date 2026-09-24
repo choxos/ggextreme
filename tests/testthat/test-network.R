@@ -3,6 +3,13 @@ layer_of <- function(p, geom) {
   lapply(hit, function(i) ggplot2::layer_data(p, i))
 }
 
+# The nodes are the last polygon layer; multi-arm shading, when drawn, sits
+# underneath them.
+nodes_of <- function(net) {
+  layers <- layer_of(net$plot, "GeomInteractivePolygon")
+  layers[[length(layers)]]
+}
+
 arms <- data.frame(
   trial = c("s1", "s1", "s2", "s2", "s3", "s3", "s3"),
   drug = c("A", "B", "A", "B", "A", "B", "C"),
@@ -23,7 +30,7 @@ test_that("nodes are treatments and edges are direct comparisons", {
 
 test_that("every node and edge carries a tooltip and a click handler", {
   net <- ggnma(arms, trial, drug, n = size)
-  nodes <- layer_of(net$plot, "GeomInteractivePolygon")[[1]]
+  nodes <- nodes_of(net)
   labels <- layer_of(net$plot, "GeomInteractiveText")[[1]]
   hits <- layer_of(net$plot, "GeomInteractivePath")[[2]]
   expect_setequal(unique(nodes$data_id), c("n1", "n2", "n3"))
@@ -51,8 +58,7 @@ test_that("the hover card shows the chosen columns, or lists the studies", {
 test_that("a class named like its treatment is not repeated", {
   d <- arms
   d$class <- c("A", "y", "A", "y", "A", "y", "y")
-  nodes <- layer_of(ggnma(d, trial, drug, group = class)$plot,
-                    "GeomInteractivePolygon")[[1]]
+  nodes <- nodes_of(ggnma(d, trial, drug, group = class))
   expect_match(nodes$tooltip[nodes$data_id == "n1"][1],
                '<div class="ggx-tip-sub">3 studies</div>', fixed = TRUE)
 })
@@ -67,7 +73,7 @@ test_that("line width follows the number of studies", {
 
 test_that("node area follows the number of participants", {
   net <- ggnma(arms, trial, drug, n = size)
-  nodes <- layer_of(net$plot, "GeomInteractivePolygon")[[1]]
+  nodes <- nodes_of(net)
   r <- tapply(nodes$x, nodes$data_id, function(x) diff(range(x)) / 2)
   expect_equal(unname((r["n3"] / r["n2"])^2), 40 / 190, tolerance = 0.01)
 })
@@ -86,7 +92,7 @@ test_that("treatments start at the top and run clockwise in level order", {
 
 test_that("the click panel shows each arm with every other column", {
   net <- ggnma(arms, trial, drug, n = size)
-  nodes <- layer_of(net$plot, "GeomInteractivePolygon")[[1]]
+  nodes <- nodes_of(net)
   panel <- nodes$onclick[nodes$data_id == "n3"][1]
   expect_match(panel, "Events", fixed = TRUE)
   expect_match(panel, "Size", fixed = TRUE)
@@ -120,7 +126,7 @@ test_that("classes color the nodes and add a legend", {
   d <- arms
   d$class <- c("x", "y", "x", "y", "x", "y", "y")
   net <- ggnma(d, trial, drug, group = class, palette = c(y = "#000000"))
-  nodes <- layer_of(net$plot, "GeomInteractivePolygon")[[1]]
+  nodes <- nodes_of(net)
   fill <- vapply(split(nodes$fill, nodes$data_id), unique, character(1))
   expect_equal(unname(fill[c("n2", "n3")]), c("#000000", "#000000"))
   expect_false(fill[["n1"]] == "#000000")
@@ -146,4 +152,55 @@ test_that("the bundled psoriasis network builds", {
   expect_equal(nrow(net$nodes), 5)
   expect_equal(nrow(net$edges), 7)
   expect_s3_class(graph_widget(net), "girafe")
+})
+
+test_that("multi-arm studies are shaded, one polygon per set of treatments", {
+  d <- rbind(arms, data.frame(trial = "s4", drug = c("A", "B", "C"),
+                              size = 20, events = 2))
+  net <- ggnma(d, trial, drug, n = size)
+  expect_equal(net$multiarm$treatments, "A, B, C")
+  expect_equal(net$multiarm$studies, "s3, s4")
+  expect_equal(net$multiarm$arms, 3)
+  shade <- layer_of(net$plot, "GeomInteractivePolygon")[[1]]
+  expect_equal(unique(shade$data_id), "m1")
+  expect_equal(nrow(shade), 3)
+  expect_match(shade$tooltip[1], "3-arm studies of A, B and C", fixed = TRUE)
+  expect_true(all(shade$alpha < 1))
+
+  off <- ggnma(d, trial, drug, multiarm = FALSE)
+  expect_equal(nrow(off$multiarm), 0)
+  first <- layer_of(off$plot, "GeomInteractivePolygon")[[1]]
+  expect_false("m1" %in% first$data_id)
+})
+
+test_that("nodes can be placed by hand, keeping the layout's shape", {
+  pos <- data.frame(treatment = c("C", "A", "B"), x = c(1, 0, 2), y = c(2, 0, 0))
+  net <- ggnma(arms, trial, drug, positions = pos, multiarm = FALSE)
+  nodes <- nodes_of(net)
+  mid <- stats::aggregate(cbind(x, y) ~ data_id, nodes, mean)
+  a <- mid[mid$data_id == "n1", ]
+  b <- mid[mid$data_id == "n2", ]
+  c <- mid[mid$data_id == "n3", ]
+  expect_equal(a$y, b$y, tolerance = 1e-6)
+  expect_gt(c$y, a$y)
+  expect_equal(c$x, (a$x + b$x) / 2, tolerance = 1e-6)
+  expect_equal((c$y - a$y) / (b$x - a$x), 1, tolerance = 1e-6)
+
+  expect_error(ggnma(arms, trial, drug, positions = pos[1:2, ]), "no row for: B")
+  expect_error(ggnma(arms, trial, drug, positions = rbind(pos, pos[1, ])),
+               "more than once: C")
+  expect_error(ggnma(arms, trial, drug, positions = transform(pos, x = 0, y = 0)),
+               "same place")
+  expect_error(ggnma(arms, trial, drug, positions = pos[c("x", "y")]), "treatment")
+})
+
+test_that("labels point away from the middle of the layout", {
+  pos <- data.frame(treatment = c("A", "B", "C"), x = c(0, 2, 1), y = c(0, 0, 2))
+  net <- ggnma(arms, trial, drug, positions = pos, multiarm = FALSE)
+  labels <- layer_of(net$plot, "GeomInteractiveText")[[1]]
+  nodes <- nodes_of(net)
+  mid <- stats::aggregate(cbind(x, y) ~ data_id, nodes, mean)
+  top <- labels[labels$data_id == "n3", ]
+  expect_gt(top$y, mid$y[mid$data_id == "n3"])
+  expect_equal(top$vjust, 0, tolerance = 0.2)
 })

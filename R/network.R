@@ -13,10 +13,13 @@
 #'
 #' Treatments sit on a circle, starting at the top and running clockwise in
 #' the order of the levels of `treatment` when it is a factor, or in order of
-#' first appearance otherwise. Line width follows the number of studies that
-#' make the comparison. When `n` is given, node area follows the total number
-#' of participants on that treatment. A study with more than two arms adds a
-#' line for every pair of its treatments.
+#' first appearance otherwise; `positions` places them by hand instead. Line
+#' width follows the number of studies that make the comparison. When `n` is
+#' given, node area follows the total number of participants on that
+#' treatment. A study with more than two arms adds a line for every pair of
+#' its treatments and, with `multiarm`, a shaded polygon joining them.
+#' Studies that compare the same set of treatments share one polygon, which
+#' has its own hover card and panel.
 #'
 #' Row labels come from each column's `label` attribute when it has one, as
 #' set by the 'labelled', 'Hmisc' or 'haven' packages, and otherwise from its
@@ -36,6 +39,12 @@
 #'   Defaults to the first four columns of the arm table. Use
 #'   `character(0)` for a card that only lists the studies. The click panel
 #'   always shows every column.
+#' @param multiarm Shade a polygon for each set of treatments compared in a
+#'   study with more than two arms.
+#' @param positions Optional data frame placing the nodes by hand, with
+#'   columns `treatment`, `x` and `y`, one row per treatment and `y` pointing
+#'   up. Any units will do: the layout is scaled to fit the plot, keeping its
+#'   shape. Labels point away from the middle of the layout.
 #' @param palette Node colors. With `group`, a vector named by class, or an
 #'   unnamed vector recycled over the classes; without it, a single color.
 #'   Defaults to [race_palette()].
@@ -47,8 +56,9 @@
 #' @return An object of class `ggnma`, which prints as an interactive widget.
 #'   Use [graph_widget()], [graph_plot()] or [graph_save()] for the widget, a
 #'   static ggplot or a file. The fields `nodes` and `edges` hold the
-#'   treatments and comparisons with their study counts, and `width` and
-#'   `height` the natural size in inches.
+#'   treatments and comparisons with their study counts, `multiarm` the sets
+#'   of treatments compared in multi-arm studies, and `width` and `height`
+#'   the natural size in inches.
 #' @export
 #'
 #' @examples
@@ -58,6 +68,8 @@
 #' net$edges
 ggnma <- function(data, study, treatment, n = NULL, group = NULL,
                   hover = NULL,
+                  multiarm = TRUE,
+                  positions = NULL,
                   palette = NULL,
                   legend = TRUE,
                   legend_title = NULL,
@@ -129,6 +141,8 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
     vapply(seq_len(k), function(i) sum(size[node_of == i]), numeric(1))
 
   comparisons <- network_comparisons(study, node_of, size)
+  multi <- if (multiarm) network_multiarm(study, node_of) else
+    network_multiarm(character(0), integer(0))
 
   # Colors, by class when there is one.
   key <- group_key(treatment, group, levels, what = "treatment")
@@ -162,14 +176,24 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
   }
   ring <- max(dims$ring_min,
               k * (2 * max(radius) + dims$ring_gap) / (2 * pi))
-  angle <- -pi / 2 + 2 * pi * (seq_len(k) - 1) / k
-  if (k == 1) ring <- 0
-  cx <- ring * cos(angle)
-  cy <- ring * sin(angle)
+  if (is.null(positions)) {
+    angle <- -pi / 2 + 2 * pi * (seq_len(k) - 1) / k
+    if (k == 1) ring <- 0
+    cx <- ring * cos(angle)
+    cy <- ring * sin(angle)
+  } else {
+    placed <- network_positions(positions, levels, ring)
+    cx <- placed$x
+    cy <- placed$y
+  }
 
-  # Labels sit outside their node, pointing away from the center.
-  ux <- if (k == 1) 0 else cos(angle)
-  uy <- if (k == 1) 1 else sin(angle)
+  # Labels sit outside their node, pointing away from the middle.
+  ux <- cx - mean(cx)
+  uy <- cy - mean(cy)
+  away <- sqrt(ux^2 + uy^2)
+  flat <- away < 1e-6
+  ux <- ifelse(flat, 0, ux / away)
+  uy <- ifelse(flat, 1, uy / away)
   label_w <- text_width_card(levels, dims$label_pt, family, 1)
   label_h <- dims$label_pt * 1.2
   lx <- cx + ux * (radius + dims$label_gap)
@@ -247,6 +271,41 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
   }, character(1))
   edge_click <- pin_js(edge_ids, edge_panel)
 
+  multi_ids <- paste0("m", seq_along(multi$sets))
+  multi_title <- vapply(multi$studies, paste, character(1), collapse = ", ")
+  multi_sub <- vapply(seq_along(multi$sets), function(j) {
+    arms <- length(multi$sets[[j]])
+    paste0(arms, "-arm ", if (length(multi$studies[[j]]) == 1) "study" else "studies",
+           " of ", and_list(levels[multi$sets[[j]]]))
+  }, character(1))
+  multi_rows <- lapply(seq_along(multi$sets), function(j) {
+    rows <- which(study %in% multi$studies[[j]])
+    rows[order(match(study[rows], unique(study)), node_of[rows])]
+  })
+  multi_tip <- network_tip(
+    multi_title, multi_sub, multi$studies,
+    vapply(multi_rows, hover_table, character(1), by_treatment = TRUE),
+    "Click for every column."
+  )
+  multi_click <- pin_js(multi_ids, vapply(seq_along(multi$sets), function(j) {
+    rows <- multi_rows[[j]]
+    network_panel(multi_title[j], multi_sub[j],
+                  arm_table(data[rows, , drop = FALSE], study[rows], shown,
+                            shown_labels, treatment = treatment[rows],
+                            notes = notes))
+  }, character(1)))
+  shade <- rep_len(setdiff(race_palette(26), colors$node), length(multi$sets))
+  multi_df <- do.call(rbind, lapply(seq_along(multi$sets), function(j) {
+    set <- multi$sets[[j]]
+    turn <- order(atan2(cy[set] - mean(cy[set]), cx[set] - mean(cx[set])))
+    set <- set[turn]
+    data.frame(x = px(cx[set]), y = py(cy[set]), id = multi_ids[j],
+               fill = shade[j], tooltip = multi_tip[j], onclick = multi_click[j],
+               hover = sprintf("fill:%s;fill-opacity:%s;stroke:none;", shade[j],
+                               dims$multiarm_hover),
+               stringsAsFactors = FALSE)
+  }))
+
   widths <- if (!nrow(edges)) numeric(0) else if (max(edges$studies) == 1) {
     rep(dims$edge_min, nrow(edges))
   } else {
@@ -278,6 +337,7 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
                          stringsAsFactors = FALSE)
 
   p <- ggplot() +
+    network_multiarm_layer(multi_df, dims) +
     network_edge_layers(edge_df) +
     ggiraph::geom_polygon_interactive(
       data = node_df,
@@ -312,6 +372,13 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
         studies = edges$studies,
         n = if (is.null(size)) rep(NA_real_, nrow(edges)) else edges$n,
         stringsAsFactors = FALSE
+      ),
+      multiarm = data.frame(
+        treatments = vapply(multi$sets, function(s) paste(levels[s], collapse = ", "),
+                            character(1)),
+        arms = lengths(multi$sets),
+        studies = vapply(multi$studies, paste, character(1), collapse = ", "),
+        stringsAsFactors = FALSE
       )
     ),
     class = c("ggnma", "ggx_graph")
@@ -329,8 +396,77 @@ network_dims <- utils::modifyList(graph_dims, list(
   label_gap = 6,
   edge_min = 1.5,
   edge_max = 7,
-  hit_extra = 9
+  hit_extra = 9,
+  multiarm_alpha = 0.16,
+  multiarm_hover = 0.34
 ))
+
+# Sets of three or more treatments compared within one study, with the
+# studies that compare each set.
+network_multiarm <- function(study, node_of) {
+  sets <- lapply(unique(study), function(s) sort(unique(node_of[study == s])))
+  names(sets) <- unique(study)
+  sets <- sets[lengths(sets) >= 3]
+  if (!length(sets)) return(list(sets = list(), studies = list()))
+  key <- vapply(sets, paste, character(1), collapse = " ")
+  first <- !duplicated(key)
+  list(
+    sets = unname(sets[first]),
+    studies = unname(lapply(key[first], function(k) names(sets)[key == k]))
+  )
+}
+
+# Node positions given by hand, scaled to the size the circle would have and
+# centered, keeping their shape. `y` points up in the input.
+network_positions <- function(positions, levels, ring) {
+  if (!is.data.frame(positions) ||
+      !all(c("treatment", "x", "y") %in% names(positions))) {
+    rlang::abort("`positions` must be a data frame with `treatment`, `x` and `y` columns.")
+  }
+  named <- as.character(positions$treatment)
+  missing <- setdiff(levels, named)
+  if (length(missing)) {
+    rlang::abort(paste0("`positions` has no row for: ",
+                        paste(missing, collapse = ", ")))
+  }
+  twice <- unique(named[duplicated(named)])
+  if (length(twice)) {
+    rlang::abort(paste0("`positions` places a treatment more than once: ",
+                        paste(twice, collapse = ", ")))
+  }
+  if (!is.numeric(positions$x) || !is.numeric(positions$y) ||
+      anyNA(positions$x) || anyNA(positions$y)) {
+    rlang::abort("`x` and `y` in `positions` must be numeric with no missing values.")
+  }
+  i <- match(levels, named)
+  x <- positions$x[i]
+  y <- -positions$y[i]
+  span <- max(diff(range(x)), diff(range(y)))
+  if (span == 0) {
+    if (length(levels) > 1) {
+      rlang::abort("`positions` puts every treatment in the same place.")
+    }
+    return(list(x = 0, y = 0))
+  }
+  scale <- 2 * ring / span
+  list(x = (x - mean(range(x))) * scale, y = (y - mean(range(y))) * scale)
+}
+
+and_list <- function(x) {
+  if (length(x) < 2) return(paste(x))
+  paste0(paste(x[-length(x)], collapse = ", "), " and ", x[length(x)])
+}
+
+network_multiarm_layer <- function(df, dims) {
+  if (is.null(df) || !nrow(df)) return(NULL)
+  ggiraph::geom_polygon_interactive(
+    data = df,
+    aes(x = .data$x, y = .data$y, group = .data$id, fill = .data$fill,
+        data_id = .data$id, tooltip = .data$tooltip,
+        onclick = .data$onclick, hover_css = .data$hover),
+    colour = NA, alpha = dims$multiarm_alpha
+  )
+}
 
 # Every pair of treatments compared within a study, with the studies that
 # compare them and the participants in those arms.
