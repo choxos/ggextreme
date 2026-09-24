@@ -9,12 +9,12 @@ template:
     code_font: {google: "JetBrains Mono"}
 
 home:
-  title: Animated bar chart races for ggplot2
+  title: Presentation charts for ggplot2
   description: >
-    Build presentation quality animated charts on top of ggplot2. Values are
-    interpolated on a uniform time grid, every frame is ranked on its own
-    values, and bars ease into new positions so a reordering field stays
-    readable.
+    Presentation quality charts built on ggplot2: animated bar chart races
+    that stay readable while the field reorders, and interactive causal
+    diagrams that carry the rationale and references for every node and
+    arrow.
 
 navbar:
   structure:
@@ -31,16 +31,23 @@ reference:
   - animate_race
 
 - title: Appearance
-  desc: Colours, theme and the images that sit on the bars.
+  desc: Colors, theme and the images that sit on the bars.
   contents:
   - race_palette
   - theme_race
   - race_flags
   - race_flag_codes
 
+- title: Causal diagrams
+  desc: Draw a DAG whose nodes and arrows explain themselves, then use it as a widget, a ggplot or a file.
+  contents:
+  - ggcausal
+  - graph_widget
+
 - title: Data
   contents:
   - clefts_qci
+  - cleft_dag
 
 - title: Package
   contents:
@@ -52,3 +59,4 @@ articles:
   contents:
   - ggextreme
   - how-the-animation-works
+  - causal-diagrams

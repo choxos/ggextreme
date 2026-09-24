@@ -1,6 +1,6 @@
 Package: ggextreme
 Type: Package
-Title: Animated Bar Chart Races and Other Presentation Charts
+Title: Bar Chart Races, Interactive Causal Diagrams and Other Charts
 Version: 0.1.0
 Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
     role = c("aut", "cre"))
@@ -11,19 +11,30 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     ordinary 'ggplot2' objects laid out on a fixed pixel grid, which keeps
     the axis and label column from drifting between them, and are encoded to
     GIF or MP4. Circular images, such as the bundled country flags, can be
-    placed at the end of each bar.
+    placed at the end of each bar. Causal diagrams are drawn as directed
+    acyclic graphs whose nodes and arrows each carry a rationale and
+    references, shown on hover and opened with clickable links on click,
+    through 'ggiraph'; the same diagram is also available as a static
+    'ggplot2' object.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:
     R (>= 4.1)
 Imports:
+    gdtools (>= 0.5.0),
+    ggiraph (>= 0.9.6),
     ggplot2 (>= 3.5.0),
     grDevices,
+    grid,
+    htmltools,
+    htmlwidgets,
+    igraph,
     parallel,
     ragg,
     rlang,
     scales,
+    splines,
     stats,
     systemfonts (>= 1.2.4),
     tools,

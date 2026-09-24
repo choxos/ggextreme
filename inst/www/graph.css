@@ -1,0 +1,124 @@
+/* Styles for the interactive graphs: the web copy of Lato, the hover card
+   and the details panel that opens on click. */
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('lato-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: url('lato-bold.woff2') format('woff2');
+}
+
+.ggx-tip-title {
+  font-weight: 700;
+  color: #1F1F1F;
+}
+
+.ggx-tip-sub,
+.ggx-panel .ggx-sub {
+  color: #6B6B6B;
+  font-size: 0.9em;
+}
+
+.ggx-tip-body {
+  margin-top: 4px;
+}
+
+.ggx-tip-hint {
+  margin-top: 6px;
+  color: #6B6B6B;
+  font-size: 0.85em;
+}
+
+.ggx-panel {
+  position: relative;
+  box-sizing: border-box;
+  margin: 12px 0 4px;
+  padding: 14px 40px 14px 18px;
+  border: 1px solid #DADADA;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #2C2C2C;
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.ggx-panel[hidden] {
+  display: none;
+}
+
+.ggx-panel .ggx-title {
+  margin: 0;
+  color: #1F1F1F;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ggx-panel .ggx-sub {
+  margin: 0 0 8px;
+}
+
+.ggx-panel p {
+  margin: 0 0 8px;
+}
+
+.ggx-panel dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 14px;
+  margin: 0 0 8px;
+}
+
+.ggx-panel dt {
+  color: #6B6B6B;
+}
+
+.ggx-panel dd {
+  margin: 0;
+}
+
+.ggx-panel .ggx-refs-head {
+  margin: 10px 0 2px;
+  color: #1F1F1F;
+  font-weight: 700;
+}
+
+.ggx-panel ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.ggx-panel li {
+  margin: 2px 0;
+}
+
+.ggx-panel a {
+  color: #1C7C79;
+  overflow-wrap: anywhere;
+}
+
+.ggx-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 6px;
+  border: 0;
+  background: none;
+  color: #6B6B6B;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ggx-close:hover,
+.ggx-close:focus-visible {
+  color: #1F1F1F;
+}

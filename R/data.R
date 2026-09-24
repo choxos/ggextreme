@@ -30,3 +30,30 @@
 #' head(clefts_qci)
 #' subset(clefts_qci, year == 2019)[order(-subset(clefts_qci, year == 2019)$qci), ]
 "clefts_qci"
+
+#' An illustrative causal diagram for maternal smoking and orofacial clefts
+#'
+#' A small directed acyclic graph for a study of maternal smoking and
+#' orofacial clefts in the child, with a rationale for every node and arrow
+#' and published references for several of them. It shows each kind of role
+#' [ggcausal()] colors: an exposure, an outcome, a confounder, an unobserved
+#' cause of the outcome, a collider created by counting only live births,
+#' and a free text role. The structure is a teaching example rather than the
+#' result of a formal review.
+#'
+#' @format A list of two data frames.
+#' \describe{
+#'   \item{nodes}{Six nodes with columns `name`, `label`, `role`,
+#'     `rationale`, `references` and `timing`. `timing` is not a reserved
+#'     column, so it appears as a field in the hover card and panel.}
+#'   \item{edges}{Eight arrows with columns `from`, `to`, `rationale` and
+#'     `references`.}
+#' }
+#'
+#' @source Rationales written for this package. References were checked
+#'   against PubMed and are listed in full in the `references` columns.
+#'
+#' @examples
+#' cleft_dag$nodes[c("name", "role")]
+#' ggcausal(cleft_dag$edges, cleft_dag$nodes)
+"cleft_dag"
