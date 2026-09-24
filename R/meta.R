@@ -231,6 +231,47 @@ rob_class <- function(v) {
   out
 }
 
+# Effects as text on the scale shown: ratios with more decimals when small.
+effect_format <- function(exponentiate) {
+  function(v) {
+    v <- if (exponentiate) exp(v) else v
+    vapply(v, function(a) {
+      if (!is.finite(a)) return("")
+      if (exponentiate) {
+        formatC(a, format = "f", digits = if (a >= 10) 1 else if (a < 0.1) 3 else 2)
+      } else {
+        formatC(a, format = "f", digits = 2)
+      }
+    }, character(1))
+  }
+}
+
+# Ticks for an effect axis spanning `span` on the model's scale, named by
+# their labels on the scale shown. Ratios get round values on a log axis.
+effect_ticks <- function(span, exponentiate) {
+  at <- if (exponentiate) {
+    nice <- c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10,
+              20, 50, 100, 200, 500, 1000)
+    t <- nice[log(nice) >= span[1] & log(nice) <= span[2]]
+    if (length(t) > 7) {
+      one <- match(1, t)
+      t <- t[seq(if (is.na(one)) 1 else (one - 1) %% 2 + 1, length(t), by = 2)]
+    }
+    if (length(t) < 3) {
+      fine <- c(0.25, 0.5, 0.75, 1, 1.5, 2, 4)
+      t <- fine[log(fine) >= span[1] & log(fine) <= span[2]]
+    }
+    log(t)
+  } else {
+    t <- scales::breaks_extended(5)(span)
+    t[t >= span[1] & t <= span[2]]
+  }
+  shown <- if (exponentiate) exp(at) else at
+  stats::setNames(at, vapply(shown, function(v) format(signif(v, 3), trim = TRUE,
+                                                       drop0trailing = TRUE),
+                             character(1)))
+}
+
 # Everything ggmeta() needs from the fit, in one shape for both packages.
 meta_input <- function(x) {
   if (inherits(x, "rma.uni")) {
@@ -249,7 +290,7 @@ meta_input <- function(x) {
       data <- data[x$not.na, , drop = FALSE]
     }
     return(list(
-      label = as.character(x$slab), yi = yi, lo = yi - z * se, hi = yi + z * se,
+      label = as.character(x$slab), yi = yi, se = se, lo = yi - z * se, hi = yi + z * se,
       weight = as.numeric(stats::weights(x)),
       pooled = list(est = as.numeric(pred$pred), lo = as.numeric(pred$ci.lb),
                     hi = as.numeric(pred$ci.ub),
@@ -281,7 +322,7 @@ meta_input <- function(x) {
     }
     num <- function(v) if (is.null(v) || !length(v)) NA_real_ else as.numeric(v[1])
     return(list(
-      label = as.character(x$studlab[keep]), yi = yi,
+      label = as.character(x$studlab[keep]), yi = yi, se = se,
       lo = yi - z * se, hi = yi + z * se,
       weight = 100 * w / sum(w),
       pooled = list(
@@ -370,18 +411,7 @@ meta_layout <- function(input, cumulative) {
   data <- input$data
   family <- input$family
   k <- length(m$yi)
-  shown <- if (input$exponentiate) exp else identity
-  fmt <- function(v) {
-    v <- shown(v)
-    vapply(v, function(a) {
-      if (!is.finite(a)) return("")
-      if (input$exponentiate) {
-        formatC(a, format = "f", digits = if (a >= 10) 1 else if (a < 0.1) 3 else 2)
-      } else {
-        formatC(a, format = "f", digits = 2)
-      }
-    }, character(1))
-  }
+  fmt <- effect_format(input$exponentiate)
   interval <- function(e, l, h) paste0(fmt(e), " (", fmt(l), ", ", fmt(h), ")")
   width <- function(s, pt = dims$text_pt, bold = FALSE) {
     if (!length(s)) return(0)
@@ -448,25 +478,9 @@ meta_layout <- function(input, cumulative) {
   }
   X <- function(v) plot_x0 + (v - span[1]) / diff(span) * (plot_x1 - plot_x0)
   inside <- function(v) pmin(pmax(v, span[1]), span[2])
-  ticks <- if (input$exponentiate) {
-    nice <- c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10,
-              20, 50, 100, 200, 500, 1000)
-    t <- nice[log(nice) >= span[1] & log(nice) <= span[2]]
-    if (length(t) > 7) {
-      at <- match(1, t)
-      t <- t[seq(if (is.na(at)) 1 else (at - 1) %% 2 + 1, length(t), by = 2)]
-    }
-    if (length(t) < 3) t <- c(0.25, 0.5, 0.75, 1, 1.5, 2, 4)[
-      log(c(0.25, 0.5, 0.75, 1, 1.5, 2, 4)) >= span[1] &
-        log(c(0.25, 0.5, 0.75, 1, 1.5, 2, 4)) <= span[2]]
-    log(t)
-  } else {
-    t <- scales::breaks_extended(5)(span)
-    t[t >= span[1] & t <= span[2]]
-  }
-  tick_labels <- vapply(shown(ticks), function(v) format(signif(v, 3), trim = TRUE,
-                                                         drop0trailing = TRUE),
-                        character(1))
+  ticks <- effect_ticks(span, input$exponentiate)
+  tick_labels <- names(ticks)
+  ticks <- unname(ticks)
 
   # Hover cards and click panels.
   ids <- paste0("s", seq_len(k))

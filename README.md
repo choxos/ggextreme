@@ -6,7 +6,7 @@
 <!-- badges: end -->
 
 Presentation quality charts built on **ggplot2** that the package itself does
-not provide. There are seven so far:
+not provide. There are nine so far:
 
 * **Bar chart races**: an animation of a ranking that changes over time, of
   the kind used to summarize long panels in talks, teaching material and
@@ -21,14 +21,19 @@ not provide. There are seven so far:
   risk of bias traffic lights, and a cumulative replay as an animation.
 * **League tables**: every estimate of a network meta-analysis, with its
   direct and indirect evidence and a ranking of the treatments.
+* **Funnel plots**: small-study effects with significance contours, the
+  pooled estimate without each study, trim and fill and the tests for
+  asymmetry.
 * **Kaplan-Meier plots**: survival curves that read every group, and the
   hazard ratio, at any time under the pointer, with a linked risk table and
   proportional hazards tests.
+* **Swimmer plots**: one lane per patient, with responses, progression and
+  death along it, that reorders on demand.
 * **Choropleth maps**: a map of the world, or of any 'sf' map, that steps or
   plays through the years, with several measures side by side for the same
   year.
 
-All seven are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
+All nine are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
 separate rendering engine, so a frame or a diagram can be inspected, modified
 or saved on its own.
 
@@ -231,6 +236,22 @@ ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable")
 
 [![A league table of five treatments for plaque psoriasis](man/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
 
+## Funnel plots
+
+`ggfunnel()` draws the funnel plot of a metafor or meta fit, shaded where a
+study would be significant against no effect, so a gap where studies would
+not be significant points to publication bias rather than heterogeneity.
+Hovering over a study shows its effect, weight and risk of bias; clicking it
+gives the pooled estimate without it. With `trim_fill = TRUE` the imputed
+studies and the adjusted estimate are added behind a switch, and a collapsed
+section under the plot gives Egger's and Begg's tests.
+
+```r
+ggfunnel(fit, hover = c("alloc", "ablat"), trim_fill = TRUE)
+```
+
+[![A contour-enhanced funnel plot of the BCG vaccine trials](man/figures/README-funnel.png)](https://choxos.github.io/ggextreme/articles/funnel-plots.html)
+
 ## Kaplan-Meier plots
 
 `ggkm()` draws Kaplan-Meier curves by group from a `Surv(time, status) ~
@@ -253,6 +274,22 @@ ggkm(Surv(years, status) ~ arm, data = colon, ph_tests = TRUE,
 `animate_km()` draws the curves over follow-up as a GIF or MP4:
 
 ![Kaplan-Meier curves drawn over follow-up](man/figures/README-km.gif)
+
+## Swimmer plots
+
+`ggswimmer()` gives every patient a lane: the time on treatment or on study,
+with responses, progression, relapse and death marked along it and an arrow
+for patients still ongoing. Hovering over a lane shows the patient's record
+and fades the rest, clicking it lists their events in order, and buttons
+under the plot reorder the lanes by duration, arm or best response.
+
+```r
+ggswimmer(aml, id, futime / 30.44, events = events, group = arm,
+          ongoing = death == 0, ongoing_label = "Alive at last follow-up",
+          xlab = "Months since randomization")
+```
+
+[![A swimmer plot of 30 patients with acute myeloid leukemia](man/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
 
 ## Choropleth maps
 

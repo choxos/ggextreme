@@ -436,8 +436,9 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggleague()],
-#' [ggkm()] or [ggchoropleth()] prints as an interactive widget. These
+#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
+#' [ggleague()], [ggkm()], [ggswimmer()] or [ggchoropleth()] prints as an
+#' interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -455,8 +456,8 @@ graph_dependency <- function() {
 #' colors that carry meaning keep their hue, and the hover cards and panels
 #' follow. It also follows a page that switches theme while it is open.
 #'
-#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggleague()],
-#'   [ggkm()] or [ggchoropleth()].
+#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
+#'   [ggleague()], [ggkm()], [ggswimmer()] or [ggchoropleth()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.

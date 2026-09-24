@@ -1,0 +1,88 @@
+---
+title: "Swimmer plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Swimmer plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = requireNamespace("survival", quietly = TRUE)
+)
+```
+
+A swimmer plot gives every patient a lane: how long they were on treatment
+or on study, when they responded, when they progressed and who is still
+going. It is the standard picture of response in single arm and early phase
+trials, where the course of each patient matters as much as the summary.
+`ggswimmer()` draws one with each lane's record under the pointer.
+
+```{r setup}
+library(ggextreme)
+```
+
+## A first swimmer plot
+
+The survival package ships `myeloid`, a simulated data set based on a trial
+in acute myeloid leukemia, with the times of complete response, stem cell
+transplant, relapse and death. The first 30 patients make a readable plot.
+The events go in a data frame of their own, one row per event, with the
+patient's id, the time and what happened:
+
+```{r}
+aml <- subset(survival::myeloid, id <= 30)
+aml$arm <- paste("Arm", aml$trt)
+month <- 30.44
+events <- rbind(
+  data.frame(id = aml$id, time = aml$crtime / month, event = "Complete response"),
+  data.frame(id = aml$id, time = aml$txtime / month, event = "Transplant"),
+  data.frame(id = aml$id, time = aml$rltime / month, event = "Relapse"),
+  data.frame(id = aml$id, time = ifelse(aml$death == 1, aml$futime / month, NA),
+             event = "Death")
+)
+events <- events[!is.na(events$time), ]
+
+ggswimmer(aml, id, futime / month, events = events, group = arm,
+          ongoing = death == 0, hover = c("sex", "flt3"),
+          ongoing_label = "Alive at last follow-up",
+          xlab = "Months since randomization",
+          title = "Acute myeloid leukemia, 30 patients")
+```
+
+Hover over a lane to read the patient's arm, the columns named in `hover`,
+the first time of each event and whether they are still being followed;
+the other lanes fade. Click it for the patient's events in order, beside
+their full record. The buttons under the plot reorder the lanes, longest
+first, by arm, by best response or in the order of the data, and the lanes
+slide into place.
+
+## Events
+
+`end` and `ongoing` take expressions of the columns of `data`, as above.
+Events are drawn by their wording, whatever the case:
+
+| wording | mark |
+| --- | --- |
+| complete, CR | star |
+| partial, PR, response, remission | triangle |
+| progression, PD, relapse, recurrence | diamond |
+| death, died | cross |
+| anything else | a circle or square in its own color |
+
+## Options
+
+| argument | effect |
+| --- | --- |
+| `start` | where each bar starts; zero by default |
+| `group` | the column that colors the bars, such as the arm |
+| `ongoing`, `ongoing_label` | who gets an arrow, and what it means |
+| `sort` | the order of a static copy: `"duration"`, `"group"`, `"response"` or `"data"` |
+| `palette` | colors for the groups |
+| `hover` | columns for each lane's hover card |
+
+On a dark page the plot takes a dark palette of its own, and
+`graph_save(s, "swimmer.png", theme = "dark")` writes a dark static copy.

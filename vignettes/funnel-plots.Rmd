@@ -1,0 +1,113 @@
+---
+title: "Funnel plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Funnel plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = requireNamespace("metafor", quietly = TRUE) &&
+    requireNamespace("metadat", quietly = TRUE)
+)
+```
+
+A funnel plot asks whether the small studies in a meta-analysis tell a
+different story from the large ones. `ggfunnel()` draws it from a fitted
+model, shades where each study would be significant against no effect, and
+keeps the evidence behind every point a hover or a click away: the study's
+record, the pooled estimate without it, and the tests for small-study
+effects.
+
+```{r setup}
+library(ggextreme)
+```
+
+## A first funnel plot
+
+The example is the classic set of 13 trials of the BCG vaccine against
+tuberculosis, which ships with the metadat package, fitted as a random
+effects model of the risk ratio.
+
+```{r}
+dat <- metafor::escalc(measure = "RR", ai = tpos, bi = tneg, ci = cpos, di = cneg,
+                       data = metadat::dat.bcg, slab = paste(author, year))
+fit <- metafor::rma(yi, vi, data = dat)
+
+f <- ggfunnel(fit, hover = c("alloc", "ablat"), trim_fill = TRUE,
+              title = "BCG vaccine and tuberculosis")
+f
+```
+
+Each point is a study, sized by its weight, with the most precise at the
+top. The solid line is the pooled estimate and the dashed lines around it
+the region where 95% of studies would fall without heterogeneity or bias.
+Hover over a study for its risk ratio, weight, the columns named in `hover`
+and the zone it sits in; click it to compare the pooled estimate with and
+without it.
+
+## Reading the contours
+
+The shading is centered on no effect, not on the pooled estimate (Peters et
+al. 2008). A study in a shaded band would reach that level of significance
+on its own; one in the unshaded middle would not. If studies are missing
+from a funnel only where they would not have been significant, publication
+bias is a likely cause. If they are missing from shaded areas too, the
+asymmetry more likely comes from somewhere else, such as heterogeneity or
+the conduct of the small studies. `contours` sets the levels, and
+`contours = NULL` leaves the shading out.
+
+## Tests for small-study effects
+
+The section under the plot, collapsed until opened, holds Egger's regression
+test, Begg's rank correlation test and, with `trim_fill = TRUE`, the trim and
+fill estimate, as computed by metafor, or by meta for a meta object.
+Egger's test is the classical one, `metafor::regtest(fit, model = "lm")`,
+which meta also computes; metafor's default `regtest(fit)` fits a
+meta-regression instead and gives a different p value. The two packages'
+trim and fill can impute different numbers of studies from the same data:
+on these trials metafor imputes one and meta four. The table is also
+returned:
+
+```{r}
+f$tests
+```
+
+Here neither test finds asymmetry, and trim and fill imputes one study on
+the right, which moves the risk ratio little. The imputed study is drawn as
+a hollow circle and the adjusted estimate as a dashed line, and the switch
+under the widget hides them. These tests have little power with fewer than
+ten studies, and asymmetry is not proof of publication bias.
+
+## Risk of bias
+
+`rob` names the column holding each study's overall judgement, which colors
+its point, with the wording matched as in `ggmeta()`:
+
+```{r}
+chi <- metafor::escalc(measure = "OR", ai = p2y12.mi, n1i = p2y12.total,
+                       ci = aspirin.mi, n2i = aspirin.total,
+                       data = metadat::dat.chiarito2020, slab = paste(study, year))
+chi <- chi[!is.na(chi$yi), ]
+ggfunnel(metafor::rma(yi, vi, data = chi), rob = "rob.overall",
+         title = "P2Y12 inhibitors against aspirin: myocardial infarction")
+```
+
+## Options
+
+| argument | effect |
+| --- | --- |
+| `x` | an `rma.uni` fit from metafor, or a `meta` object |
+| `hover` | columns of the data for each study's hover card |
+| `rob` | the column of overall risk of bias judgements |
+| `contours` | significance levels for the shading, or `NULL` |
+| `trim_fill` | add the imputed studies and the adjusted estimate |
+| `tests` | add the collapsed section of tests |
+| `exponentiate`, `xlim`, `xlab` | the scale, limits and label of the effect axis |
+
+On a dark page the plot takes a dark palette of its own, and
+`graph_save(f, "funnel.png", theme = "dark")` writes a dark static copy.

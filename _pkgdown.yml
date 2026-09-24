@@ -55,13 +55,15 @@ reference:
   contents:
   - ggmeta
   - animate_meta
+  - ggfunnel
   - ggleague
 
-- title: Survival
-  desc: Kaplan-Meier plots with a linked risk table and proportional hazards tests.
+- title: Survival and trials
+  desc: Kaplan-Meier plots with a linked risk table and proportional hazards tests, and swimmer plots of each patient's course.
   contents:
   - ggkm
   - animate_km
+  - ggswimmer
 
 - title: Maps
   desc: Choropleth maps that step or play through the years, with measures side by side.
@@ -94,6 +96,8 @@ articles:
   - causal-diagrams
   - network-plots
   - forest-plots
+  - funnel-plots
   - league-tables
   - kaplan-meier
+  - swimmer-plots
   - choropleth-maps

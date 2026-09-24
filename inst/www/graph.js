@@ -167,6 +167,65 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // A row of controls under the plot, above any collapsed section.
+  function addControls(el, html) {
+    var bar = document.createElement('div');
+    bar.className = 'ggx-controls';
+    bar.innerHTML = html;
+    var section = el.querySelector(':scope > .ggx-details');
+    if (section) el.insertBefore(bar, section);
+    else el.appendChild(bar);
+    return bar;
+  }
+
+  // A funnel plot with trim and fill: a switch shows or hides the imputed
+  // studies and the adjusted estimate (ids starting tf).
+  window.ggextremeFunnel = function (el) {
+    var svg = el.querySelector('svg');
+    if (!svg) return;
+    var filled = [].slice.call(svg.querySelectorAll('[data-id^="tf"]'));
+    if (!filled.length) return;
+    var bar = addControls(el, '<label class="ggx-check"><input type="checkbox" checked> ' +
+      'Show trim and fill</label>');
+    bar.querySelector('input').addEventListener('change', function (ev) {
+      filled.forEach(function (node) { node.style.display = ev.target.checked ? '' : 'none'; });
+    });
+  };
+
+  // A swimmer plot. Every mark in a lane carries the lane's id (p<lane>);
+  // the buttons move each lane to its row in the chosen order.
+  window.ggextremeSwimmer = function (el, data) {
+    var svg = el.querySelector('svg');
+    if (!svg || !data) return;
+    el.classList.add('ggx-swimmer');
+    var lanes = [];
+    [].forEach.call(svg.querySelectorAll('[data-id^="p"]'), function (node) {
+      var m = /^p(\d+)$/.exec(node.getAttribute('data-id'));
+      if (m) (lanes[m[1] - 1] = lanes[m[1] - 1] || []).push(node);
+    });
+    var first = data.orders.filter(function (o) { return o.key === data.start; })[0];
+    function place(order) {
+      lanes.forEach(function (nodes, i) {
+        var dy = (order.row[i] - first.row[i]) * data.row_h;
+        nodes.forEach(function (node) {
+          node.style.transform = dy ? 'translate(0px, ' + dy + 'px)' : '';
+        });
+      });
+    }
+    var bar = addControls(el, '<span>Order</span><div class="ggx-seg" role="group" ' +
+      'aria-label="Order of the lanes">' + data.orders.map(function (o) {
+        return '<button type="button" data-key="' + escapeHtml(o.key) + '" aria-pressed="' +
+          (o.key === data.start) + '">' + escapeHtml(o.label) + '</button>';
+      }).join('') + '</div>');
+    var buttons = [].slice.call(bar.querySelectorAll('button'));
+    buttons.forEach(function (b, k) {
+      b.addEventListener('click', function () {
+        buttons.forEach(function (o) { o.setAttribute('aria-pressed', o === b); });
+        place(data.orders[k]);
+      });
+    });
+  };
+
   var icons = {
     play: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.2l8 4.8-8 4.8z"/></svg>',
     pause: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>'
@@ -351,15 +410,10 @@
     }
 
     if (last > 0) {
-      var bar = document.createElement('div');
-      bar.className = 'ggx-map-controls';
-      bar.innerHTML = '<button type="button" class="ggx-play" aria-label="Play">' + icons.play +
-        '</button><span>' + escapeHtml(times[0]) + '</span>' +
+      var bar = addControls(el, '<button type="button" class="ggx-play" aria-label="Play">' +
+        icons.play + '</button><span>' + escapeHtml(times[0]) + '</span>' +
         '<input type="range" min="0" max="' + last + '" step="1" value="' + current +
-        '" aria-label="Time"><span>' + escapeHtml(times[last]) + '</span>';
-      var section = el.querySelector(':scope > .ggx-details');
-      if (section) el.insertBefore(bar, section);
-      else el.appendChild(bar);
+        '" aria-label="Time"><span>' + escapeHtml(times[last]) + '</span>');
       button = bar.querySelector('button');
       slider = bar.querySelector('input');
       button.addEventListener('click', function () { if (timer) stop(); else play(); });
