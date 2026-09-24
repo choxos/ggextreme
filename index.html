@@ -48,6 +48,7 @@
     <li><a class="dropdown-item" href="articles/league-tables.html">League tables</a></li>
     <li><a class="dropdown-item" href="articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul>
 </li>
@@ -69,7 +70,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are nine so far:</p>
+<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are ten so far:</p>
 <ul>
 <li>
 <strong>Bar chart races</strong>: an animation of a ranking that changes over time, of the kind used to summarize long panels in talks, teaching material and journal supplements.</li>
@@ -88,9 +89,11 @@
 <li>
 <strong>Swimmer plots</strong>: one lane per patient, with responses, progression and death along it, that reorders on demand.</li>
 <li>
+<strong>Nomograms</strong>: any regression model, from logistic and Cox to mixed, ordinal and multinomial models, as a nomogram whose handles move, with the prediction and its confidence interval computed in the page.</li>
+<li>
 <strong>Choropleth maps</strong>: a map of the world, or of any ‘sf’ map, that steps or plays through the years, with several measures side by side for the same year.</li>
 </ul>
-<p>All nine are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
+<p>All ten are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
 <img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
@@ -302,10 +305,20 @@
 <p><a href="https://choxos.github.io/ggextreme/articles/swimmer-plots.html"><img src="reference/figures/README-swimmer.png" alt="A swimmer plot of 30 patients with acute myeloid leukemia"></a></p>
 </div>
 <div class="section level2">
+<h2 id="nomograms">Nomograms<a class="anchor" aria-label="anchor" href="#nomograms"></a>
+</h2>
+<p><code><a href="reference/ggnomogram.html">ggnomogram()</a></code> draws the nomogram of a fitted model and gives every predictor a handle: drag it, click a category or use the arrow keys, and the points, the total and the prediction with its 95% confidence interval follow. It reads linear, generalized linear, mixed (lme4, nlme, glmmTMB), Cox, parametric survival, ordinal and multinomial models, and models from rms and mgcv. Splines, polynomials and interactions work, because the points come from the model’s design matrix, and every class is checked against its own <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">low</span> <span class="op">~</span> <span class="fu">splines</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/splines/ns.html" class="external-link">ns</a></span><span class="op">(</span><span class="va">age</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="va">lwt</span> <span class="op">+</span> <span class="va">race</span> <span class="op">+</span> <span class="va">smoke</span> <span class="op">*</span> <span class="va">ht</span>,</span>
+<span>           family <span class="op">=</span> <span class="va">binomial</span>, data <span class="op">=</span> <span class="va">bw</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ggnomogram.html">ggnomogram</a></span><span class="op">(</span><span class="va">fit</span>, outcome <span class="op">=</span> <span class="st">"Risk of low birth weight"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/nomograms.html"><img src="reference/figures/README-nomogram.png" alt="A nomogram for the risk of low birth weight"></a></p>
+</div>
+<div class="section level2">
 <h2 id="choropleth-maps">Choropleth maps<a class="anchor" aria-label="anchor" href="#choropleth-maps"></a>
 </h2>
 <p><code><a href="reference/ggchoropleth.html">ggchoropleth()</a></code> colors every country by a measure, one map per measure side by side, with a slider and a play button under them that step through the years. All the maps show the same year: hovering over a country outlines it on every map and lists its value and rank on each measure, and clicking it opens its whole series. Countries match by ISO code or by name, including the forms the WHO and the Global Burden of Disease study use, and any ‘sf’ map of polygons can replace the bundled world map.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qci</span> <span class="op">&lt;-</span> <span class="va">clefts_qci_world</span></span>
 <span><span class="va">first</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">qci</span><span class="op">$</span><span class="va">iso3</span>, <span class="va">qci</span><span class="op">$</span><span class="va">iso3</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">qci</span><span class="op">$</span><span class="va">change</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span> <span class="op">-</span> <span class="va">first</span></span>

@@ -31,6 +31,7 @@
   --ggx-line: #2A3434;
   --ggx-hover: #EEF2F2;
   --ggx-link: #4CC2BE;
+  --ggx-axis: #7D8A8A;
 }
 
 /* In a dark widget the neutrals the plot was drawn with take their dark
@@ -550,4 +551,166 @@ svg.ggiraph-svg text[data-id="yr"] {
   .ggx-swimmer svg.ggiraph-svg [data-id^="p"] {
     transition: none;
   }
+}
+
+/* A nomogram the widget draws itself: axes, handles and the prediction.
+   Its canvas is laid out in points, one SVG unit each, so sizes are in px. */
+.ggx-nomo text {
+  font-family: Lato, sans-serif;
+}
+
+.ggx-nomo-axis {
+  stroke: var(--ggx-axis, #8A8A8A);
+  stroke-width: 1;
+}
+
+.ggx-nomo-tick {
+  fill: var(--ggx-muted, #6B6B6B);
+  font-size: 9px;
+}
+
+.ggx-nomo-label {
+  fill: var(--ggx-text, #2C2C2C);
+  font-size: 10.5px;
+}
+
+.ggx-nomo-head {
+  fill: var(--ggx-title, #1F1F1F);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.ggx-nomo-hit {
+  fill: var(--ggx-faint, #EEF2F2);
+  fill-opacity: 0;
+  cursor: pointer;
+}
+
+.ggx-nomo-row:hover .ggx-nomo-hit {
+  fill-opacity: 0.6;
+}
+
+.ggx-nomo-guide {
+  stroke: #22928F;
+  stroke-opacity: 0.35;
+  stroke-dasharray: 2 3;
+}
+
+.ggx-nomo-handle {
+  cursor: grab;
+}
+
+.ggx-nomo-handle circle {
+  fill: #22928F;
+  stroke: var(--ggx-card, #FFFFFF);
+  stroke-width: 2;
+}
+
+.ggx-nomo-handle:focus {
+  outline: none;
+}
+
+.ggx-nomo-handle:focus-visible circle {
+  stroke: var(--ggx-title, #1F1F1F);
+}
+
+.ggx-nomo-value {
+  fill: var(--ggx-title, #1F1F1F);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ggx-nomo-pts {
+  fill: var(--ggx-muted, #6B6B6B);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-nomo-drop {
+  stroke: #C0603F;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.ggx-nomo-dot {
+  fill: #C0603F;
+  stroke: var(--ggx-card, #FFFFFF);
+  stroke-width: 2;
+}
+
+.ggx-float-tip {
+  position: absolute;
+  z-index: 10;
+  max-width: 300px;
+  padding: 8px 11px;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 6px;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-family: Lato, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.ggx-nomo-readout {
+  margin: 4px 24px 6px;
+  font-family: Lato, sans-serif;
+  color: var(--ggx-text, #2C2C2C);
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-nomo-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.ggx-nomo-line b {
+  color: var(--ggx-title, #1F1F1F);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.ggx-nomo-ci,
+.ggx-nomo-total {
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 13px;
+}
+
+.ggx-nomo-cats {
+  display: flex;
+  height: 12px;
+  margin: 8px 0 4px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--ggx-faint, #EEF2F2);
+}
+
+.ggx-nomo-cat i {
+  display: block;
+  height: 100%;
+  background: #22928F;
+  border-right: 1px solid var(--ggx-card, #FFFFFF);
+}
+
+.ggx-nomo-catlabels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  font-size: 13px;
+}
+
+.ggx-nomo-reset {
+  padding: 5px 11px;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 6px;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
+  font: inherit;
+  cursor: pointer;
 }

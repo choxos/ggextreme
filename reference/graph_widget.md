@@ -7,7 +7,8 @@ A graph built by
 [`ggfunnel()`](https://choxos.github.io/ggextreme/reference/ggfunnel.md),
 [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
 [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
-[`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
+[`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md),
+[`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
 or
 [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
 prints as an interactive widget. These functions give the other forms it
@@ -42,7 +43,8 @@ knit_print(x, ...)
   [`ggfunnel()`](https://choxos.github.io/ggextreme/reference/ggfunnel.md),
   [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
   [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
-  [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
+  [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md),
+  [`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
   or
   [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md).
 

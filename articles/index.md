@@ -20,5 +20,6 @@
   plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):
 - [Swimmer
   plots](https://choxos.github.io/ggextreme/articles/swimmer-plots.md):
+- [Nomograms](https://choxos.github.io/ggextreme/articles/nomograms.md):
 - [Choropleth maps over
   time](https://choxos.github.io/ggextreme/articles/choropleth-maps.md):

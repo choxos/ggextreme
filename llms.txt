@@ -1,7 +1,7 @@
 # ggextreme
 
 Presentation quality charts built on **ggplot2** that the package itself
-does not provide. There are nine so far:
+does not provide. There are ten so far:
 
 - **Bar chart races**: an animation of a ranking that changes over time,
   of the kind used to summarize long panels in talks, teaching material
@@ -25,13 +25,16 @@ does not provide. There are nine so far:
   and proportional hazards tests.
 - **Swimmer plots**: one lane per patient, with responses, progression
   and death along it, that reorders on demand.
+- **Nomograms**: any regression model, from logistic and Cox to mixed,
+  ordinal and multinomial models, as a nomogram whose handles move, with
+  the prediction and its confidence interval computed in the page.
 - **Choropleth maps**: a map of the world, or of any ‘sf’ map, that
   steps or plays through the years, with several measures side by side
   for the same year.
 
-All nine are drawn as ordinary `ggplot` objects. Nothing is hidden
-behind a separate rendering engine, so a frame or a diagram can be
-inspected, modified or saved on its own.
+All ten are drawn as ordinary `ggplot` objects. Nothing is hidden behind
+a separate rendering engine, so a frame or a diagram can be inspected,
+modified or saved on its own.
 
 ![A bar chart race of the Quality of Care Index for orofacial clefts in
 fifteen countries, 1990 to 2019](reference/figures/README-race.gif)
@@ -338,6 +341,28 @@ ggswimmer(aml, id, futime / 30.44, events = events, group = arm,
 [![A swimmer plot of 30 patients with acute myeloid
 leukemia](reference/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
 
+## Nomograms
+
+[`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
+draws the nomogram of a fitted model and gives every predictor a handle:
+drag it, click a category or use the arrow keys, and the points, the
+total and the prediction with its 95% confidence interval follow. It
+reads linear, generalized linear, mixed (lme4, nlme, glmmTMB), Cox,
+parametric survival, ordinal and multinomial models, and models from rms
+and mgcv. Splines, polynomials and interactions work, because the points
+come from the model’s design matrix, and every class is checked against
+its own [`predict()`](https://rdrr.io/r/stats/predict.html).
+
+``` r
+
+fit <- glm(low ~ splines::ns(age, 3) + lwt + race + smoke * ht,
+           family = binomial, data = bw)
+ggnomogram(fit, outcome = "Risk of low birth weight")
+```
+
+[![A nomogram for the risk of low birth
+weight](reference/figures/README-nomogram.png)](https://choxos.github.io/ggextreme/articles/nomograms.html)
+
 ## Choropleth maps
 
 [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
@@ -488,6 +513,16 @@ tests, and swimmer plots of each patient’s course.
 - [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
   : Draw an interactive swimmer plot
 
+## Prediction models
+
+Nomograms of regression models, with a handle per predictor and the
+prediction computed in the page.
+
+- [`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
+  : Draw an interactive nomogram for a regression model
+- [`nomogram_predict()`](https://choxos.github.io/ggextreme/reference/nomogram_predict.md)
+  : Predict from a nomogram
+
 ## Maps
 
 Choropleth maps that step or play through the years, with measures side
@@ -550,5 +585,6 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
   plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):
 - [Swimmer
   plots](https://choxos.github.io/ggextreme/articles/swimmer-plots.md):
+- [Nomograms](https://choxos.github.io/ggextreme/articles/nomograms.md):
 - [Choropleth maps over
   time](https://choxos.github.io/ggextreme/articles/choropleth-maps.md):

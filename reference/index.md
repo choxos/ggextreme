@@ -65,6 +65,16 @@ tests, and swimmer plots of each patient’s course.
 - [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
   : Draw an interactive swimmer plot
 
+## Prediction models
+
+Nomograms of regression models, with a handle per predictor and the
+prediction computed in the page.
+
+- [`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
+  : Draw an interactive nomogram for a regression model
+- [`nomogram_predict()`](https://choxos.github.io/ggextreme/reference/nomogram_predict.md)
+  : Predict from a nomogram
+
 ## Maps
 
 Choropleth maps that step or play through the years, with measures side

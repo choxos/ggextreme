@@ -22,9 +22,12 @@ trim and fill and the tests for small-study effects; league tables for
 estimate. Kaplan-Meier plots read survival and the hazard ratio at any
 time under the pointer, beside a risk table and proportional hazards
 tests, and swimmer plots give each patient a lane with their responses,
-progression and death. Choropleth maps of the world or of any 'sf' map
-step or play through the years, with several measures side by side for
-the same year.
+progression and death. Nomograms of regression models, from linear and
+generalized linear models to mixed, Cox, parametric survival, ordinal
+and multinomial models, have a handle per predictor and compute each
+prediction with its confidence interval in the page. Choropleth maps of
+the world or of any 'sf' map step or play through the years, with
+several measures side by side for the same year.
 
 ## See also
 
