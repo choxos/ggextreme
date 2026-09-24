@@ -40,9 +40,20 @@ Draw the network of a network meta-analysis from arm level data.
 - [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md) :
   Draw an interactive network plot for a network meta-analysis
 
+## Meta-analysis
+
+Forest plots and league tables for fitted models.
+
+- [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md) :
+  Draw an interactive forest plot for a meta-analysis
+- [`animate_meta()`](https://choxos.github.io/ggextreme/reference/animate_meta.md)
+  : Animate a cumulative meta-analysis
+- [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
+  : Draw an interactive league table for a network meta-analysis
+
 ## Using a graph
 
-Turn a causal diagram or network plot into a widget, a ggplot or a file.
+Turn any of the interactive graphs into a widget, a ggplot or a file.
 
 - [`graph_widget()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
@@ -64,4 +75,5 @@ Turn a causal diagram or network plot into a widget, a ggplot or a file.
 
 - [`ggextreme`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
   [`ggextreme-package`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
-  : ggextreme: Bar Chart Races, Causal Diagrams and Network Plots
+  : ggextreme: Bar Chart Races, Causal Diagrams and Evidence Synthesis
+  Plots

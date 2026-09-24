@@ -1,7 +1,7 @@
 # ggextreme
 
 Presentation quality charts built on **ggplot2** that the package itself
-does not provide. There are three so far:
+does not provide. There are five so far:
 
 - **Bar chart races**: an animation of a ranking that changes over time,
   of the kind used to summarize long panels in talks, teaching material
@@ -12,8 +12,13 @@ does not provide. There are three so far:
 - **Interactive network plots**: the network of a network meta-analysis,
   with the baseline characteristics and outcomes of every arm behind
   each treatment and comparison.
+- **Interactive forest plots**: a meta-analysis with each study’s record
+  and risk of bias traffic lights, and a cumulative replay as an
+  animation.
+- **League tables**: every estimate of a network meta-analysis, with its
+  direct and indirect evidence and a ranking of the treatments.
 
-All three are drawn as ordinary `ggplot` objects. Nothing is hidden
+All five are drawn as ordinary `ggplot` objects. Nothing is hidden
 behind a separate rendering engine, so a frame or a diagram can be
 inspected, modified or saved on its own.
 
@@ -200,6 +205,57 @@ is on the package website. Nodes sit on a circle or wherever `positions`
 places them. Rows of the arm tables are named from each column’s `label`
 attribute, text that is the same across a study, such as a reference, is
 listed once per study, and DOIs and URLs are linked.
+
+## Interactive forest plots
+
+[`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md)
+draws the forest plot of a fitted meta-analysis, a metafor `rma()` fit
+or a meta object. Hovering over a study shows its effect, weight and
+chosen columns, and clicking it opens every column of its record. Risk
+of bias judgements, from RoB 2, RoB 1 or ROBINS-I, are drawn as traffic
+lights beside each study.
+
+``` r
+
+ggmeta(fit,
+       columns = c("P2Y12 inhibitor" = "p2y12", Aspirin = "aspirin"),
+       rob = c(R = "rob.R", D = "rob.D", Mi = "rob.Mi", Me = "rob.Me",
+               S = "rob.S", Overall = "rob.overall"),
+       favors = c("Favors P2Y12 inhibitor", "Favors aspirin"))
+```
+
+[![A forest plot of P2Y12 inhibitors against aspirin with risk of bias
+traffic
+lights](reference/figures/README-forest.png)](https://choxos.github.io/ggextreme/articles/forest-plots.html)
+
+`cumulative = TRUE` shows the pooled estimate after each study, and
+[`animate_meta()`](https://choxos.github.io/ggextreme/reference/animate_meta.md)
+replays it as a GIF or MP4, each trial fading in as the pooled diamond
+eases to its new value:
+
+![A cumulative meta-analysis of the BCG vaccine trials, replayed one
+trial at a time](reference/figures/README-meta-cumulative.gif)
+
+A cumulative meta-analysis of the BCG vaccine trials, replayed one trial
+at a time
+
+## League tables
+
+[`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
+draws every estimate of a netmeta fit as a grid, network estimates below
+the diagonal and direct estimates above it, following
+[`netmeta::netleague()`](https://rdrr.io/pkg/netmeta/man/netleague.html),
+with a P-score ranking beside it. Hovering over a cell shows the
+network, direct and indirect estimates and the share that comes from
+direct trials; clicking it opens the direct trials arm by arm.
+
+``` r
+
+ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable")
+```
+
+[![A league table of five treatments for plaque
+psoriasis](reference/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
 
 ## Bundled data
 

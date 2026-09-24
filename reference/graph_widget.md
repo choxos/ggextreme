@@ -1,8 +1,10 @@
 # Use an interactive graph as a widget, a ggplot or a file
 
 A graph built by
-[`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
-or [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md)
+[`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
+[`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
+[`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md) or
+[`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
 prints as an interactive widget. These functions give the other forms it
 can take. `graph_widget()` returns the 'htmlwidgets' object, for use in
 'shiny' or to save with
@@ -29,8 +31,11 @@ knit_print(x, ...)
 - x:
 
   A graph from
-  [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
-  or [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md).
+  [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
+  [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
+  [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md)
+  or
+  [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md).
 
 - file:
 

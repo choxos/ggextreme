@@ -10,3 +10,7 @@
   diagrams](https://choxos.github.io/ggextreme/articles/causal-diagrams.md):
 - [Interactive network
   plots](https://choxos.github.io/ggextreme/articles/network-plots.md):
+- [Interactive forest
+  plots](https://choxos.github.io/ggextreme/articles/forest-plots.md):
+- [League
+  tables](https://choxos.github.io/ggextreme/articles/league-tables.md):
