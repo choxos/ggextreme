@@ -9,12 +9,12 @@
 Source:
 [`DESCRIPTION`](https://github.com/choxos/ggextreme/blob/main/DESCRIPTION)
 
-Sofi-Mahmudi A (2026). *ggextreme: Bar Chart Races, Interactive Causal
-Diagrams and Other Charts*. R package version 0.1.0,
+Sofi-Mahmudi A (2026). *ggextreme: Bar Chart Races, Causal Diagrams and
+Network Plots*. R package version 0.1.0,
 <https://choxos.github.io/ggextreme/>.
 
     @Manual{,
-      title = {ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other Charts},
+      title = {ggextreme: Bar Chart Races, Causal Diagrams and Network Plots},
       author = {Ahmad Sofi-Mahmudi},
       year = {2026},
       note = {R package version 0.1.0},

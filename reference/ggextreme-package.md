@@ -1,4 +1,4 @@
-# ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other Charts
+# ggextreme: Bar Chart Races, Causal Diagrams and Network Plots
 
 Presentation quality charts built on 'ggplot2' that the package itself
 does not provide. The bar chart race interpolates values on a uniform
@@ -11,7 +11,9 @@ at the end of each bar. Causal diagrams are drawn as directed acyclic
 graphs whose nodes and arrows each carry a rationale and references,
 shown on hover and opened with clickable links on click, through
 'ggiraph'; the same diagram is also available as a static 'ggplot2'
-object.
+object. Network plots for network meta-analysis are drawn from arm level
+data, with the baseline characteristics and outcomes of every arm shown
+side by side on click.
 
 ## See also
 

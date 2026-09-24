@@ -8,3 +8,5 @@
   works](https://choxos.github.io/ggextreme/articles/how-the-animation-works.md):
 - [Interactive causal
   diagrams](https://choxos.github.io/ggextreme/articles/causal-diagrams.md):
+- [Interactive network
+  plots](https://choxos.github.io/ggextreme/articles/network-plots.md):

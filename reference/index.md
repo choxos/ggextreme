@@ -28,11 +28,22 @@ Colors, theme and the images that sit on the bars.
 
 ## Causal diagrams
 
-Draw a DAG whose nodes and arrows explain themselves, then use it as a
-widget, a ggplot or a file.
+Draw a DAG whose nodes and arrows explain themselves.
 
 - [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
   : Draw an interactive causal diagram
+
+## Network plots
+
+Draw the network of a network meta-analysis from arm level data.
+
+- [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md) :
+  Draw an interactive network plot for a network meta-analysis
+
+## Using a graph
+
+Turn a causal diagram or network plot into a widget, a ggplot or a file.
+
 - [`graph_widget()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
@@ -46,10 +57,11 @@ widget, a ggplot or a file.
 - [`cleft_dag`](https://choxos.github.io/ggextreme/reference/cleft_dag.md)
   : An illustrative causal diagram for maternal smoking and orofacial
   clefts
+- [`psoriasis_nma`](https://choxos.github.io/ggextreme/reference/psoriasis_nma.md)
+  : Arm level data from five trials in plaque psoriasis
 
 ## Package
 
 - [`ggextreme`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
   [`ggextreme-package`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
-  : ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other
-  Charts
+  : ggextreme: Bar Chart Races, Causal Diagrams and Network Plots

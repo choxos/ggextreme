@@ -1,7 +1,7 @@
 # ggextreme
 
 Presentation quality charts built on **ggplot2** that the package itself
-does not provide. There are two so far:
+does not provide. There are three so far:
 
 - **Bar chart races**: an animation of a ranking that changes over time,
   of the kind used to summarize long panels in talks, teaching material
@@ -9,10 +9,13 @@ does not provide. There are two so far:
 - **Interactive causal diagrams**: a directed acyclic graph in which
   every node and arrow carries its rationale and references, shown on
   hover and opened in full on click.
+- **Interactive network plots**: the network of a network meta-analysis,
+  with the baseline characteristics and outcomes of every arm behind
+  each treatment and comparison.
 
-Both are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
-separate rendering engine, so a frame or a diagram can be inspected,
-modified or saved on its own.
+All three are drawn as ordinary `ggplot` objects. Nothing is hidden
+behind a separate rendering engine, so a frame or a diagram can be
+inspected, modified or saved on its own.
 
 ![A bar chart race of the Quality of Care Index for orofacial clefts in
 fifteen countries, 1990 to 2019](reference/figures/README-race.gif)
@@ -168,6 +171,34 @@ columns place the boxes by hand instead. Any other column in either data
 frame appears as a labeled field. The widget embeds a web copy of Lato
 and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.
 
+## Interactive network plots
+
+[`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md) draws
+the network of a network meta-analysis from arm level data, one row per
+study arm. Nodes are treatments and lines join treatments compared
+directly in at least one study; node area follows the number of
+participants and line width the number of studies. Hovering over a node
+or line shows its arms side by side, in the manner of a trial’s baseline
+table, with the columns chosen in `hover`; clicking opens the full table
+with every other column of the data as a row.
+
+``` r
+
+net <- ggnma(psoriasis_nma, study, treatment, n = n, group = class,
+             legend_title = "Class")
+net                              # interactive widget
+graph_save(net, "network.html")  # a single file for a supplement
+```
+
+[![A network plot of five treatments for plaque
+psoriasis](reference/figures/README-network.png)](https://choxos.github.io/ggextreme/articles/network-plots.html)
+
+The [interactive
+version](https://choxos.github.io/ggextreme/articles/network-plots.html)
+is on the package website. Rows of the arm tables are named from each
+column’s `label` attribute, text that is the same across a study, such
+as a reference, is listed once per study, and DOIs and URLs are linked.
+
 ## Bundled data
 
 `clefts_qci` gives the Quality of Care Index for orofacial clefts in
@@ -180,6 +211,13 @@ summarized by principal component analysis and rescaled from 0 to 100.
 > burden and Quality of Care Index (QCI) of orofacial clefts: Global
 > burden of disease systematic analysis 1990-2019. *PLOS ONE* 20(1):
 > e0317267. <https://doi.org/10.1371/journal.pone.0317267>
+
+`psoriasis_nma` gives arm level baseline characteristics and PASI 75
+response for five randomized trials in plaque psoriasis (CLEAR, ERASURE,
+FEATURE, FIXTURE and JUNCTURE), as compiled by Phillippo (2019) and
+distributed with the ‘multinma’ package. They were analyzed in Phillippo
+et al. (2020), *Journal of the Royal Statistical Society Series A*
+183(3): 1189-1210, <https://doi.org/10.1111/rssa.12579>.
 
 `cleft_dag` is a small illustrative causal diagram for maternal smoking
 and orofacial clefts. Its rationales were written for the package as a
@@ -224,11 +262,22 @@ Colors, theme and the images that sit on the bars.
 
 ## Causal diagrams
 
-Draw a DAG whose nodes and arrows explain themselves, then use it as a
-widget, a ggplot or a file.
+Draw a DAG whose nodes and arrows explain themselves.
 
 - [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
   : Draw an interactive causal diagram
+
+## Network plots
+
+Draw the network of a network meta-analysis from arm level data.
+
+- [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md) :
+  Draw an interactive network plot for a network meta-analysis
+
+## Using a graph
+
+Turn a causal diagram or network plot into a widget, a ggplot or a file.
+
 - [`graph_widget()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
@@ -242,13 +291,14 @@ widget, a ggplot or a file.
 - [`cleft_dag`](https://choxos.github.io/ggextreme/reference/cleft_dag.md)
   : An illustrative causal diagram for maternal smoking and orofacial
   clefts
+- [`psoriasis_nma`](https://choxos.github.io/ggextreme/reference/psoriasis_nma.md)
+  : Arm level data from five trials in plaque psoriasis
 
 ## Package
 
 - [`ggextreme`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
   [`ggextreme-package`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
-  : ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other
-  Charts
+  : ggextreme: Bar Chart Races, Causal Diagrams and Network Plots
 
 # Articles
 
@@ -260,3 +310,5 @@ widget, a ggplot or a file.
   works](https://choxos.github.io/ggextreme/articles/how-the-animation-works.md):
 - [Interactive causal
   diagrams](https://choxos.github.io/ggextreme/articles/causal-diagrams.md):
+- [Interactive network
+  plots](https://choxos.github.io/ggextreme/articles/network-plots.md):

@@ -2,6 +2,7 @@
 
 A graph built by
 [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
+or [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md)
 prints as an interactive widget. These functions give the other forms it
 can take. `graph_widget()` returns the 'htmlwidgets' object, for use in
 'shiny' or to save with
@@ -28,7 +29,8 @@ knit_print(x, ...)
 - x:
 
   A graph from
-  [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md).
+  [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
+  or [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md).
 
 - file:
 

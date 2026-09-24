@@ -13,9 +13,9 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Presentation charts for ggplot2">
-<meta name="description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, and interactive causal diagrams that carry the rationale and references for every node and arrow.
+<meta name="description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, interactive causal diagrams that carry the rationale and references for every node and arrow, and network meta-analysis plots that show the data behind every treatment and comparison.
 ">
-<meta property="og:description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, and interactive causal diagrams that carry the rationale and references for every node and arrow.
+<meta property="og:description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, interactive causal diagrams that carry the rationale and references for every node and arrow, and network meta-analysis plots that show the data behind every treatment and comparison.
 ">
 </head>
 <body>
@@ -42,6 +42,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/how-the-animation-works.html">How the animation works</a></li>
     <li><a class="dropdown-item" href="articles/causal-diagrams.html">Interactive causal diagrams</a></li>
+    <li><a class="dropdown-item" href="articles/network-plots.html">Interactive network plots</a></li>
   </ul>
 </li>
       </ul>
@@ -62,14 +63,16 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are two so far:</p>
+<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are three so far:</p>
 <ul>
 <li>
 <strong>Bar chart races</strong>: an animation of a ranking that changes over time, of the kind used to summarize long panels in talks, teaching material and journal supplements.</li>
 <li>
 <strong>Interactive causal diagrams</strong>: a directed acyclic graph in which every node and arrow carries its rationale and references, shown on hover and opened in full on click.</li>
+<li>
+<strong>Interactive network plots</strong>: the network of a network meta-analysis, with the baseline characteristics and outcomes of every arm behind each treatment and comparison.</li>
 </ul>
-<p>Both are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
+<p>All three are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
 <img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
@@ -214,12 +217,25 @@
 <p>Nodes are colored by <code>role</code>, with fixed colors for exposures, outcomes, confounders, mediators, colliders, instruments and unobserved variables. The layout is layered so that every arrow points the same way, and an arrow that skips a layer bends around the boxes in between; <code>x</code> and <code>y</code> columns place the boxes by hand instead. Any other column in either data frame appears as a labeled field. The widget embeds a web copy of Lato and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.</p>
 </div>
 <div class="section level2">
+<h2 id="interactive-network-plots">Interactive network plots<a class="anchor" aria-label="anchor" href="#interactive-network-plots"></a>
+</h2>
+<p><code><a href="reference/ggnma.html">ggnma()</a></code> draws the network of a network meta-analysis from arm level data, one row per study arm. Nodes are treatments and lines join treatments compared directly in at least one study; node area follows the number of participants and line width the number of studies. Hovering over a node or line shows its arms side by side, in the manner of a trial’s baseline table, with the columns chosen in <code>hover</code>; clicking opens the full table with every other column of the data as a row.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggnma.html">ggnma</a></span><span class="op">(</span><span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, n <span class="op">=</span> <span class="va">n</span>, group <span class="op">=</span> <span class="va">class</span>,</span>
+<span>             legend_title <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span></span>
+<span><span class="va">net</span>                              <span class="co"># interactive widget</span></span>
+<span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"network.html"</span><span class="op">)</span>  <span class="co"># a single file for a supplement</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/network-plots.html"><img src="reference/figures/README-network.png" alt="A network plot of five treatments for plaque psoriasis"></a></p>
+<p>The <a href="https://choxos.github.io/ggextreme/articles/network-plots.html">interactive version</a> is on the package website. Rows of the arm tables are named from each column’s <code>label</code> attribute, text that is the same across a study, such as a reference, is listed once per study, and DOIs and URLs are linked.</p>
+</div>
+<div class="section level2">
 <h2 id="bundled-data">Bundled data<a class="anchor" aria-label="anchor" href="#bundled-data"></a>
 </h2>
 <p><code>clefts_qci</code> gives the Quality of Care Index for orofacial clefts in fifteen countries from 1990 to 2019. The index is a composite of four secondary indices derived from Global Burden of Disease estimates, summarized by principal component analysis and rescaled from 0 to 100.</p>
 <blockquote>
 <p>Sofi-Mahmudi A, Shamsoddin E, Khademioore S, Khazaei Y, Vahdati A, Tovani-Palone MR (2025). Global, regional, and national survey on burden and Quality of Care Index (QCI) of orofacial clefts: Global burden of disease systematic analysis 1990-2019. <em>PLOS ONE</em> 20(1): e0317267. <a href="https://doi.org/10.1371/journal.pone.0317267" class="external-link uri">https://doi.org/10.1371/journal.pone.0317267</a></p>
 </blockquote>
+<p><code>psoriasis_nma</code> gives arm level baseline characteristics and PASI 75 response for five randomized trials in plaque psoriasis (CLEAR, ERASURE, FEATURE, FIXTURE and JUNCTURE), as compiled by Phillippo (2019) and distributed with the ‘multinma’ package. They were analyzed in Phillippo et al. (2020), <em>Journal of the Royal Statistical Society Series A</em> 183(3): 1189-1210, <a href="https://doi.org/10.1111/rssa.12579" class="external-link uri">https://doi.org/10.1111/rssa.12579</a>.</p>
 <p><code>cleft_dag</code> is a small illustrative causal diagram for maternal smoking and orofacial clefts. Its rationales were written for the package as a teaching example, and every reference it cites was checked against PubMed.</p>
 </div>
 <div class="section level2">
