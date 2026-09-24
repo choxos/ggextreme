@@ -15,8 +15,33 @@ graph_ink <- list(
   edge = "#8A8A8A",
   hover = "#1F1F1F",
   plain_fill = "#FFFFFF",
-  plain_border = "#9A9A9A"
+  plain_border = "#9A9A9A",
+  faint = "#EEF2F2",
+  ghost = "#D6DCDC",
+  watermark = "#E4E9E9",
+  # White on a colored shape, which stays white on a dark page.
+  on_color = "#FEFEFE"
 )
+
+# The dark counterpart of every neutral in graph_ink. Colors carry meaning
+# and keep their hue, and pale fills are drawn as a color with transparency,
+# so they darken with the page on their own. inst/www/graph.css swaps the
+# same colors in a widget on a dark page; graph_plot() swaps them in the
+# plot for a static dark copy.
+dark_ink <- c(
+  "#FFFFFF" = "#161C1C",
+  "#1F1F1F" = "#EEF2F2",
+  "#2C2C2C" = "#DDE4E4",
+  "#6B6B6B" = "#9AA6A6",
+  "#8A8A8A" = "#7D8A8A",
+  "#9A9A9A" = "#637070",
+  "#EEF2F2" = "#232C2C",
+  "#D6DCDC" = "#3A4747",
+  "#E4E9E9" = "#253030"
+)
+
+# Hover outlines, as a CSS variable the dark theme redefines.
+hover_ink <- "var(--ggx-hover, #1F1F1F)"
 
 graph_dims <- list(
   margin = 18,
@@ -54,7 +79,8 @@ graph_dims <- list(
 
 # Hover card, in the widget's own tooltip container.
 tip_css <- paste0(
-  "background:#FFFFFF;color:#2C2C2C;border:1px solid #DADADA;",
+  "background:var(--ggx-card, #FFFFFF);color:var(--ggx-text, #2C2C2C);",
+  "border:1px solid var(--ggx-rule, #DADADA);",
   "border-radius:6px;padding:8px 11px;font-family:Lato,sans-serif;",
   "font-size:13px;line-height:1.4;",
   "box-shadow:0 2px 8px rgba(0,0,0,0.12);"
@@ -272,13 +298,6 @@ label_boxes <- function(labels, dims, family) {
   )
 }
 
-# Lighter version of a color for a box fill.
-tint <- function(color, amount = 0.16) {
-  rgb <- grDevices::col2rgb(color) / 255
-  mixed <- 1 - (1 - rgb) * amount
-  grDevices::rgb(mixed[1, ], mixed[2, ], mixed[3, ])
-}
-
 # Smooth a route through its bend points with a clamped B-spline, so it
 # leaves the first point and reaches the last one exactly.
 smooth_route <- function(pts, n = 80) {
@@ -397,6 +416,7 @@ graph_frame <- function(canvas, family) {
     scale_fill_identity(),
     scale_colour_identity(),
     scale_linetype_identity(),
+    scale_alpha_identity(),
     coord_cartesian(xlim = c(0, canvas$width), ylim = c(0, canvas$height),
                     expand = FALSE, clip = "off"),
     theme_race(page = graph_ink$page)
@@ -430,11 +450,23 @@ graph_dependency <- function() {
 #' `graph_save()` does. The widget embeds a web copy of Lato, so it looks the
 #' same on machines without the font.
 #'
+#' On a dark page the widget switches to a dark palette of its own: the
+#' background, text, lines and neutral fills take their dark counterparts,
+#' colors that carry meaning keep their hue, and the hover cards and panels
+#' follow. It also follows a page that switches theme while it is open.
+#'
 #' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggleague()]
 #'   or [ggkm()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.
+#' @param theme For the widget, `"auto"` follows the page it sits on: a dark
+#'   'pkgdown' or 'bslib' page (`data-bs-theme="dark"`), a dark Quarto theme,
+#'   a page marked `data-theme="dark"`, or, for a widget saved as its own
+#'   page, the viewer's system setting. `"light"` and `"dark"` fix it. For
+#'   [graph_plot()] and a PNG from [graph_save()], `"light"` or `"dark"`
+#'   picks the colors of the static copy; a saved `.html` defaults to
+#'   `"auto"` and a `.png` to `"light"`.
 #' @param ... Passed to [knitr::knit_print()].
 #'
 #' @return `graph_widget()` returns an htmlwidget and `graph_plot()` a
@@ -449,16 +481,17 @@ graph_dependency <- function() {
 #' \donttest{
 #' graph_save(dag, tempfile(fileext = ".png"))
 #' }
-graph_widget <- function(x) {
+graph_widget <- function(x, theme = c("auto", "light", "dark")) {
   stopifnot(inherits(x, "ggx_graph"))
+  theme <- match.arg(theme)
   hover <- ggiraph::girafe_css(
     css = "cursor:pointer;",
     # Node labels share their box's id, so they would otherwise pick up the
     # box's fill and border on hover.
-    text = paste0("fill:", graph_ink$text, " !important;stroke:none !important;"),
-    line = paste0("stroke:", graph_ink$hover, ";"),
+    text = "fill:var(--ggx-text, #2C2C2C) !important;stroke:none !important;",
+    line = paste0("stroke:", hover_ink, ";"),
     # Shapes keep their own fill and gain an outline.
-    area = paste0("stroke:", graph_ink$hover, ";stroke-width:1.5px;")
+    area = paste0("stroke:", hover_ink, ";stroke-width:1.5px;")
   )
   w <- ggiraph::girafe(
     ggobj = x$plot,
@@ -479,31 +512,62 @@ graph_widget <- function(x) {
   # follow, so the widget never crops the diagram or leaves a gap under it.
   w$width <- "100%"
   w$height <- paste0(round(x$height * 96), "px")
-  htmlwidgets::onRender(w, paste0("function(el) { ggextremeFit(el); ",
+  htmlwidgets::onRender(w, paste0("function(el) { ggextremeFit(el, ", js_string(theme), "); ",
                                   if (!is.null(x$on_render)) x$on_render, " }"))
 }
 
 #' @rdname graph_widget
 #' @export
-graph_plot <- function(x) {
+graph_plot <- function(x, theme = c("light", "dark")) {
   stopifnot(inherits(x, "ggx_graph"))
-  x$plot
+  theme <- match.arg(theme)
+  if (theme == "light") x$plot else recolor_plot(x$plot, dark_ink)
+}
+
+# A copy of a plot with its colors swapped by `map`, for a static dark copy.
+# Layers are ggproto objects, so they are cloned rather than changed.
+recolor_plot <- function(p, map) {
+  swap <- function(v) {
+    if (!is.character(v)) return(v)
+    key <- toupper(substr(v, 1, 7))
+    hit <- !is.na(key) & key %in% names(map)
+    v[hit] <- paste0(map[key[hit]], substring(v[hit], 8))
+    v
+  }
+  fields <- c("colour", "fill", "border")
+  p$layers <- lapply(p$layers, function(l) {
+    out <- ggplot2::ggproto(NULL, l)
+    if (is.data.frame(l$data)) {
+      d <- l$data
+      for (f in intersect(fields, names(d))) d[[f]] <- swap(d[[f]])
+      out$data <- d
+    }
+    params <- l$aes_params
+    for (f in intersect(fields, names(params))) params[[f]] <- swap(params[[f]])
+    out$aes_params <- params
+    out
+  })
+  page <- map[[graph_ink$page]]
+  p + theme(plot.background = element_rect(fill = page, colour = NA),
+            panel.background = element_rect(fill = page, colour = NA))
 }
 
 #' @rdname graph_widget
 #' @export
-graph_save <- function(x, file, res = 300) {
+graph_save <- function(x, file, res = 300, theme = NULL) {
   stopifnot(inherits(x, "ggx_graph"))
   ext <- tolower(tools::file_ext(file))
   if (ext == "html") {
     file <- file.path(normalizePath(dirname(file)), basename(file))
-    htmlwidgets::saveWidget(graph_widget(x), file, selfcontained = TRUE,
+    htmlwidgets::saveWidget(graph_widget(x, if (is.null(theme)) "auto" else theme),
+                            file, selfcontained = TRUE,
                             title = if (is.null(x$title)) "Graph" else x$title)
   } else if (ext == "png") {
-    ragg::agg_png(file, width = x$width, height = x$height, units = "in",
-                  res = res, background = graph_ink$page)
+    theme <- match.arg(if (is.null(theme)) "light" else theme, c("light", "dark"))
+    ragg::agg_png(file, width = x$width, height = x$height, units = "in", res = res,
+                  background = if (theme == "dark") dark_ink[[graph_ink$page]] else graph_ink$page)
     on.exit(grDevices::dev.off(), add = TRUE)
-    print(x$plot)
+    print(graph_plot(x, theme))
   } else {
     rlang::abort("`file` must end in `.html` or `.png`.")
   }

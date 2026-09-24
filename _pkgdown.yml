@@ -2,6 +2,7 @@ url: https://choxos.github.io/ggextreme/
 
 template:
   bootstrap: 5
+  light-switch: true
   bslib:
     primary: "#22928F"
     base_font: {google: "Lato"}

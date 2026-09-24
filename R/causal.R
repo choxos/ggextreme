@@ -132,8 +132,10 @@ ggcausal <- function(edges, nodes = NULL,
   edge_click <- pin_js(edge_ids, panel_html(edge_title, edge_sub, edge_body,
                                             edge_fields, edge_refs))
 
-  fill <- ifelse(is.na(roles$role), graph_ink$plain_fill,
-                 tint(roles$color_of, 0.16))
+  # Role fills are the role's color with transparency, so they sit right on
+  # a light or a dark page.
+  fill <- ifelse(is.na(roles$role), graph_ink$plain_fill, roles$color_of)
+  fill_alpha <- ifelse(is.na(roles$role), 1, 0.16)
   border <- ifelse(is.na(roles$role), graph_ink$plain_border, roles$color_of)
   dashed <- tolower(trimws(roles$role)) %in% c("unobserved", "latent")
 
@@ -145,10 +147,10 @@ ggcausal <- function(edges, nodes = NULL,
                           dims$radius, n = 6)
     data.frame(
       x = px(shape$x), y = py(shape$y), id = node_ids[i],
-      fill = fill[i], border = border[i],
+      fill = fill[i], alpha = fill_alpha[i], border = border[i],
       linetype = if (dashed[i]) "22" else "solid",
       tooltip = node_tip[i], onclick = node_click[i],
-      hover = sprintf("fill:%s;stroke:%s;stroke-width:2px;", fill[i], border[i]),
+      hover = sprintf("stroke:%s;stroke-width:2px;", border[i]),
       stringsAsFactors = FALSE
     )
   }))
@@ -182,7 +184,7 @@ ggcausal <- function(edges, nodes = NULL,
     ggiraph::geom_polygon_interactive(
       data = node_df,
       aes(x = .data$x, y = .data$y, group = .data$id, fill = .data$fill,
-          colour = .data$border, linetype = .data$linetype,
+          alpha = .data$alpha, colour = .data$border, linetype = .data$linetype,
           data_id = .data$id, tooltip = .data$tooltip,
           onclick = .data$onclick, hover_css = .data$hover),
       linewidth = 0.9 / .pt

@@ -1,5 +1,8 @@
-/* Styles for the interactive graphs: the web copy of Lato, the hover card
-   and the details panel that opens on click. */
+/* Styles for the interactive graphs: the web copy of Lato, the hover card,
+   the panel that opens on click, the collapsed sections under a plot, and
+   the dark theme. Colors are variables with the light values as fallbacks;
+   graph.js marks a widget, its panels and the page's hover cards with
+   .ggx-dark or .ggx-dark-tips when the page is dark. */
 
 @font-face {
   font-family: 'Lato';
@@ -15,14 +18,49 @@
   src: url('lato-bold.woff2') format('woff2');
 }
 
+/* The dark palette. The same neutrals are listed in dark_ink in R/graph.R. */
+.ggx-dark,
+.ggx-dark-tips {
+  --ggx-page: #161C1C;
+  --ggx-card: #1D2424;
+  --ggx-title: #EEF2F2;
+  --ggx-text: #DDE4E4;
+  --ggx-muted: #9AA6A6;
+  --ggx-rule: #334040;
+  --ggx-faint: #232C2C;
+  --ggx-line: #2A3434;
+  --ggx-hover: #EEF2F2;
+  --ggx-link: #4CC2BE;
+}
+
+/* In a dark widget the neutrals the plot was drawn with take their dark
+   counterparts. :where() keeps these rules weaker than the hover styles. */
+:where(.ggx-dark svg) [fill="#FFFFFF"] { fill: #161C1C; }
+:where(.ggx-dark svg) [fill="#1F1F1F"] { fill: #EEF2F2; }
+:where(.ggx-dark svg) [fill="#2C2C2C"] { fill: #DDE4E4; }
+:where(.ggx-dark svg) [fill="#6B6B6B"] { fill: #9AA6A6; }
+:where(.ggx-dark svg) [fill="#8A8A8A"] { fill: #7D8A8A; }
+:where(.ggx-dark svg) [fill="#9A9A9A"] { fill: #637070; }
+:where(.ggx-dark svg) [fill="#EEF2F2"] { fill: #232C2C; }
+:where(.ggx-dark svg) [fill="#D6DCDC"] { fill: #3A4747; }
+:where(.ggx-dark svg) [fill="#E4E9E9"] { fill: #253030; }
+:where(.ggx-dark svg) [stroke="#FFFFFF"] { stroke: #161C1C; }
+:where(.ggx-dark svg) [stroke="#1F1F1F"] { stroke: #EEF2F2; }
+:where(.ggx-dark svg) [stroke="#2C2C2C"] { stroke: #DDE4E4; }
+:where(.ggx-dark svg) [stroke="#6B6B6B"] { stroke: #9AA6A6; }
+:where(.ggx-dark svg) [stroke="#8A8A8A"] { stroke: #7D8A8A; }
+:where(.ggx-dark svg) [stroke="#9A9A9A"] { stroke: #637070; }
+:where(.ggx-dark svg) [stroke="#EEF2F2"] { stroke: #232C2C; }
+:where(.ggx-dark svg) [stroke="#D6DCDC"] { stroke: #3A4747; }
+
 .ggx-tip-title {
   font-weight: 700;
-  color: #1F1F1F;
+  color: var(--ggx-title, #1F1F1F);
 }
 
 .ggx-tip-sub,
 .ggx-panel .ggx-sub {
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
   font-size: 0.9em;
 }
 
@@ -33,23 +71,61 @@
 
 .ggx-tip-hint {
   margin-top: 6px;
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
   font-size: 0.85em;
 }
 
-.ggx-panel {
+.ggx-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-tip-row span:first-child {
+  color: var(--ggx-muted, #6B6B6B);
+}
+
+.ggx-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+
+.ggx-share {
+  height: 6px;
+  margin: 5px 0 2px;
+  border-radius: 3px;
+  background: var(--ggx-faint, #EEF2F2);
+  overflow: hidden;
+}
+
+.ggx-share i {
+  display: block;
+  height: 100%;
+  background: #22928F;
+}
+
+/* The click panel and the collapsed sections share one card style. */
+.ggx-panel,
+.ggx-details {
   position: relative;
   box-sizing: border-box;
   margin: 12px 0 4px;
-  padding: 14px 40px 14px 18px;
-  border: 1px solid #DADADA;
+  border: 1px solid var(--ggx-rule, #DADADA);
   border-radius: 6px;
-  background: #FFFFFF;
-  color: #2C2C2C;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
   font-family: Lato, sans-serif;
   font-size: 14px;
   line-height: 1.45;
   text-align: left;
+}
+
+.ggx-panel {
+  padding: 14px 40px 14px 18px;
 }
 
 .ggx-panel[hidden] {
@@ -58,7 +134,7 @@
 
 .ggx-panel .ggx-title {
   margin: 0;
-  color: #1F1F1F;
+  color: var(--ggx-title, #1F1F1F);
   font-size: 16px;
   font-weight: 700;
 }
@@ -67,7 +143,8 @@
   margin: 0 0 8px;
 }
 
-.ggx-panel p {
+.ggx-panel p,
+.ggx-details p {
   margin: 0 0 8px;
 }
 
@@ -79,7 +156,7 @@
 }
 
 .ggx-panel dt {
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
 }
 
 .ggx-panel dd {
@@ -88,7 +165,7 @@
 
 .ggx-panel .ggx-refs-head {
   margin: 10px 0 2px;
-  color: #1F1F1F;
+  color: var(--ggx-title, #1F1F1F);
   font-weight: 700;
 }
 
@@ -101,8 +178,9 @@
   margin: 2px 0;
 }
 
-.ggx-panel a {
-  color: #1C7C79;
+.ggx-panel a,
+.ggx-details a {
+  color: var(--ggx-link, #1C7C79);
   overflow-wrap: anywhere;
 }
 
@@ -113,7 +191,7 @@
   padding: 2px 6px;
   border: 0;
   background: none;
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
@@ -121,17 +199,91 @@
 
 .ggx-close:hover,
 .ggx-close:focus-visible {
-  color: #1F1F1F;
+  color: var(--ggx-title, #1F1F1F);
 }
 
-/* Tables and lists in the panel reset the borders, margins and bullets that
-   document stylesheets put on every table and list. */
-.ggx-panel .ggx-table {
+/* A section under the plot that starts collapsed. */
+.ggx-details > summary {
+  padding: 11px 18px;
+  color: var(--ggx-title, #1F1F1F);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ggx-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ggx-details > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 10px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--ggx-muted, #6B6B6B);
+  transition: transform 0.15s ease;
+  vertical-align: 1px;
+}
+
+.ggx-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.ggx-details > summary:focus-visible {
+  outline: 2px solid #22928F;
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+.ggx-details > .ggx-details-body {
+  padding: 0 18px 14px;
+}
+
+.ggx-details .ggx-notes-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.ggx-details .ggx-notes-list dt {
+  color: var(--ggx-title, #1F1F1F);
+  font-weight: 700;
+}
+
+.ggx-details .ggx-notes-list dd {
+  margin: 0;
+  color: var(--ggx-muted, #6B6B6B);
+}
+
+@media (max-width: 560px) {
+  .ggx-details .ggx-notes-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ggx-details > summary::before {
+    transition: none;
+  }
+}
+
+/* Tables in the panel, the collapsed sections and the hover card reset the
+   borders, margins and bullets that document stylesheets put on every
+   table and list. */
+.ggx-panel .ggx-table,
+.ggx-details .ggx-table,
+.ggx-tip .ggx-table {
   margin: 4px 0 0;
   overflow-x: auto;
 }
 
 .ggx-panel .ggx-table table,
+.ggx-details .ggx-table table,
 .ggx-tip .ggx-table table {
   margin: 0;
   border: 0;
@@ -142,43 +294,59 @@
 }
 
 .ggx-panel .ggx-table thead,
-.ggx-tip .ggx-table thead,
 .ggx-panel .ggx-table tr,
+.ggx-details .ggx-table thead,
+.ggx-details .ggx-table tr,
+.ggx-tip .ggx-table thead,
 .ggx-tip .ggx-table tr {
   background: none;
 }
 
 .ggx-panel .ggx-table th,
-.ggx-tip .ggx-table th,
 .ggx-panel .ggx-table td,
+.ggx-details .ggx-table th,
+.ggx-details .ggx-table td,
+.ggx-tip .ggx-table th,
 .ggx-tip .ggx-table td {
   padding: 4px 10px;
   border: 0;
-  border-bottom: 1px solid #ECECEC;
+  border-bottom: 1px solid var(--ggx-line, #ECECEC);
+  color: inherit;
   line-height: 1.35;
   text-align: left;
   vertical-align: top;
 }
 
 .ggx-panel .ggx-table thead th,
+.ggx-details .ggx-table thead th,
 .ggx-tip .ggx-table thead th {
-  border-bottom: 1px solid #D0D0D0;
-  color: #1F1F1F;
+  border-bottom: 1px solid var(--ggx-rule, #D0D0D0);
+  color: var(--ggx-title, #1F1F1F);
   font-weight: 700;
   white-space: nowrap;
 }
 
 .ggx-panel .ggx-table thead .ggx-arm,
 .ggx-tip .ggx-table thead .ggx-arm {
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
   font-weight: 400;
 }
 
 .ggx-panel .ggx-table tbody th,
 .ggx-tip .ggx-table tbody th {
-  color: #6B6B6B;
+  color: var(--ggx-muted, #6B6B6B);
   font-weight: 400;
   white-space: nowrap;
+}
+
+.ggx-details .ggx-table tbody th {
+  color: var(--ggx-title, #1F1F1F);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.ggx-details .ggx-table td {
+  font-variant-numeric: tabular-nums;
 }
 
 .ggx-panel .ggx-table .ggx-num td,
@@ -197,7 +365,6 @@
   list-style: none;
 }
 
-
 /* The hover card's table is a compact version of the panel's. */
 .ggx-tip .ggx-table table {
   font-size: 12px;
@@ -213,41 +380,14 @@
   white-space: normal;
 }
 
-.ggx-tip-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  font-variant-numeric: tabular-nums;
-}
-
-.ggx-tip-row span:first-child {
-  color: #6B6B6B;
-}
-
-.ggx-share {
-  height: 6px;
-  margin: 5px 0 2px;
-  border-radius: 3px;
-  background: #EEF2F2;
-  overflow: hidden;
-}
-
-.ggx-share i {
-  display: block;
-  height: 100%;
-  background: #22928F;
-}
-
 /* Text without its own handlers lets the pointer through to the shape
    under it, so a label never interrupts a hover. */
 svg.ggiraph-svg text:not([data-id]) {
   pointer-events: none;
 }
 
-.ggx-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 6px;
-  border-radius: 50%;
+/* Inside a widget, a section or panel lines up with the plot's own margin. */
+.ggx-graph > .ggx-details,
+.ggx-graph > .ggx-panel {
+  margin: 4px 24px 8px;
 }

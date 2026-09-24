@@ -577,7 +577,7 @@ meta_draw <- function(lay, step = NULL, pooled = NULL, time_label = NULL) {
   X <- lay$X
   r <- lay$rows
   k <- length(r$y)
-  ghost <- "#D6DCDC"
+  ghost <- graph_ink$ghost
   faded <- if (is.null(step)) rep(FALSE, k) else seq_len(k) > step
   ink <- ifelse(faded, ghost, graph_ink$text)
   muted <- ifelse(faded, ghost, graph_ink$muted)
@@ -688,7 +688,7 @@ meta_draw <- function(lay, step = NULL, pooled = NULL, time_label = NULL) {
           hover = sprintf("fill:%s;stroke:none;", fill), stringsAsFactors = FALSE
         ))
         symbols <- rbind(symbols, texts(info$symbol, lay$rob_x[j], r$y[i] + 0.4,
-                                        dims$small_pt, "#FFFFFF", hjust = 0.5,
+                                        dims$small_pt, graph_ink$on_color, hjust = 0.5,
                                         face = "bold"))
       }
     }
@@ -758,7 +758,7 @@ meta_draw <- function(lay, step = NULL, pooled = NULL, time_label = NULL) {
     )
   )
   big <- if (!is.null(time_label)) {
-    texts(time_label, lay$plot_x1 - 4, lay$row_top + 34, 54, "#E6EAEA", hjust = 1,
+    texts(time_label, lay$plot_x1 - 4, lay$row_top + 34, 54, graph_ink$watermark, hjust = 1,
           face = "bold")
   }
 

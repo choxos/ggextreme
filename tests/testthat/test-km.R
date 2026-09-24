@@ -22,8 +22,11 @@ test_that("every time slice carries a readout with the hazard ratio", {
   expect_equal(nrow(slices), km_dims$slices)
   expect_true(all(grepl("^t\\d+_\\d+$", slices$data_id)))
   expect_match(slices$tooltip[40], "Hazard ratio vs Male", fixed = TRUE)
-  expect_match(slices$onclick[40], "Group by log time model", fixed = TRUE)
+  expect_match(slices$onclick[40], "Smoothed Schoenfeld residuals", fixed = TRUE)
+  # The interaction models are only fitted for the tests.
+  expect_false(grepl("Group by log time model", slices$onclick[40], fixed = TRUE))
   expect_equal(km$on_render, "ggextremeKm(el);")
+  expect_null(km$ph)
   expect_equal(km$hover_inv, "")
   expect_s3_class(graph_widget(km), "girafe")
 })
@@ -38,10 +41,24 @@ test_that("the risk table matches survfit", {
   expect_equal(sort(unique(sub("_\\d+$", "", cells$data_id))), paste0("r", 1:4))
 })
 
+test_that("the proportional hazards tests go in a collapsed section", {
+  skip_if_not_installed("survival")
+  km <- km_fit(ph_tests = TRUE)
+  expect_match(km$on_render, "ggextremeDetails(el, ", fixed = TRUE)
+  expect_match(km$on_render, "Hazard ratios and proportional hazards", fixed = TRUE)
+  expect_match(km$on_render, "Grambsch and Therneau", fixed = TRUE)
+  slices <- layer_of(km$plot, "GeomInteractiveRect")[[1]]
+  expect_match(slices$onclick[40], "Group by log time model", fixed = TRUE)
+  # The table is part of the widget, not the plot.
+  labels <- layer_of(km$plot, "GeomText")
+  expect_false(any(vapply(labels, function(d) any(d$label == "Schoenfeld residuals"),
+                          logical(1))))
+})
+
 test_that("the proportional hazards table matches survival's own tests", {
   skip_if_not_installed("survival")
   d <- lung_data()
-  km <- km_fit()
+  km <- km_fit(ph_tests = TRUE)
   ph <- km$ph
   cox <- survival::coxph(survival::Surv(time, status) ~ sex, data = d)
   zph <- survival::cox.zph(cox, transform = "km", terms = FALSE)
@@ -97,7 +114,7 @@ test_that("more than two groups compare each with the reference", {
   d <- lung_data()
   d <- d[!is.na(d$ph) & d$ph %in% c("0", "1", "2"), ]
   d$ph <- droplevels(d$ph)
-  km <- ggkm(survival::Surv(time, status) ~ ph, data = d)
+  km <- ggkm(survival::Surv(time, status) ~ ph, data = d, ph_tests = TRUE)
   expect_equal(sum(km$ph$test == "Cox model"), 2)
   expect_equal(km$ph$comparison[km$ph$test == "Schoenfeld residuals"],
                c("1 vs 0", "2 vs 0", "Global"))

@@ -18,11 +18,13 @@
 #' between the group and log time or time, and `"constant"` shows the Cox
 #' estimate at every time.
 #'
-#' The proportional hazards table gives the Cox hazard ratios, the log-rank
-#' test, the Grambsch and Therneau test for each comparison and overall,
-#' and the group by time and group by log time interactions with their joint
-#' Wald tests. Hover over a row for what the test asks, and click it for the
-#' model behind it.
+#' With `ph_tests = TRUE`, a section under the plot, collapsed until the
+#' reader opens it, gives the Cox hazard ratios, the log-rank test, the
+#' Grambsch and Therneau test for each comparison and overall, and the group
+#' by time and group by log time interactions with their joint Wald tests,
+#' with a note on what each test asks. The table is also returned as the
+#' field `ph`. It belongs to the widget, so static copies from
+#' [graph_plot()] and [graph_save()] leave it out.
 #'
 #' @param formula A formula of the form `Surv(time, status) ~ group`, with
 #'   right censored survival times and a single grouping variable.
@@ -31,9 +33,10 @@
 #'   the cumulative probability of the event.
 #' @param hr_time How the hazard ratio at each time is estimated:
 #'   `"schoenfeld"`, `"log"`, `"linear"`, `"constant"` or `"none"`.
-#' @param ph_tests Show the table of hazard ratios and proportional hazards
-#'   tests. The time interaction models grow with the number of events, so
-#'   they are skipped with a message for very large data.
+#' @param ph_tests Add the hazard ratios and proportional hazards tests, in a
+#'   collapsed section under the plot. The time interaction models grow with
+#'   the number of events, so they are skipped with a message for very large
+#'   data.
 #' @param risk_table Show the numbers at risk.
 #' @param conf_int Shade the confidence bands.
 #' @param breaks Times for the axis ticks and the risk table. Defaults to
@@ -52,8 +55,8 @@
 #' @return An object of class `ggkm`, which prints as an interactive widget.
 #'   Use [graph_widget()], [graph_plot()] or [graph_save()] for the widget, a
 #'   static ggplot or a file, and [animate_km()] to draw the curves over
-#'   follow-up as an animation. The field `ph` holds the proportional hazards
-#'   table as a data frame.
+#'   follow-up as an animation. With `ph_tests = TRUE`, the field `ph` holds
+#'   the proportional hazards table as a data frame.
 #' @export
 #'
 #' @examples
@@ -61,14 +64,14 @@
 #'   colon <- subset(survival::colon, etype == 2)
 #'   colon$years <- colon$time / 365.25
 #'   km <- ggkm(survival::Surv(years, status) ~ rx, data = colon,
-#'              xlab = "Years since randomization")
+#'              ph_tests = TRUE, xlab = "Years since randomization")
 #'   km
 #'   km$ph
 #' }
 ggkm <- function(formula, data,
                  type = c("survival", "risk"),
                  hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
-                 ph_tests = TRUE,
+                 ph_tests = FALSE,
                  risk_table = TRUE,
                  conf_int = TRUE,
                  breaks = NULL,
@@ -88,10 +91,16 @@ ggkm <- function(formula, data,
   if (is.null(ylab)) ylab <- if (type == "survival") "Survival" else "Cumulative incidence"
   lay <- km_layout(input, type, hr_time, ph_tests, risk_table, conf_int, palette,
                    xlab, ylab, legend, legend_title, title, caption, family)
+  on_render <- "ggextremeKm(el);"
+  if (!is.null(lay$ph_html)) {
+    on_render <- paste0(on_render, " ggextremeDetails(el, ",
+                        js_string("Hazard ratios and proportional hazards"), ", ",
+                        js_string(lay$ph_html), ");")
+  }
   structure(
     list(plot = km_draw(lay), width = lay$page$width / 72,
          height = lay$page$height / 72, title = title,
-         on_render = "ggextremeKm(el);", hover_inv = "", layout = lay,
+         on_render = on_render, hover_inv = "", layout = lay,
          ph = lay$ph_table),
     class = c("ggkm", "ggx_graph")
   )
@@ -122,7 +131,7 @@ ggkm <- function(formula, data,
 #' if (requireNamespace("survival", quietly = TRUE)) {
 #'   colon <- subset(survival::colon, etype == 2)
 #'   km <- ggkm(survival::Surv(time / 365.25, status) ~ rx, data = colon,
-#'              ph_tests = FALSE, xlab = "Years")
+#'              xlab = "Years")
 #'   animate_km(km, tempfile(fileext = ".gif"), duration = 2, fps = 8,
 #'              cores = 1)
 #' }
@@ -436,15 +445,17 @@ km_layout <- function(input, type, hr_time, ph_tests, risk_table, conf_int,
            '<div class="ggx-tip-hint">Click for the full readout at this time.</div>')
   }, character(1))
   slice_click <- pin_js(slice_ids, vapply(seq_len(n), function(i) {
-    all_hr <- lapply(names(hr_methods), function(m) {
+    fitted <- names(hr_methods)[c(!is.null(input$zph), !is.null(input$logt),
+                                   !is.null(input$lin), TRUE)]
+    all_hr <- lapply(fitted, function(m) {
       h <- km_hr_curves(input, mids[i], m)
       vapply(h, function(o) {
         if (is.na(o$est)) "" else sprintf("%s (%s, %s)", fmt2(exp(o$est)),
                                           fmt2(exp(o$est - z * o$se)), fmt2(exp(o$est + z * o$se)))
       }, character(1))
     })
-    hr_rows <- paste0(vapply(seq_along(hr_methods), function(m) {
-      paste0("<tr><th scope=\"row\">", esc(capitalize(hr_methods[[m]])), "</th>",
+    hr_rows <- paste0(vapply(seq_along(fitted), function(m) {
+      paste0("<tr><th scope=\"row\">", esc(capitalize(hr_methods[[fitted[m]]])), "</th>",
              paste0("<td>", esc(all_hr[[m]]), "</td>", collapse = ""), "</tr>")
     }, character(1)), collapse = "")
     arm_rows <- paste0(vapply(seq_len(k), function(a) {
@@ -514,52 +525,34 @@ km_layout <- function(input, type, hr_time, ph_tests, risk_table, conf_int,
       i <- bstrata == arms[a]
       list(n = at_breaks$n.risk[i], events = cumsum(at_breaks$n.event[i]))
     }))
-    y <- max(rows_y) + 24
+    y <- max(rows_y) + 8
   }
 
-  # Proportional hazards table.
-  ph <- NULL
+  # Hazard ratios and proportional hazards tests, as an HTML section the
+  # widget adds under the plot, collapsed.
   ph_table <- NULL
+  ph_html <- NULL
   if (ph_tests) {
     ph_table <- km_ph_table(input)
-    cols <- list(
-      test = ph_table$test, comparison = ph_table$comparison,
-      estimate = ph_table$estimate, statistic = ph_table$statistic,
-      p = fmt_p(ph_table$p)
+    body <- paste0(
+      "<tr><th scope=\"row\">", esc(ph_table$test), "</th><td>", esc(ph_table$comparison),
+      "</td><td>", esc(ph_table$estimate), "</td><td>", esc(ph_table$statistic),
+      "</td><td>", fmt_p(ph_table$p), "</td></tr>", collapse = ""
     )
-    heads <- c(test = "Test", comparison = "Comparison", estimate = "Estimate",
-               statistic = "Statistic", p = "p")
-    widths <- vapply(names(cols), function(nm) max(width(cols[[nm]]), width(heads[[nm]], bold = TRUE)),
-                     numeric(1))
-    xs <- cumsum(c(0, widths[-length(widths)] + dims$gap))
-    names(xs) <- names(cols)
-    head_y <- y + 16
-    rows_y <- head_y + seq_len(nrow(ph_table)) * dims$row_h
-    ph <- list(cols = cols, heads = heads, x = xs, widths = widths, head_y = head_y,
-               title_y = y + 2, y = rows_y, right = xs[["p"]] + widths[["p"]],
-               ids = paste0("p", seq_len(nrow(ph_table))),
-               tips = vapply(seq_len(nrow(ph_table)), function(r) {
-                 paste0('<div class="ggx-tip-title">', esc(ph_table$test[r]), "</div>",
-                        '<div class="ggx-tip-sub">', esc(ph_table$comparison[r]), "</div>",
-                        tip_rows(c(if (nzchar(ph_table$estimate[r])) c(Estimate = ph_table$estimate[r]),
-                                   Statistic = ph_table$statistic[r], p = fmt_p(ph_table$p[r]))),
-                        '<div class="ggx-tip-body">', esc(km_test_notes[[ph_table$test[r]]]), "</div>")
-               }, character(1)))
-    ph$click <- pin_js(ph$ids, vapply(seq_len(nrow(ph_table)), function(r) {
-      same <- ph_table$test == ph_table$test[r]
-      rows <- paste0("<tr><th scope=\"row\">", esc(ph_table$comparison[same]), "</th><td>",
-                     esc(ph_table$estimate[same]), "</td><td>", esc(ph_table$statistic[same]),
-                     "</td><td>", fmt_p(ph_table$p[same]), "</td></tr>", collapse = "")
-      paste0('<div class="ggx-title">', esc(ph_table$test[r]), "</div>",
-             "<p>", esc(km_test_notes[[ph_table$test[r]]]), "</p>",
-             '<div class="ggx-table"><table><thead><tr><td></td><th scope="col">Estimate</th>',
-             '<th scope="col">Statistic</th><th scope="col">p</th></tr></thead>',
-             '<tbody class="ggx-num">', rows, "</tbody></table></div>")
-    }, character(1)))
-    y <- max(rows_y) + 6
+    tests <- unique(ph_table$test)
+    ph_html <- paste0(
+      '<div class="ggx-table"><table><thead><tr><th scope="col">Test</th>',
+      '<th scope="col">Comparison</th><th scope="col">Estimate</th>',
+      '<th scope="col">Statistic</th><th scope="col">p</th></tr></thead>',
+      '<tbody>', body, "</tbody></table></div>",
+      '<dl class="ggx-notes-list">',
+      paste0("<dt>", esc(tests), "</dt><dd>", esc(km_test_notes[tests]), "</dd>",
+             collapse = ""),
+      "</dl>"
+    )
   }
 
-  right <- max(plot_x1 + 8, if (!is.null(ph)) ph$right else 0)
+  right <- plot_x1 + 8
   page <- graph_canvas(c(0, right), c(0, y), title, caption,
                        if (legend) arms else character(0), if (legend) colors else character(0),
                        legend_title, dims, family)
@@ -571,7 +564,7 @@ km_layout <- function(input, type, hr_time, ph_tests, risk_table, conf_int,
     xlab = xlab, ylab = ylab, breaks = input$breaks, curves = curves,
     edges = edges, slice_ids = slice_ids, slice_tip = slice_tip, slice_click = slice_click,
     arm_ids = arm_ids, arm_tip = arm_tip, arm_click = arm_click,
-    risk = risk, ph = ph, ph_table = ph_table, time_text = time_text
+    risk = risk, ph_table = ph_table, ph_html = ph_html, time_text = time_text
   )
 }
 
@@ -655,7 +648,7 @@ km_draw <- function(lay, until = NULL) {
   # Axes and grid.
   yt <- c(0, 0.25, 0.5, 0.75, 1)
   grid <- rbind(
-    segs(lay$plot_x0, lay$plot_x1, Y(yt), Y(yt), "#EEF2F2"),
+    segs(lay$plot_x0, lay$plot_x1, Y(yt), Y(yt), graph_ink$faint),
     segs(lay$plot_x0, lay$plot_x1, lay$plot_bottom, lay$plot_bottom, graph_ink$text),
     segs(X(lay$breaks), X(lay$breaks), lay$plot_bottom, lay$plot_bottom + 4, graph_ink$text)
   )
@@ -670,7 +663,7 @@ km_draw <- function(lay, until = NULL) {
   )
   if (!is.null(until)) {
     labels <- rbind(texts(lay$time_text(round(until, 1)), lay$plot_x1 - 4, lay$plot_top + 30,
-                          40, "#E3E8E8", hjust = 1, face = "bold"), labels)
+                          40, graph_ink$watermark, hjust = 1, face = "bold"), labels)
   }
 
   # Risk table.
@@ -691,7 +684,7 @@ km_draw <- function(lay, until = NULL) {
                          esc(lay$time_text(lay$breaks)), "</div>",
                          tip_rows(stats::setNames(c(r$cells[[i]]$n, r$cells[[i]]$events),
                                                   c("At risk", "Events so far")))),
-        colour = ifelse(shown, graph_ink$text, "#D6DCDC"), stringsAsFactors = FALSE
+        colour = ifelse(shown, graph_ink$text, graph_ink$ghost), stringsAsFactors = FALSE
       ))
     }
     dots <- do.call(rbind, lapply(seq_len(k), function(i) {
@@ -702,37 +695,12 @@ km_draw <- function(lay, until = NULL) {
     dots <- NULL
   }
 
-  # Proportional hazards table.
-  ph_hits <- NULL
-  if (!is.null(lay$ph)) {
-    ph <- lay$ph
-    labels <- rbind(labels, texts("Hazard ratios and proportional hazards", 0, ph$title_y,
-                                  dims$text_pt, graph_ink$title, face = "bold"))
-    for (nm in names(ph$cols)) {
-      hj <- if (nm == "p") 1 else 0
-      x <- ph$x[[nm]] + if (nm == "p") ph$widths[[nm]] else 0
-      labels <- rbind(
-        labels,
-        texts(ph$heads[[nm]], x, ph$head_y, dims$small_pt, graph_ink$muted, hjust = hj,
-              face = "bold"),
-        texts(ph$cols[[nm]], rep(x, length(ph$y)), ph$y, dims$small_pt,
-              if (nm == "test") graph_ink$title else graph_ink$text, hjust = hj)
-      )
-    }
-    if (interactive) {
-      ph_hits <- data.frame(xmin = px(-4), xmax = px(ph$right + 4),
-                            ymin = py(ph$y + dims$row_h / 2), ymax = py(ph$y - dims$row_h / 2),
-                            id = ph$ids, tooltip = ph$tips, onclick = ph$click,
-                            hover = "fill:#22928F;fill-opacity:0.08;stroke:none;",
-                            stringsAsFactors = FALSE)
-    }
-  }
-
   slices <- if (interactive) {
     data.frame(xmin = px(X(lay$edges[-length(lay$edges)])), xmax = px(X(lay$edges[-1])),
                ymin = py(lay$plot_bottom), ymax = py(lay$plot_top),
                id = lay$slice_ids, tooltip = lay$slice_tip, onclick = lay$slice_click,
-               hover = "fill:#1F1F1F;fill-opacity:0.06;stroke:none;", stringsAsFactors = FALSE)
+               hover = paste0("fill:", hover_ink, ";fill-opacity:0.06;stroke:none;"),
+               stringsAsFactors = FALSE)
   }
 
   p <- ggplot() +
@@ -759,7 +727,6 @@ km_draw <- function(lay, until = NULL) {
           tooltip = .data$tooltip),
       size = dims$small_pt / .pt, colour = cells$colour, family = lay$family
     )) +
-    km_rects(ph_hits) +
     draw_text(labels, lay$family) +
     graph_frame(lay$page, lay$family)
   p

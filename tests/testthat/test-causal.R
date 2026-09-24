@@ -167,3 +167,41 @@ test_that("the graph becomes a widget, a ggplot and a file", {
   graph_save(dag, html)
   expect_match(paste(readLines(html, warn = FALSE), collapse = ""), "ggextremePin")
 })
+
+test_that("role fills are colors with transparency", {
+  dag <- ggcausal(cleft_dag$edges, cleft_dag$nodes)
+  boxes <- layer_of(dag$plot, "GeomInteractivePolygon")[[1]]
+  exposure <- boxes[boxes$data_id == "n2", ]
+  expect_equal(unique(exposure$fill), known_roles[["exposure"]])
+  expect_equal(unique(exposure$alpha), 0.16)
+})
+
+test_that("a graph takes a dark theme as a widget and as a static copy", {
+  dag <- ggcausal(cleft_dag$edges, cleft_dag$nodes, title = "A title")
+  expect_match(graph_widget(dag, "dark")$jsHooks$render[[1]]$code, '"dark"', fixed = TRUE)
+  expect_match(graph_widget(dag)$jsHooks$render[[1]]$code, '"auto"', fixed = TRUE)
+
+  dark <- graph_plot(dag, theme = "dark")
+  text <- layer_of(dark, "GeomText")
+  title <- Filter(function(d) any(d$label == "A title"), text)[[1]]
+  expect_equal(title$colour[title$label == "A title"], dark_ink[["#1F1F1F"]])
+  boxes <- layer_of(dark, "GeomInteractivePolygon")[[1]]
+  expect_true(known_roles[["exposure"]] %in% boxes$fill)
+  # The light plot is left as it was.
+  light <- Filter(function(d) any(d$label == "A title"), layer_of(graph_plot(dag), "GeomText"))[[1]]
+  expect_equal(light$colour[light$label == "A title"], graph_ink$title)
+
+  png <- tempfile(fileext = ".png")
+  graph_save(dag, png, res = 40, theme = "dark")
+  expect_true(file.exists(png))
+})
+
+test_that("every neutral has a dark counterpart in R and in the stylesheet", {
+  neutrals <- unlist(graph_ink[setdiff(names(graph_ink), "on_color")])
+  expect_true(all(toupper(unique(neutrals)) %in% names(dark_ink)))
+  css <- paste(readLines(system.file("www", "graph.css", package = "ggextreme")),
+               collapse = "\n")
+  for (hex in names(dark_ink)) {
+    expect_match(css, sprintf('[fill="%s"] { fill: %s; }', hex, dark_ink[[hex]]), fixed = TRUE)
+  }
+})

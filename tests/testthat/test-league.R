@@ -9,9 +9,9 @@ psoriasis_fit <- function() {
   netmeta::netmeta(pw, common = FALSE)
 }
 
-cell_fill <- function(lg, id) {
+cell_tone <- function(lg, id) {
   cells <- layer_of(lg$plot, "GeomInteractivePolygon")[[1]]
-  unique(cells$fill[cells$data_id == id])
+  unique(cells[cells$data_id == id, c("fill", "alpha")])
 }
 
 test_that("every pair has a cell and every treatment a diagonal entry", {
@@ -50,11 +50,12 @@ test_that("which treatment a cell favors follows small_values", {
   good <- ggleague(nma, order = own, small_values = "undesirable")
   bad <- ggleague(nma, order = own, small_values = "desirable")
   # Placebo is last, so the cell in its row compares secukinumab 300 mg with it.
-  first <- cell_fill(good, "c5_1")
-  second <- cell_fill(bad, "c5_1")
-  expect_false(identical(first, second))
-  expect_equal(first, tint(league_ink$first, 0.2 + 0.5 * min(1, log(81.85) / log(40))),
-               tolerance = 1e-6)
+  first <- cell_tone(good, "c5_1")
+  second <- cell_tone(bad, "c5_1")
+  expect_equal(first$fill, league_ink$first)
+  expect_equal(second$fill, league_ink$second)
+  # Shades are the color with transparency, so they suit a light or dark page.
+  expect_equal(first$alpha, 0.2 + 0.5 * min(1, log(81.85) / log(40)), tolerance = 1e-3)
 })
 
 test_that("the hover card gives the direct share of the estimate", {

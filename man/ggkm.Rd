@@ -9,7 +9,7 @@ ggkm(
   data,
   type = c("survival", "risk"),
   hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
-  ph_tests = TRUE,
+  ph_tests = FALSE,
   risk_table = TRUE,
   conf_int = TRUE,
   breaks = NULL,
@@ -36,9 +36,10 @@ the cumulative probability of the event.}
 \item{hr_time}{How the hazard ratio at each time is estimated:
 \code{"schoenfeld"}, \code{"log"}, \code{"linear"}, \code{"constant"} or \code{"none"}.}
 
-\item{ph_tests}{Show the table of hazard ratios and proportional hazards
-tests. The time interaction models grow with the number of events, so
-they are skipped with a message for very large data.}
+\item{ph_tests}{Add the hazard ratios and proportional hazards tests, in a
+collapsed section under the plot. The time interaction models grow with
+the number of events, so they are skipped with a message for very large
+data.}
 
 \item{risk_table}{Show the numbers at risk.}
 
@@ -68,8 +69,8 @@ card, so include its unit, such as \code{"Years since randomization"}.}
 An object of class \code{ggkm}, which prints as an interactive widget.
 Use \code{\link[=graph_widget]{graph_widget()}}, \code{\link[=graph_plot]{graph_plot()}} or \code{\link[=graph_save]{graph_save()}} for the widget, a
 static ggplot or a file, and \code{\link[=animate_km]{animate_km()}} to draw the curves over
-follow-up as an animation. The field \code{ph} holds the proportional hazards
-table as a data frame.
+follow-up as an animation. With \code{ph_tests = TRUE}, the field \code{ph} holds
+the proportional hazards table as a data frame.
 }
 \description{
 Draws Kaplan-Meier curves by group with confidence bands, censoring
@@ -91,18 +92,20 @@ against time, which estimates the log hazard ratio as a function of time
 between the group and log time or time, and \code{"constant"} shows the Cox
 estimate at every time.
 
-The proportional hazards table gives the Cox hazard ratios, the log-rank
-test, the Grambsch and Therneau test for each comparison and overall,
-and the group by time and group by log time interactions with their joint
-Wald tests. Hover over a row for what the test asks, and click it for the
-model behind it.
+With \code{ph_tests = TRUE}, a section under the plot, collapsed until the
+reader opens it, gives the Cox hazard ratios, the log-rank test, the
+Grambsch and Therneau test for each comparison and overall, and the group
+by time and group by log time interactions with their joint Wald tests,
+with a note on what each test asks. The table is also returned as the
+field \code{ph}. It belongs to the widget, so static copies from
+\code{\link[=graph_plot]{graph_plot()}} and \code{\link[=graph_save]{graph_save()}} leave it out.
 }
 \examples{
 if (requireNamespace("survival", quietly = TRUE)) {
   colon <- subset(survival::colon, etype == 2)
   colon$years <- colon$time / 365.25
   km <- ggkm(survival::Surv(years, status) ~ rx, data = colon,
-             xlab = "Years since randomization")
+             ph_tests = TRUE, xlab = "Years since randomization")
   km
   km$ph
 }

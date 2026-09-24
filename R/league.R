@@ -110,7 +110,8 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
   shade <- function(e, l, h) {
     sig <- l > 0 || h < 0
     amount <- if (sig) 0.2 + 0.5 * magnitude(e) else 0.08 + 0.12 * magnitude(e)
-    tint(if (favors_first(e)) league_ink$first else league_ink$second, amount)
+    list(color = if (favors_first(e)) league_ink$first else league_ink$second,
+         alpha = amount)
   }
 
   # Arm level data for the click panels, when given.
@@ -245,8 +246,7 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
   }
 
   # Cells.
-  treatment_hover <- sprintf("fill:%s;stroke:%s;stroke-width:1.5px;",
-                             league_ink$diagonal, graph_ink$hover)
+  treatment_hover <- paste0("stroke:", hover_ink, ";stroke-width:1.5px;")
   shapes <- NULL
   labels <- empty_texts()
   cell_text <- NULL
@@ -262,7 +262,7 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
         tip <- treatment_tip(a)
         shapes <- rbind(shapes, data.frame(
           x = px(box$x), y = py(box$y), group = paste0("g", a, "_", b), id = id,
-          tooltip = tip, onclick = "", fill = league_ink$diagonal,
+          tooltip = tip, onclick = "", fill = league_ink$diagonal, alpha = 1,
           border = league_ink$diagonal, linetype = "solid",
           hover = treatment_hover,
           stringsAsFactors = FALSE))
@@ -295,13 +295,14 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
         h <- upper_d[first, second]
       }
       empty <- !network && !(n_direct[first, second] > 0 && is.finite(e))
-      fill <- if (empty) graph_ink$page else shade(e, l, h)
-      border <- if (empty) graph_ink$plain_border else fill
+      tone <- if (empty) list(color = graph_ink$page, alpha = 1) else shade(e, l, h)
+      fill <- tone$color
+      border <- if (empty) graph_ink$plain_border else NA
       shapes <- rbind(shapes, data.frame(
         x = px(box$x), y = py(box$y), group = paste0("g", a, "_", b), id = id,
-        tooltip = tip, onclick = click, fill = fill, border = border,
+        tooltip = tip, onclick = click, fill = fill, alpha = tone$alpha, border = border,
         linetype = if (empty) "22" else "solid",
-        hover = sprintf("fill:%s;stroke:%s;stroke-width:1.5px;", fill, graph_ink$hover),
+        hover = paste0("stroke:", hover_ink, ";stroke-width:1.5px;"),
         stringsAsFactors = FALSE))
       cell_text <- rbind(cell_text, if (empty) {
         data.frame(x = px(cx), y = py(cy), label = "no direct trials",
@@ -346,7 +347,7 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
       targets <- rbind(targets, data.frame(
         x = px(hit$x), y = py(hit$y), group = sprintf("r%03d", r),
         id = paste0("t", p), tooltip = treatment_tip(p), onclick = "",
-        fill = "#FFFFFF02", border = NA, linetype = "solid", hover = treatment_hover,
+        fill = "#FFFFFF02", alpha = 1, border = NA, linetype = "solid", hover = treatment_hover,
         stringsAsFactors = FALSE
       ))
       labels <- rbind(
@@ -362,7 +363,8 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
     ggiraph::geom_polygon_interactive(
       data = shapes,
       aes(x = .data$x, y = .data$y, group = .data$group, fill = .data$fill,
-          colour = .data$border, linetype = .data$linetype, data_id = .data$id,
+          alpha = .data$alpha, colour = .data$border, linetype = .data$linetype,
+          data_id = .data$id,
           tooltip = .data$tooltip, onclick = .data$onclick, hover_css = .data$hover),
       linewidth = 0.8 / .pt
     ) +
@@ -392,7 +394,7 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
   )
 }
 
-league_ink <- list(first = "#22928F", second = "#B66399", diagonal = "#EEF2F2")
+league_ink <- list(first = "#22928F", second = "#B66399", diagonal = graph_ink$faint)
 
 league_dims <- utils::modifyList(graph_dims, list(
   cell_min = 78,

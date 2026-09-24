@@ -327,8 +327,7 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
                y = py(cy[i] + radius[i] * sin(a)),
                id = node_ids[i], fill = colors$node[i],
                tooltip = node_tip[i], onclick = node_click[i],
-               hover = sprintf("fill:%s;stroke:%s;stroke-width:2px;",
-                               colors$node[i], graph_ink$hover),
+               hover = paste0("stroke:", hover_ink, ";stroke-width:2px;"),
                stringsAsFactors = FALSE)
   }))
   label_df <- data.frame(x = px(lx), y = py(ly), label = levels,

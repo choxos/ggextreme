@@ -7,17 +7,25 @@
 \alias{knit_print.ggx_graph}
 \title{Use an interactive graph as a widget, a ggplot or a file}
 \usage{
-graph_widget(x)
+graph_widget(x, theme = c("auto", "light", "dark"))
 
-graph_plot(x)
+graph_plot(x, theme = c("light", "dark"))
 
-graph_save(x, file, res = 300)
+graph_save(x, file, res = 300, theme = NULL)
 
 \method{knit_print}{ggx_graph}(x, ...)
 }
 \arguments{
 \item{x}{A graph from \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}}, \code{\link[=ggleague]{ggleague()}}
 or \code{\link[=ggkm]{ggkm()}}.}
+
+\item{theme}{For the widget, \code{"auto"} follows the page it sits on: a dark
+'pkgdown' or 'bslib' page (\code{data-bs-theme="dark"}), a dark Quarto theme,
+a page marked \code{data-theme="dark"}, or, for a widget saved as its own
+page, the viewer's system setting. \code{"light"} and \code{"dark"} fix it. For
+\code{\link[=graph_plot]{graph_plot()}} and a PNG from \code{\link[=graph_save]{graph_save()}}, \code{"light"} or \code{"dark"}
+picks the colors of the static copy; a saved \code{.html} defaults to
+\code{"auto"} and a \code{.png} to \code{"light"}.}
 
 \item{file}{Output path. \code{.html} writes the widget as a single file, which
 needs 'pandoc'; \code{.png} writes a static image with 'ragg'.}
@@ -45,6 +53,11 @@ labels. The widget scales to the width of the page it sits in; a static
 copy should be drawn at \code{x$width} by \code{x$height} inches, which is what
 \code{graph_save()} does. The widget embeds a web copy of Lato, so it looks the
 same on machines without the font.
+
+On a dark page the widget switches to a dark palette of its own: the
+background, text, lines and neutral fills take their dark counterparts,
+colors that carry meaning keep their hue, and the hover cards and panels
+follow. It also follows a page that switches theme while it is open.
 }
 \examples{
 dag <- ggcausal(cleft_dag$edges, cleft_dag$nodes)
