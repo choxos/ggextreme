@@ -268,19 +268,19 @@ formula. Hovering anywhere along the time axis shows each group’s
 survival with its confidence interval, the number at risk and the events
 so far, and the hazard ratio against the reference group at that time,
 from the smoothed Schoenfeld residuals or a time interaction model,
-while the matching column of the risk table lights up. Below the plot, a
-table gives the Cox hazard ratios, the log-rank test, the Grambsch and
-Therneau test and the group by time and group by log time interactions.
+while the matching column of the risk table lights up. With
+`ph_tests = TRUE`, a collapsed section under the plot gives the Cox
+hazard ratios, the log-rank test, the Grambsch and Therneau test and the
+group by time and group by log time interactions.
 
 ``` r
 
-ggkm(Surv(years, status) ~ arm, data = colon,
+ggkm(Surv(years, status) ~ arm, data = colon, ph_tests = TRUE,
      xlab = "Years since randomization")
 ```
 
-[![Kaplan-Meier curves for the colon cancer trial with the risk table
-and proportional hazards
-tests](reference/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
+[![Kaplan-Meier curves for the colon cancer trial with the numbers at
+risk](reference/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
 
 [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
 draws the curves over follow-up as a GIF or MP4:
@@ -289,6 +289,16 @@ draws the curves over follow-up as a GIF or MP4:
 follow-up](reference/figures/README-km.gif)
 
 Kaplan-Meier curves drawn over follow-up
+
+## Dark pages
+
+Every interactive graph follows the page it sits on. On a dark ‘pkgdown’
+or ‘bslib’ page, a dark Quarto theme or a saved page viewed in dark
+mode, the background, text, lines and neutral fills take dark
+counterparts, colors that carry meaning keep their hue, and the hover
+cards and panels follow, even when the page switches theme while it is
+open. `graph_widget(x, theme = "dark")` fixes the theme, and
+`graph_save(x, "plot.png", theme = "dark")` writes a dark static copy.
 
 ## Bundled data
 

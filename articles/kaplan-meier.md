@@ -7,8 +7,8 @@ hazard ratio reported with it holds across follow-up.
 [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) puts
 those answers under the pointer. Hovering anywhere along the time axis
 reads every group at that time, with the hazard ratio at that time, and
-the table under the plot reports the proportional hazards tests
-alongside the hazard ratios.
+an optional section under the plot reports the proportional hazards
+tests alongside the hazard ratios.
 
 ``` r
 
@@ -32,6 +32,7 @@ colon$arm <- factor(colon$rx,
 km <- ggkm(
   survival::Surv(years, status) ~ arm,
   data = colon,
+  ph_tests = TRUE,
   xlab = "Years since randomization",
   title = "Overall survival, stage C colon cancer"
 )
@@ -69,7 +70,11 @@ answer does not hang on the method.
 
 ## Proportional hazards tests
 
-The table under the plot is returned as a data frame:
+`ph_tests = TRUE` adds a section under the plot, collapsed until the
+reader opens it, with the hazard ratios and the tests of proportional
+hazards. It is off by default, since the interaction models take a few
+seconds to fit on a large trial. The table is also returned as a data
+frame:
 
 ``` r
 
@@ -112,12 +117,11 @@ km$ph
   for each comparison, how much the log hazard ratio changes per unit of
   time or log time, with a joint Wald test of all of them.
 
-Hover over a row for what the test asks, and click it for the full
-result. Here none of the tests is significant at the 5% level; the
-closest is the log time interaction for levamisole plus fluorouracil, at
-p = 0.08. The Cox hazard ratio of 0.69 for that arm is a reasonable
-summary of follow-up, and the hover card shows how far the estimate at
-each time strays from it.
+A note under the table says what each test asks. Here none of the tests
+is significant at the 5% level; the closest is the log time interaction
+for levamisole plus fluorouracil, at p = 0.08. The Cox hazard ratio of
+0.69 for that arm is a reasonable summary of follow-up, and the hover
+card shows how far the estimate at each time strays from it.
 
 The interaction models are fitted on data split at every event time, so
 they grow with the size of the study; for very large data they are
@@ -130,8 +134,16 @@ skipped with a message.
 | `type` | `"survival"`, or `"risk"` for the cumulative incidence |
 | `reference` | the group the hazard ratios compare against |
 | `breaks` | times for the axis and the risk table |
-| `risk_table`, `ph_tests`, `conf_int` | show the risk table, the tests and the bands |
+| `risk_table`, `ph_tests`, `conf_int` | show the risk table, the collapsed tests and the bands |
 | `palette` | group colors; the reference group defaults to grey |
+
+## Dark pages
+
+On a dark page the plot takes a dark palette of its own, and follows a
+page that switches theme while it is open, like this site’s light and
+dark switch. `graph_widget(km, theme = "dark")` fixes it, and
+`graph_save(km, "km.png", theme = "dark")` writes a dark static copy for
+slides.
 
 ## Drawing the curves over follow-up
 

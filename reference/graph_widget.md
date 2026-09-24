@@ -17,11 +17,11 @@ extension.
 ## Usage
 
 ``` r
-graph_widget(x)
+graph_widget(x, theme = c("auto", "light", "dark"))
 
-graph_plot(x)
+graph_plot(x, theme = c("light", "dark"))
 
-graph_save(x, file, res = 300)
+graph_save(x, file, res = 300, theme = NULL)
 
 # S3 method for class 'ggx_graph'
 knit_print(x, ...)
@@ -37,6 +37,16 @@ knit_print(x, ...)
   [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md),
   [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
   or [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md).
+
+- theme:
+
+  For the widget, `"auto"` follows the page it sits on: a dark 'pkgdown'
+  or 'bslib' page (`data-bs-theme="dark"`), a dark Quarto theme, a page
+  marked `data-theme="dark"`, or, for a widget saved as its own page,
+  the viewer's system setting. `"light"` and `"dark"` fix it. For
+  `graph_plot()` and a PNG from `graph_save()`, `"light"` or `"dark"`
+  picks the colors of the static copy; a saved `.html` defaults to
+  `"auto"` and a `.png` to `"light"`.
 
 - file:
 
@@ -64,6 +74,11 @@ labels. The widget scales to the width of the page it sits in; a static
 copy should be drawn at `x$width` by `x$height` inches, which is what
 `graph_save()` does. The widget embeds a web copy of Lato, so it looks
 the same on machines without the font.
+
+On a dark page the widget switches to a dark palette of its own: the
+background, text, lines and neutral fills take their dark counterparts,
+colors that carry meaning keep their hue, and the hover cards and panels
+follow. It also follows a page that switches theme while it is open.
 
 ## Examples
 

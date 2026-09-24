@@ -72,7 +72,7 @@ animate_km(
 if (requireNamespace("survival", quietly = TRUE)) {
   colon <- subset(survival::colon, etype == 2)
   km <- ggkm(survival::Surv(time / 365.25, status) ~ rx, data = colon,
-             ph_tests = FALSE, xlab = "Years")
+             xlab = "Years")
   animate_km(km, tempfile(fileext = ".gif"), duration = 2, fps = 8,
              cores = 1)
 }

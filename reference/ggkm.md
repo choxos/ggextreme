@@ -18,7 +18,7 @@ ggkm(
   data,
   type = c("survival", "risk"),
   hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
-  ph_tests = TRUE,
+  ph_tests = FALSE,
   risk_table = TRUE,
   conf_int = TRUE,
   breaks = NULL,
@@ -57,9 +57,10 @@ ggkm(
 
 - ph_tests:
 
-  Show the table of hazard ratios and proportional hazards tests. The
-  time interaction models grow with the number of events, so they are
-  skipped with a message for very large data.
+  Add the hazard ratios and proportional hazards tests, in a collapsed
+  section under the plot. The time interaction models grow with the
+  number of events, so they are skipped with a message for very large
+  data.
 
 - risk_table:
 
@@ -114,8 +115,9 @@ or
 [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
 for the widget, a static ggplot or a file, and
 [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
-to draw the curves over follow-up as an animation. The field `ph` holds
-the proportional hazards table as a data frame.
+to draw the curves over follow-up as an animation. With
+`ph_tests = TRUE`, the field `ph` holds the proportional hazards table
+as a data frame.
 
 ## Details
 
@@ -128,11 +130,16 @@ draws. `"log"` and `"linear"` take it from a Cox model with an
 interaction between the group and log time or time, and `"constant"`
 shows the Cox estimate at every time.
 
-The proportional hazards table gives the Cox hazard ratios, the log-rank
-test, the Grambsch and Therneau test for each comparison and overall,
-and the group by time and group by log time interactions with their
-joint Wald tests. Hover over a row for what the test asks, and click it
-for the model behind it.
+With `ph_tests = TRUE`, a section under the plot, collapsed until the
+reader opens it, gives the Cox hazard ratios, the log-rank test, the
+Grambsch and Therneau test for each comparison and overall, and the
+group by time and group by log time interactions with their joint Wald
+tests, with a note on what each test asks. The table is also returned as
+the field `ph`. It belongs to the widget, so static copies from
+[`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+and
+[`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+leave it out.
 
 ## Examples
 
@@ -141,7 +148,7 @@ if (requireNamespace("survival", quietly = TRUE)) {
   colon <- subset(survival::colon, etype == 2)
   colon$years <- colon$time / 365.25
   km <- ggkm(survival::Surv(years, status) ~ rx, data = colon,
-             xlab = "Years since randomization")
+             ph_tests = TRUE, xlab = "Years since randomization")
   km
   km$ph
 }
