@@ -48,18 +48,22 @@ Forest plots and league tables for fitted models.
   Draw an interactive forest plot for a meta-analysis
 - [`animate_meta()`](https://choxos.github.io/ggextreme/reference/animate_meta.md)
   : Animate a cumulative meta-analysis
+- [`ggfunnel()`](https://choxos.github.io/ggextreme/reference/ggfunnel.md)
+  : Draw an interactive funnel plot for a meta-analysis
 - [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
   : Draw an interactive league table for a network meta-analysis
 
-## Survival
+## Survival and trials
 
 Kaplan-Meier plots with a linked risk table and proportional hazards
-tests.
+tests, and swimmer plots of each patient’s course.
 
 - [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) :
   Draw an interactive Kaplan-Meier plot
 - [`animate_km()`](https://choxos.github.io/ggextreme/reference/animate_km.md)
   : Animate a Kaplan-Meier plot
+- [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
+  : Draw an interactive swimmer plot
 
 ## Maps
 

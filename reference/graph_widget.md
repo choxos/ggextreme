@@ -4,8 +4,11 @@ A graph built by
 [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
 [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
 [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md),
+[`ggfunnel()`](https://choxos.github.io/ggextreme/reference/ggfunnel.md),
 [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
-[`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) or
+[`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
+[`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
+or
 [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
 prints as an interactive widget. These functions give the other forms it
 can take. `graph_widget()` returns the 'htmlwidgets' object, for use in
@@ -36,8 +39,11 @@ knit_print(x, ...)
   [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
   [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
   [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md),
+  [`ggfunnel()`](https://choxos.github.io/ggextreme/reference/ggfunnel.md),
   [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
-  [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) or
+  [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
+  [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
+  or
   [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md).
 
 - theme:

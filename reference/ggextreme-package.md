@@ -15,12 +15,16 @@ object. Network plots for network meta-analysis are drawn from arm level
 data, with the baseline characteristics and outcomes of every arm shown
 side by side on click. Forest plots for 'metafor' and 'meta' fits carry
 each study's record and risk of bias traffic lights, and replay a
-cumulative meta-analysis as an animation; league tables for 'netmeta'
-fits show the direct and indirect evidence behind every estimate.
-Kaplan-Meier plots read survival and the hazard ratio at any time under
-the pointer, beside a risk table and proportional hazards tests.
-Choropleth maps of the world or of any 'sf' map step or play through the
-years, with several measures side by side for the same year.
+cumulative meta-analysis as an animation; funnel plots shade where each
+study would be significant and carry the pooled estimate without it,
+trim and fill and the tests for small-study effects; league tables for
+'netmeta' fits show the direct and indirect evidence behind every
+estimate. Kaplan-Meier plots read survival and the hazard ratio at any
+time under the pointer, beside a risk table and proportional hazards
+tests, and swimmer plots give each patient a lane with their responses,
+progression and death. Choropleth maps of the world or of any 'sf' map
+step or play through the years, with several measures side by side for
+the same year.
 
 ## See also
 

@@ -12,9 +12,13 @@
   plots](https://choxos.github.io/ggextreme/articles/network-plots.md):
 - [Interactive forest
   plots](https://choxos.github.io/ggextreme/articles/forest-plots.md):
+- [Funnel
+  plots](https://choxos.github.io/ggextreme/articles/funnel-plots.md):
 - [League
   tables](https://choxos.github.io/ggextreme/articles/league-tables.md):
 - [Kaplan-Meier
   plots](https://choxos.github.io/ggextreme/articles/kaplan-meier.md):
+- [Swimmer
+  plots](https://choxos.github.io/ggextreme/articles/swimmer-plots.md):
 - [Choropleth maps over
   time](https://choxos.github.io/ggextreme/articles/choropleth-maps.md):

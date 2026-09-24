@@ -399,8 +399,7 @@ svg.ggiraph-svg text:not([data-id]) {
   margin: 4px 24px 8px;
 }
 
-/* A choropleth: the regions change shade in place, and the controls under
-   the maps choose the time. */
+/* A choropleth: the regions change shade in place. */
 .ggx-map svg.ggiraph-svg path[data-id^="g"] {
   transition: fill 0.35s ease, fill-opacity 0.35s ease;
 }
@@ -409,8 +408,11 @@ svg.ggiraph-svg text[data-id="yr"] {
   pointer-events: none;
 }
 
-.ggx-map-controls {
+/* Controls under a plot: the map's time slider, the funnel plot's trim and
+   fill switch and the swimmer plot's order. */
+.ggx-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin: 2px 24px 12px;
@@ -420,7 +422,7 @@ svg.ggiraph-svg text[data-id="yr"] {
   font-variant-numeric: tabular-nums;
 }
 
-.ggx-map-controls input[type="range"] {
+.ggx-controls input[type="range"] {
   flex: 1;
   min-width: 80px;
   margin: 0;
@@ -448,9 +450,51 @@ svg.ggiraph-svg text[data-id="yr"] {
 }
 
 .ggx-play:focus-visible,
-.ggx-map-controls input[type="range"]:focus-visible {
+.ggx-controls input[type="range"]:focus-visible,
+.ggx-controls input[type="checkbox"]:focus-visible,
+.ggx-seg button:focus-visible {
   outline: 2px solid #22928F;
   outline-offset: 2px;
+}
+
+.ggx-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ggx-text, #2C2C2C);
+  cursor: pointer;
+}
+
+.ggx-check input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #22928F;
+}
+
+.ggx-seg {
+  display: inline-flex;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ggx-seg button {
+  padding: 5px 11px;
+  border: 0;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ggx-seg button + button {
+  border-left: 1px solid var(--ggx-rule, #DADADA);
+}
+
+.ggx-seg button[aria-pressed="true"] {
+  background: #22928F;
+  color: #FFFFFF;
 }
 
 .ggx-play svg {
@@ -496,8 +540,14 @@ svg.ggiraph-svg text[data-id="yr"] {
   stroke-width: 1.5;
 }
 
+/* A swimmer plot's lanes slide to their new rows. */
+.ggx-swimmer svg.ggiraph-svg [data-id^="p"] {
+  transition: transform 0.45s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ggx-map svg.ggiraph-svg path[data-id^="g"] {
+  .ggx-map svg.ggiraph-svg path[data-id^="g"],
+  .ggx-swimmer svg.ggiraph-svg [data-id^="p"] {
     transition: none;
   }
 }
