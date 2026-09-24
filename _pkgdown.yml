@@ -65,6 +65,12 @@ reference:
   - animate_km
   - ggswimmer
 
+- title: Prediction models
+  desc: Nomograms of regression models, with a handle per predictor and the prediction computed in the page.
+  contents:
+  - ggnomogram
+  - nomogram_predict
+
 - title: Maps
   desc: Choropleth maps that step or play through the years, with measures side by side.
   contents:
@@ -100,4 +106,5 @@ articles:
   - league-tables
   - kaplan-meier
   - swimmer-plots
+  - nomograms
   - choropleth-maps

@@ -26,9 +26,12 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     every estimate. Kaplan-Meier plots read survival and the hazard ratio at
     any time under the pointer, beside a risk table and proportional hazards
     tests, and swimmer plots give each patient a lane with their responses,
-    progression and death. Choropleth maps of the world or of any 'sf' map
-    step or play through the years, with several measures side by side for
-    the same year.
+    progression and death. Nomograms of regression models, from linear and
+    generalized linear models to mixed, Cox, parametric survival, ordinal
+    and multinomial models, have a handle per predictor and compute each
+    prediction with its confidence interval in the page. Choropleth maps of
+    the world or of any 'sf' map step or play through the years, with
+    several measures side by side for the same year.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -54,15 +57,26 @@ Imports:
     utils
 Suggests:
     av,
+    geepack,
     gifski,
+    glmmTMB,
     gt,
     knitr,
+    lme4,
+    logistf,
     magick,
+    MASS,
     meta,
     metadat,
     metafor,
+    mgcv,
     netmeta,
+    nlme,
+    nnet,
+    ordinal,
+    quantreg,
     rmarkdown,
+    rms,
     rsvg,
     sf,
     survival,

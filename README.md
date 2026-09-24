@@ -6,7 +6,7 @@
 <!-- badges: end -->
 
 Presentation quality charts built on **ggplot2** that the package itself does
-not provide. There are nine so far:
+not provide. There are ten so far:
 
 * **Bar chart races**: an animation of a ranking that changes over time, of
   the kind used to summarize long panels in talks, teaching material and
@@ -29,11 +29,14 @@ not provide. There are nine so far:
   proportional hazards tests.
 * **Swimmer plots**: one lane per patient, with responses, progression and
   death along it, that reorders on demand.
+* **Nomograms**: any regression model, from logistic and Cox to mixed,
+  ordinal and multinomial models, as a nomogram whose handles move, with the
+  prediction and its confidence interval computed in the page.
 * **Choropleth maps**: a map of the world, or of any 'sf' map, that steps or
   plays through the years, with several measures side by side for the same
   year.
 
-All nine are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
+All ten are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
 separate rendering engine, so a frame or a diagram can be inspected, modified
 or saved on its own.
 
@@ -290,6 +293,25 @@ ggswimmer(aml, id, futime / 30.44, events = events, group = arm,
 ```
 
 [![A swimmer plot of 30 patients with acute myeloid leukemia](man/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
+
+## Nomograms
+
+`ggnomogram()` draws the nomogram of a fitted model and gives every
+predictor a handle: drag it, click a category or use the arrow keys, and the
+points, the total and the prediction with its 95% confidence interval follow.
+It reads linear, generalized linear, mixed (lme4, nlme, glmmTMB), Cox,
+parametric survival, ordinal and multinomial models, and models from rms and
+mgcv. Splines, polynomials and interactions work, because the points come
+from the model's design matrix, and every class is checked against its own
+`predict()`.
+
+```r
+fit <- glm(low ~ splines::ns(age, 3) + lwt + race + smoke * ht,
+           family = binomial, data = bw)
+ggnomogram(fit, outcome = "Risk of low birth weight")
+```
+
+[![A nomogram for the risk of low birth weight](man/figures/README-nomogram.png)](https://choxos.github.io/ggextreme/articles/nomograms.html)
 
 ## Choropleth maps
 

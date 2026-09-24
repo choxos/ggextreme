@@ -104,9 +104,10 @@ test_that("intervals past the axis limits end in an arrow", {
 
 test_that("difference measures are shown on their own scale", {
   skip_if_not_installed("metafor")
-  dat <- metafor::escalc(measure = "SMD", m1i = m1i, sd1i = sd1i, n1i = n1i,
-                         m2i = m2i, sd2i = sd2i, n2i = n2i,
-                         data = metadat::dat.normand1999)
+  # These trials have standardized differences above 2, which escalc() flags.
+  dat <- suppressWarnings(metafor::escalc(measure = "SMD", m1i = m1i, sd1i = sd1i, n1i = n1i,
+                                          m2i = m2i, sd2i = sd2i, n2i = n2i,
+                                          data = metadat::dat.normand1999))
   lay <- meta_layout(ggmeta(metafor::rma(yi, vi, data = dat))$input, FALSE)
   expect_false(lay$exponentiate)
   expect_equal(lay$xlab, "Standardized mean difference")

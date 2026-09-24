@@ -437,8 +437,8 @@ graph_dependency <- function() {
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
 #' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
-#' [ggleague()], [ggkm()], [ggswimmer()] or [ggchoropleth()] prints as an
-#' interactive widget. These
+#' [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()] or [ggchoropleth()]
+#' prints as an interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -457,7 +457,8 @@ graph_dependency <- function() {
 #' follow. It also follows a page that switches theme while it is open.
 #'
 #' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
-#'   [ggleague()], [ggkm()], [ggswimmer()] or [ggchoropleth()].
+#'   [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()] or
+#'   [ggchoropleth()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.
@@ -495,7 +496,8 @@ graph_widget <- function(x, theme = c("auto", "light", "dark")) {
     area = paste0("stroke:", hover_ink, ";stroke-width:1.5px;")
   )
   w <- ggiraph::girafe(
-    ggobj = x$plot,
+    # A graph the widget draws itself gives an empty canvas of the same size.
+    ggobj = if (is.null(x$widget_plot)) x$plot else x$widget_plot,
     width_svg = x$width,
     height_svg = x$height,
     font_set = gdtools::font_set(),
