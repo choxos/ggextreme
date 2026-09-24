@@ -124,8 +124,8 @@ Windows.
 | `top_n` | how many bars are visible at once |
 | `duration`, `fps`, `end_pause` | length in seconds, frame rate, hold on the last frame |
 | `swap` | seconds a bar takes to move into a new rank |
-| `group` | colour bars by category and draw a legend |
-| `palette` | a colour vector, or one named by entity or category |
+| `group` | color bars by category and draw a legend |
+| `palette` | a color vector, or one named by entity or category |
 | `breaks` | gridline positions, a function or a fixed vector |
 | `label_value`, `label_time` | formatters for the bar numbers and the large time label |
 | `images` | pictures to sit at the end of the bars |
@@ -150,11 +150,11 @@ race_frame(top10, round(top10$n_frames / 2))
 
 ![](ggextreme_files/figure-html/top-ten-1.png)
 
-## Colouring by group
+## Coloring by group
 
-By default each entity gets its own colour. When entities fall into
+By default each entity gets its own color. When entities fall into
 categories, pass the column that names them as `group`: bars are then
-coloured by category and a legend appears above the axis.
+colored by category and a legend appears above the axis.
 
 ``` r
 
@@ -173,12 +173,12 @@ race_frame(regional, regional$n_frames)
 
 ![](ggextreme_files/figure-html/groups-1.png)
 
-Each entity must belong to exactly one category, or the colouring would
+Each entity must belong to exactly one category, or the coloring would
 be ambiguous and the function stops. A factor keeps the legend in the
 order of its levels; anything else is sorted. The card grows to make
 room for the legend and wraps onto further rows when the categories do
 not fit across it, so nothing is pushed off the edge. Set
-`legend = FALSE` to keep the colouring and drop the legend.
+`legend = FALSE` to keep the coloring and drop the legend.
 
 ## Images on the bars
 

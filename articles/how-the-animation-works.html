@@ -37,6 +37,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/how-the-animation-works.html">How the animation works</a></li>
+    <li><a class="dropdown-item" href="../articles/causal-diagrams.html">Interactive causal diagrams</a></li>
   </ul>
 </li>
       </ul>
@@ -154,9 +155,9 @@ the panel edges are constants.</p>
 <p>The axis carries no headroom. The longest bar always reaches the
 right edge of the plotting area and the axis maximum is the largest
 value in the current frame, so gridlines drift as the field grows.</p>
-<p>Colours are assigned once across the whole field, not per frame, so
-an entity keeps its colour when it drops out of the visible window and
-comes back.</p>
+<p>Colors are assigned once across the whole field, not per frame, so an
+entity keeps its color when it drops out of the visible window and comes
+back.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">race</span><span class="op">$</span><span class="va">colors</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Brazil     Chile     China     Egypt </span></span>

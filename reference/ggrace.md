@@ -55,10 +55,10 @@ ggrace(
 - group:
 
   Optional bare column naming a category for each entity, such as a
-  continent. Bars are then coloured by category rather than
-  individually, and a legend is drawn above the axis. Each entity must
-  belong to exactly one category. A factor keeps the legend in the order
-  of its levels.
+  continent. Bars are then colored by category rather than individually,
+  and a legend is drawn above the axis. Each entity must belong to
+  exactly one category. A factor keeps the legend in the order of its
+  levels.
 
 - top_n:
 
@@ -199,8 +199,8 @@ ragg::agg_png(file, width = race$width, height = 500, units = "px",
                res = race$res)
 print(race_frame(race, 60))
 dev.off()
-#> agg_record_1f38b7fde0a 
-#>                      2 
+#> agg_record_21087f592606 
+#>                       2 
 # \donttest{
 animate_race(race, tempfile(fileext = ".gif"), cores = 1)
 #>   |                                                                              |                                                                      |   0%

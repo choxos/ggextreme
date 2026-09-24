@@ -108,9 +108,9 @@ The axis carries no headroom. The longest bar always reaches the right
 edge of the plotting area and the axis maximum is the largest value in
 the current frame, so gridlines drift as the field grows.
 
-Colours are assigned once across the whole field, not per frame, so an
-entity keeps its colour when it drops out of the visible window and
-comes back.
+Colors are assigned once across the whole field, not per frame, so an
+entity keeps its color when it drops out of the visible window and comes
+back.
 
 ``` r
 

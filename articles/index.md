@@ -6,3 +6,5 @@
   races](https://choxos.github.io/ggextreme/articles/ggextreme.md):
 - [How the animation
   works](https://choxos.github.io/ggextreme/articles/how-the-animation-works.md):
+- [Interactive causal
+  diagrams](https://choxos.github.io/ggextreme/articles/causal-diagrams.md):

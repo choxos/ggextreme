@@ -15,7 +15,7 @@ Turn a panel of observations into frames, then draw or encode them.
 
 ## Appearance
 
-Colours, theme and the images that sit on the bars.
+Colors, theme and the images that sit on the bars.
 
 - [`race_palette()`](https://choxos.github.io/ggextreme/reference/race_palette.md)
   : Colors used by the bar chart race
@@ -26,13 +26,30 @@ Colours, theme and the images that sit on the bars.
 - [`race_flag_codes()`](https://choxos.github.io/ggextreme/reference/race_flag_codes.md)
   : Countries the bundled flags cover
 
+## Causal diagrams
+
+Draw a DAG whose nodes and arrows explain themselves, then use it as a
+widget, a ggplot or a file.
+
+- [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
+  : Draw an interactive causal diagram
+- [`graph_widget()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  [`knit_print(`*`<ggx_graph>`*`)`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  : Use an interactive graph as a widget, a ggplot or a file
+
 ## Data
 
 - [`clefts_qci`](https://choxos.github.io/ggextreme/reference/clefts_qci.md)
   : Quality of Care Index for orofacial clefts, 1990 to 2019
+- [`cleft_dag`](https://choxos.github.io/ggextreme/reference/cleft_dag.md)
+  : An illustrative causal diagram for maternal smoking and orofacial
+  clefts
 
 ## Package
 
 - [`ggextreme`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
   [`ggextreme-package`](https://choxos.github.io/ggextreme/reference/ggextreme-package.md)
-  : ggextreme: Animated Bar Chart Races and Other Presentation Charts
+  : ggextreme: Bar Chart Races, Interactive Causal Diagrams and Other
+  Charts

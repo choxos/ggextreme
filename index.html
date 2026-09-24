@@ -5,17 +5,17 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Animated bar chart races for ggplot2 • ggextreme</title>
+<title>Presentation charts for ggplot2 • ggextreme</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Lato-0.4.10/font.css" rel="stylesheet">
 <link href="deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Animated bar chart races for ggplot2">
-<meta name="description" content="Build presentation quality animated charts on top of ggplot2. Values are interpolated on a uniform time grid, every frame is ranked on its own values, and bars ease into new positions so a reordering field stays readable.
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Presentation charts for ggplot2">
+<meta name="description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, and interactive causal diagrams that carry the rationale and references for every node and arrow.
 ">
-<meta property="og:description" content="Build presentation quality animated charts on top of ggplot2. Values are interpolated on a uniform time grid, every frame is ranked on its own values, and bars ease into new positions so a reordering field stays readable.
+<meta property="og:description" content="Presentation quality charts built on ggplot2: animated bar chart races that stay readable while the field reorders, and interactive causal diagrams that carry the rationale and references for every node and arrow.
 ">
 </head>
 <body>
@@ -41,6 +41,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/how-the-animation-works.html">How the animation works</a></li>
+    <li><a class="dropdown-item" href="articles/causal-diagrams.html">Interactive causal diagrams</a></li>
   </ul>
 </li>
       </ul>
@@ -61,8 +62,14 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. The first is a bar chart race: an animation of a ranking that changes over time, of the kind used to summarise long panels in talks, teaching material and journal supplements.</p>
-<p>Every frame is an ordinary <code>ggplot</code> object. Nothing is hidden behind a separate rendering engine, so a frame can be inspected, modified or saved on its own.</p>
+<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are two so far:</p>
+<ul>
+<li>
+<strong>Bar chart races</strong>: an animation of a ranking that changes over time, of the kind used to summarize long panels in talks, teaching material and journal supplements.</li>
+<li>
+<strong>Interactive causal diagrams</strong>: a directed acyclic graph in which every node and arrow carries its rationale and references, shown on hover and opened in full on click.</li>
+</ul>
+<p>Both are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
 <img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
@@ -75,7 +82,7 @@
 <p>Writing output requires an encoder: <strong>gifski</strong> or <strong>magick</strong> for GIF, <strong>av</strong> or an <code>ffmpeg</code> binary for MP4. Images on the bars require <strong>magick</strong>.</p>
 </div>
 <div class="section level2">
-<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+<h2 id="bar-chart-races">Bar chart races<a class="anchor" aria-label="anchor" href="#bar-chart-races"></a>
 </h2>
 <p><code><a href="reference/ggrace.html">ggrace()</a></code> takes long data with one row per entity per time point, and three bare column names for the value, the label and the time.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -122,13 +129,13 @@
 </tr>
 <tr>
 <td><code>group</code></td>
-<td>colour bars by category and draw a legend</td>
+<td>color bars by category and draw a legend</td>
 </tr>
 <tr>
 <td>
 <code>palette</code>, <code>breaks</code>
 </td>
-<td>bar colours; gridline positions</td>
+<td>bar colors; gridline positions</td>
 </tr>
 <tr>
 <td>
@@ -155,11 +162,10 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section level2">
-<h2 id="colouring-by-group">Colouring by group<a class="anchor" aria-label="anchor" href="#colouring-by-group"></a>
-</h2>
-<p>Passing a <code>group</code> column colours the bars by category rather than individually and draws a legend above the axis. Each entity must belong to exactly one category; a factor keeps the legend in the order of its levels.</p>
+<div class="section level3">
+<h3 id="coloring-by-group">Coloring by group<a class="anchor" aria-label="anchor" href="#coloring-by-group"></a>
+</h3>
+<p>Passing a <code>group</code> column colors the bars by category rather than individually and draws a legend above the axis. Each entity must belong to exactly one category; a factor keeps the legend in the order of its levels.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggrace.html">ggrace</a></span><span class="op">(</span></span>
 <span>  <span class="va">clefts_qci</span>, <span class="va">qci</span>, <span class="va">country</span>, <span class="va">year</span>,</span>
@@ -167,11 +173,11 @@
 <span>  legend_title <span class="op">=</span> <span class="st">"Region"</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">15</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The card grows to make room for the legend, wrapping onto more rows when the categories do not fit across it. <code>legend = FALSE</code> keeps the colouring and drops the legend.</p>
+<p>The card grows to make room for the legend, wrapping onto more rows when the categories do not fit across it. <code>legend = FALSE</code> keeps the coloring and drops the legend.</p>
 </div>
-<div class="section level2">
-<h2 id="images-on-the-bars">Images on the bars<a class="anchor" aria-label="anchor" href="#images-on-the-bars"></a>
-</h2>
+<div class="section level3">
+<h3 id="images-on-the-bars">Images on the bars<a class="anchor" aria-label="anchor" href="#images-on-the-bars"></a>
+</h3>
 <p><code>images</code> takes image file paths named by entity. Pictures are cropped to a circle and right aligned just inside the end of each bar; entities without an image simply get none. A circular flag for every ISO 3166-1 country, plus Kurdistan, is bundled, so country races need no extra files.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">clefts_qci</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>, <span class="st">"iso"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -180,9 +186,9 @@
 <span><span class="fu"><a href="reference/ggrace.html">ggrace</a></span><span class="op">(</span><span class="va">clefts_qci</span>, <span class="va">qci</span>, <span class="va">country</span>, <span class="va">year</span>, top_n <span class="op">=</span> <span class="fl">15</span>, images <span class="op">=</span> <span class="va">flags</span><span class="op">)</span></span></code></pre></div>
 <p>Any image works, not only flags. Pass paths to logos, portraits or crests in the same way.</p>
 </div>
-<div class="section level2">
-<h2 id="design-notes">Design notes<a class="anchor" aria-label="anchor" href="#design-notes"></a>
-</h2>
+<div class="section level3">
+<h3 id="design-notes">Design notes<a class="anchor" aria-label="anchor" href="#design-notes"></a>
+</h3>
 <p>Three choices govern how the animation reads. They are set out in full in <code><a href="articles/how-the-animation-works.html">vignette("how-the-animation-works")</a></code>.</p>
 <ul>
 <li>
@@ -190,21 +196,36 @@
 <li>
 <strong>Rank is not interpolated.</strong> Every frame is ranked on its own values, and a bar that changes rank eases into the new position over <code>swap</code> seconds. Bars therefore rest in place and trade positions in one short move rather than drifting for a whole time step.</li>
 <li>
-<strong>The geometry is fixed.</strong> The label column has a constant width and the panel edges are constants, so the chart does not shift sideways when the longest name enters or leaves the visible window. Colours are assigned once across the whole field, so an entity keeps its colour when it drops out and returns.</li>
+<strong>The geometry is fixed.</strong> The label column has a constant width and the panel edges are constants, so the chart does not shift sideways when the longest name enters or leaves the visible window. Colors are assigned once across the whole field, so an entity keeps its color when it drops out and returns.</li>
 </ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="interactive-causal-diagrams">Interactive causal diagrams<a class="anchor" aria-label="anchor" href="#interactive-causal-diagrams"></a>
+</h2>
+<p><code><a href="reference/ggcausal.html">ggcausal()</a></code> draws a DAG from two data frames: <code>edges</code>, with one row per arrow, and <code>nodes</code>, with one row per variable. A <code>rationale</code> and <code>references</code> column on either one explains why that node or arrow is in the diagram. Hovering shows the rationale; clicking opens a panel with the full text and clickable references, which also works on touch screens.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggcausal.html">ggcausal</a></span><span class="op">(</span><span class="va">cleft_dag</span><span class="op">$</span><span class="va">edges</span>, <span class="va">cleft_dag</span><span class="op">$</span><span class="va">nodes</span>, legend_title <span class="op">=</span> <span class="st">"Role"</span><span class="op">)</span></span>
+<span><span class="va">dag</span>                           <span class="co"># interactive widget</span></span>
+<span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"dag.html"</span><span class="op">)</span>   <span class="co"># a single file for a supplement</span></span>
+<span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"dag.png"</span><span class="op">)</span>    <span class="co"># a static figure</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html"><img src="reference/figures/README-dag.png" alt="An illustrative causal diagram for maternal smoking and orofacial clefts"></a></p>
+<p>GitHub cannot run the widget, so the image above is static. The <a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html">interactive version</a> is on the package website.</p>
+<p>Nodes are colored by <code>role</code>, with fixed colors for exposures, outcomes, confounders, mediators, colliders, instruments and unobserved variables. The layout is layered so that every arrow points the same way, and an arrow that skips a layer bends around the boxes in between; <code>x</code> and <code>y</code> columns place the boxes by hand instead. Any other column in either data frame appears as a labeled field. The widget embeds a web copy of Lato and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.</p>
 </div>
 <div class="section level2">
 <h2 id="bundled-data">Bundled data<a class="anchor" aria-label="anchor" href="#bundled-data"></a>
 </h2>
-<p><code>clefts_qci</code> gives the Quality of Care Index for orofacial clefts in fifteen countries from 1990 to 2019. The index is a composite of four secondary indices derived from Global Burden of Disease estimates, summarised by principal component analysis and rescaled from 0 to 100.</p>
+<p><code>clefts_qci</code> gives the Quality of Care Index for orofacial clefts in fifteen countries from 1990 to 2019. The index is a composite of four secondary indices derived from Global Burden of Disease estimates, summarized by principal component analysis and rescaled from 0 to 100.</p>
 <blockquote>
 <p>Sofi-Mahmudi A, Shamsoddin E, Khademioore S, Khazaei Y, Vahdati A, Tovani-Palone MR (2025). Global, regional, and national survey on burden and Quality of Care Index (QCI) of orofacial clefts: Global burden of disease systematic analysis 1990-2019. <em>PLOS ONE</em> 20(1): e0317267. <a href="https://doi.org/10.1371/journal.pone.0317267" class="external-link uri">https://doi.org/10.1371/journal.pone.0317267</a></p>
 </blockquote>
+<p><code>cleft_dag</code> is a small illustrative causal diagram for maternal smoking and orofacial clefts. Its rationales were written for the package as a teaching example, and every reference it cites was checked against PubMed.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT. The package bundles the Lato typeface under the SIL Open Font License (<code>inst/fonts/OFL.txt</code>) and country flag artwork from the flag-icons project under the MIT License, with two exceptions noted in <code>inst/extdata/flags/SOURCE.txt</code>.</p>
+<p>MIT. The package bundles the Lato typeface, and a web subset of it for the interactive graphs, under the SIL Open Font License (<code>inst/fonts/OFL.txt</code>), and country flag artwork from the flag-icons project under the MIT License, with two exceptions noted in <code>inst/extdata/flags/SOURCE.txt</code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
