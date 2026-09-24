@@ -16,8 +16,8 @@ graph_save(x, file, res = 300, theme = NULL)
 \method{knit_print}{ggx_graph}(x, ...)
 }
 \arguments{
-\item{x}{A graph from \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}}, \code{\link[=ggleague]{ggleague()}}
-or \code{\link[=ggkm]{ggkm()}}.}
+\item{x}{A graph from \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}}, \code{\link[=ggleague]{ggleague()}},
+\code{\link[=ggkm]{ggkm()}} or \code{\link[=ggchoropleth]{ggchoropleth()}}.}
 
 \item{theme}{For the widget, \code{"auto"} follows the page it sits on: a dark
 'pkgdown' or 'bslib' page (\code{data-bs-theme="dark"}), a dark Quarto theme,
@@ -39,8 +39,8 @@ needs 'pandoc'; \code{.png} writes a static image with 'ragg'.}
 ggplot. \code{graph_save()} returns \code{file}, invisibly.
 }
 \description{
-A graph built by \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}}, \code{\link[=ggleague]{ggleague()}} or
-\code{\link[=ggkm]{ggkm()}} prints as an interactive widget. These
+A graph built by \code{\link[=ggcausal]{ggcausal()}}, \code{\link[=ggnma]{ggnma()}}, \code{\link[=ggmeta]{ggmeta()}}, \code{\link[=ggleague]{ggleague()}},
+\code{\link[=ggkm]{ggkm()}} or \code{\link[=ggchoropleth]{ggchoropleth()}} prints as an interactive widget. These
 functions give the other forms it can take. \code{graph_widget()} returns the
 'htmlwidgets' object, for use in 'shiny' or to save with
 \code{\link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget()}}. \code{graph_plot()} returns the underlying

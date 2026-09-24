@@ -63,6 +63,12 @@ reference:
   - ggkm
   - animate_km
 
+- title: Maps
+  desc: Choropleth maps that step or play through the years, with measures side by side.
+  contents:
+  - ggchoropleth
+  - animate_choropleth
+
 - title: Using a graph
   desc: Turn any of the interactive graphs into a widget, a ggplot or a file.
   contents:
@@ -71,6 +77,7 @@ reference:
 - title: Data
   contents:
   - clefts_qci
+  - clefts_qci_world
   - cleft_dag
   - psoriasis_nma
 
@@ -89,3 +96,4 @@ articles:
   - forest-plots
   - league-tables
   - kaplan-meier
+  - choropleth-maps

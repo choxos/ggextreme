@@ -436,8 +436,8 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggleague()] or
-#' [ggkm()] prints as an interactive widget. These
+#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggleague()],
+#' [ggkm()] or [ggchoropleth()] prints as an interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
 #' [htmlwidgets::saveWidget()]. `graph_plot()` returns the underlying
@@ -455,8 +455,8 @@ graph_dependency <- function() {
 #' colors that carry meaning keep their hue, and the hover cards and panels
 #' follow. It also follows a page that switches theme while it is open.
 #'
-#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggleague()]
-#'   or [ggkm()].
+#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggleague()],
+#'   [ggkm()] or [ggchoropleth()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.
@@ -512,8 +512,9 @@ graph_widget <- function(x, theme = c("auto", "light", "dark")) {
   # follow, so the widget never crops the diagram or leaves a gap under it.
   w$width <- "100%"
   w$height <- paste0(round(x$height * 96), "px")
-  htmlwidgets::onRender(w, paste0("function(el) { ggextremeFit(el, ", js_string(theme), "); ",
-                                  if (!is.null(x$on_render)) x$on_render, " }"))
+  htmlwidgets::onRender(w, paste0("function(el, x, data) { ggextremeFit(el, ", js_string(theme), "); ",
+                                  if (!is.null(x$on_render)) x$on_render, " }"),
+                        data = x$render_data)
 }
 
 #' @rdname graph_widget

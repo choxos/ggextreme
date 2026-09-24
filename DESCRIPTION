@@ -23,7 +23,9 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     'netmeta' fits show the direct and indirect evidence behind every
     estimate. Kaplan-Meier plots read survival and the hazard ratio at any
     time under the pointer, beside a risk table and proportional hazards
-    tests.
+    tests. Choropleth maps of the world or of any 'sf' map step or play
+    through the years, with several measures side by side for the same
+    year.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -59,6 +61,7 @@ Suggests:
     netmeta,
     rmarkdown,
     rsvg,
+    sf,
     survival,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
