@@ -79,6 +79,7 @@ and otherwise each trial's own estimate. Hovering over a treatment on the
 diagonal or in the ranking lights its row and column.
 }
 \examples{
+\donttest{
 if (requireNamespace("netmeta", quietly = TRUE) &&
     requireNamespace("meta", quietly = TRUE)) {
   pw <- meta::pairwise(treat = treatment, event = pasi75_r,
@@ -87,5 +88,6 @@ if (requireNamespace("netmeta", quietly = TRUE) &&
   nma <- netmeta::netmeta(pw, common = FALSE)
   ggleague(nma, psoriasis_nma, study, treatment,
            small_values = "undesirable")
+}
 }
 }

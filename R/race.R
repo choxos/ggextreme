@@ -65,7 +65,12 @@
 #' @param res Output resolution in pixels per inch.
 #' @param family Font family. The package ships Lato and registers it on load.
 #'
-#' @return An object of class `ggrace`.
+#' @return An object of class `ggrace`. It prints as an interactive widget,
+#'   like the package's other graphs: the card's play button and timeline
+#'   work, and hovering over a bar shows its value and rank. Use
+#'   [graph_widget()] or [graph_save()] with a `.html` file for the widget,
+#'   [race_frame()] or [graph_plot()] for a static frame, and
+#'   [animate_race()] for a GIF or video.
 #' @export
 #'
 #' @examples
@@ -211,6 +216,7 @@ ggrace <- function(data, value, name, time,
       res = res,
       family = family,
       date = inherits(time, "Date"),
+      image_files = if (!is.null(images)) images[names(images) %in% entities],
       images = prepare_images(
         images,
         px = 2 * ceiling(image_size * layout$bar_h * width /
@@ -477,11 +483,14 @@ render_frames <- function(dir, n, frame, width, height, res, background,
 
 #' @export
 print.ggrace <- function(x, ...) {
-  cat("<ggrace>\n")
-  cat(" entities: ", length(x$entities), " (top ", x$top_n, " shown)\n", sep = "")
-  cat(" keyframes:", length(x$keys), "\n")
-  cat(" frames:   ", x$n_frames, " at ", x$fps, " fps\n", sep = "")
+  print(graph_widget(x))
   invisible(x)
+}
+
+#' @rdname graph_widget
+#' @exportS3Method knitr::knit_print
+knit_print.ggrace <- function(x, ...) {
+  knitr::knit_print(graph_widget(x), ...)
 }
 
 # Internals -------------------------------------------------------------

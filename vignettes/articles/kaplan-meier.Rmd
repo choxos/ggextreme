@@ -160,5 +160,5 @@ animate_km(km, "colon.gif")
 ```
 
 ```{r, echo = FALSE, eval = TRUE, out.width = "100%"}
-knitr::include_graphics("../man/figures/README-km.gif")
+knitr::include_graphics("../../man/figures/README-km.gif")
 ```

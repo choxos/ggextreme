@@ -117,17 +117,17 @@ articles:
   contents:
   - ggextreme
   - how-the-animation-works
-  - causal-diagrams
-  - network-plots
-  - forest-plots
-  - funnel-plots
-  - league-tables
-  - cinema
-  - kaplan-meier
-  - swimmer-plots
-  - responder-thresholds
-  - diagnostic-thresholds
-  - bias-sensitivity
-  - multiverse
-  - nomograms
-  - choropleth-maps
+  - articles/causal-diagrams
+  - articles/network-plots
+  - articles/forest-plots
+  - articles/funnel-plots
+  - articles/league-tables
+  - articles/cinema
+  - articles/kaplan-meier
+  - articles/swimmer-plots
+  - articles/responder-thresholds
+  - articles/diagnostic-thresholds
+  - articles/bias-sensitivity
+  - articles/multiverse
+  - articles/nomograms
+  - articles/choropleth-maps

@@ -62,8 +62,16 @@ race <- ggrace(
 race
 ```
 
-The object holds one row per entity per frame, already interpolated. Nothing
-has been drawn yet.
+Printed, the race plays in the page, like the package's other graphs: the
+round button plays and pauses it, clicking or dragging along the timeline
+moves to any time, and the arrow keys step from one year to the next.
+Hovering over a bar shows its value and rank at that moment, and clicking one
+follows it through the race while the others fade. `graph_save(race,
+"race.html")` writes it as a single web page.
+
+The object holds one row per entity per frame, already interpolated, and the
+widget plays exactly these frames, so it matches the GIF or video that
+`animate_race()` writes.
 
 ```{r}
 head(race$frames)

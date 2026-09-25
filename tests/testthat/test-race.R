@@ -100,3 +100,47 @@ test_that("colors are stable across the whole field", {
   expect_named(race$colors, sort(unique(as.character(phones$region))))
   expect_length(unique(race$colors), length(race$colors))
 })
+
+test_that("a race becomes a widget that plays the same frames", {
+  d <- data.frame(name = rep(c("A", "B", "C"), 3), time = rep(1:3, each = 3),
+                  value = c(1, 2, 3, 3, 2, 1, 2, 5, 1))
+  race <- ggrace(d, value, name, time, top_n = 2, duration = 1, fps = 10, family = "")
+  g <- race_graph(race)
+  expect_s3_class(g, "ggx_graph")
+  expect_equal(g$on_render, "ggextremeRace(el, data);")
+  rd <- g$render_data
+  expect_equal(rd$n, race$n_frames)
+  expect_length(rd$start, race$n_frames + 1)
+  # Each frame lists the bars ranked within the window plus the one waiting.
+  vis <- race$frames[race$frames$rank <= race$top_n + 1, ]
+  expect_equal(length(rd$entity), nrow(vis))
+  expect_equal(diff(rd$start), as.vector(table(factor(vis$frame, levels = seq_len(race$n_frames)))))
+  # The labels are the race's own formatter, and the bar ends are laid out
+  # against the frame's axis maximum as race_frame() does.
+  first <- vis[vis$frame == 1, ]
+  first <- first[order(first$rank), ]
+  expect_equal(rd$value[1:nrow(first)], race$label_value(first$value))
+  top <- max(first$value[first$rank <= race$top_n + 0.5])
+  lay <- race$layout
+  expect_equal(rd$end[1], round(lay$bar_x0 + first$value[1] * (lay$bar_x1 - lay$bar_x0) / top, 2))
+  expect_equal(rd$time_labels[rd$time_index + 1], race$label_time(race$times))
+  expect_equal(rd$key_frames + 1, vapply(race$keys, function(k) which.min(abs(race$times - k)), 1L))
+  # The widget, the static copy and printing all work like the other graphs.
+  expect_s3_class(graph_widget(race), "girafe")
+  expect_s3_class(graph_plot(race), "ggplot")
+  png <- tempfile(fileext = ".png")
+  graph_save(race, png, res = 30)
+  expect_true(file.exists(png))
+})
+
+test_that("images reach the widget as data URIs", {
+  skip_if_not_installed("magick")
+  skip_if_not_installed("rsvg")
+  key <- unique(clefts_qci[c("country", "iso")])[1:3, ]
+  d <- clefts_qci[clefts_qci$country %in% key$country & clefts_qci$year <= 1992, ]
+  race <- ggrace(d, qci, country, year, top_n = 3, duration = 1, fps = 5, family = "",
+                 images = stats::setNames(race_flags(key$iso), key$country))
+  uris <- race_graph(race)$render_data$images
+  expect_setequal(names(uris), key$country)
+  expect_true(all(startsWith(unlist(uris), "data:image/svg+xml;base64,")))
+})

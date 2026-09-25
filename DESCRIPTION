@@ -64,6 +64,7 @@ Imports:
     htmltools,
     htmlwidgets,
     igraph,
+    jsonlite,
     parallel,
     ragg,
     rlang,

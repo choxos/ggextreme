@@ -131,7 +131,7 @@ animate_meta(ggmeta(bcg_fit), "bcg.gif", time = bcg$year)
 ```
 
 ```{r, echo = FALSE, eval = TRUE, out.width = "100%"}
-knitr::include_graphics("../man/figures/README-meta-cumulative.gif")
+knitr::include_graphics("../../man/figures/README-meta-cumulative.gif")
 ```
 
 ## Other forms

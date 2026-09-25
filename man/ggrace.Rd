@@ -103,7 +103,12 @@ it also fixes every font size.}
 \item{family}{Font family. The package ships Lato and registers it on load.}
 }
 \value{
-An object of class \code{ggrace}.
+An object of class \code{ggrace}. It prints as an interactive widget,
+like the package's other graphs: the card's play button and timeline
+work, and hovering over a bar shows its value and rank. Use
+\code{\link[=graph_widget]{graph_widget()}} or \code{\link[=graph_save]{graph_save()}} with a \code{.html} file for the widget,
+\code{\link[=race_frame]{race_frame()}} or \code{\link[=graph_plot]{graph_plot()}} for a static frame, and
+\code{\link[=animate_race]{animate_race()}} for a GIF or video.
 }
 \description{
 Turns a long panel of \code{name}, \code{time}, \code{value} observations into a bar chart

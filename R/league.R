@@ -48,6 +48,7 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' if (requireNamespace("netmeta", quietly = TRUE) &&
 #'     requireNamespace("meta", quietly = TRUE)) {
 #'   pw <- meta::pairwise(treat = treatment, event = pasi75_r,
@@ -56,6 +57,7 @@
 #'   nma <- netmeta::netmeta(pw, common = FALSE)
 #'   ggleague(nma, psoriasis_nma, study, treatment,
 #'            small_values = "undesirable")
+#' }
 #' }
 ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
                      pooled = NULL, small_values = NULL, order = NULL,

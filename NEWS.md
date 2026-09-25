@@ -2,7 +2,9 @@
 
 * First release.
 * Bar chart races: `ggrace()`, `race_frame()`, `race_size()` and
-  `animate_race()`, with country flags on the bars.
+  `animate_race()`, with country flags on the bars. A race prints as an
+  interactive widget whose play button and timeline work, and plays the same
+  frames `animate_race()` writes.
 * Interactive causal diagrams with `ggcausal()`, including the paths an
   adjustment set leaves open.
 * Network meta-analysis: network plots with `ggnma()`, league tables with

@@ -155,5 +155,5 @@ animate_choropleth(m, "qci.gif", step = 0.4)
 ```
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("../man/figures/README-map.gif")
+knitr::include_graphics("../../man/figures/README-map.gif")
 ```

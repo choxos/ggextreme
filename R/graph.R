@@ -441,7 +441,8 @@ graph_dependency <- function() {
 
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
-#' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
+#' A bar chart race from [ggrace()], or a graph built by [ggcausal()],
+#' [ggnma()], [ggmeta()], [ggfunnel()],
 #' [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()], [ggchoropleth()],
 #' [ggdiagnostic()], [ggsensitivity()], [ggmultiverse()], [ggresponder()],
 #' [cinema_league()], [cinema_contribution()], [cinema_clinical()],
@@ -464,7 +465,8 @@ graph_dependency <- function() {
 #' colors that carry meaning keep their hue, and the hover cards and panels
 #' follow. It also follows a page that switches theme while it is open.
 #'
-#' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
+#' @param x A race from [ggrace()], whose static copy is its last frame, or
+#'   a graph from [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
 #'   [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()], [ggchoropleth()],
 #'   [ggdiagnostic()], [ggsensitivity()], [ggmultiverse()],
 #'   [ggresponder()], [cinema_league()], [cinema_contribution()],
@@ -494,6 +496,7 @@ graph_dependency <- function() {
 #' graph_save(dag, tempfile(fileext = ".png"))
 #' }
 graph_widget <- function(x, theme = c("auto", "light", "dark")) {
+  if (inherits(x, "ggrace")) x <- race_graph(x)
   stopifnot(inherits(x, "ggx_graph"))
   theme <- match.arg(theme)
   hover <- ggiraph::girafe_css(
@@ -533,6 +536,7 @@ graph_widget <- function(x, theme = c("auto", "light", "dark")) {
 #' @rdname graph_widget
 #' @export
 graph_plot <- function(x, theme = c("light", "dark")) {
+  if (inherits(x, "ggrace")) x <- race_graph(x)
   stopifnot(inherits(x, "ggx_graph"))
   theme <- match.arg(theme)
   if (theme == "light") x$plot else recolor_plot(x$plot, dark_ink)
@@ -569,6 +573,7 @@ recolor_plot <- function(p, map) {
 #' @rdname graph_widget
 #' @export
 graph_save <- function(x, file, res = 300, theme = NULL) {
+  if (inherits(x, "ggrace")) x <- race_graph(x)
   stopifnot(inherits(x, "ggx_graph"))
   ext <- tolower(tools::file_ext(file))
   if (ext == "html") {
