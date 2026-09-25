@@ -714,3 +714,553 @@ svg.ggiraph-svg text[data-id="yr"] {
   font: inherit;
   cursor: pointer;
 }
+
+/* Restricted mean survival in a Kaplan-Meier plot. */
+svg.ggiraph-svg [data-id^="rm"],
+.ggx-rmst-area,
+.ggx-rmst-tau {
+  pointer-events: none;
+}
+
+.ggx-rmst-tau {
+  stroke: var(--ggx-title, #1F1F1F);
+  stroke-width: 1.4;
+}
+
+/* A slider with its label and value, and a plain-language readout under a
+   plot. */
+.ggx-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ggx-muted, #6B6B6B);
+}
+
+.ggx-range input[type="range"] {
+  width: 200px;
+  accent-color: #22928F;
+}
+
+.ggx-range b {
+  min-width: 3em;
+  color: var(--ggx-title, #1F1F1F);
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-readout {
+  margin: 2px 24px 10px;
+  color: var(--ggx-text, #2C2C2C);
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ggx-readout p {
+  margin: 0 0 4px;
+}
+
+.ggx-readout b {
+  color: var(--ggx-title, #1F1F1F);
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-readout .ggx-readout-note {
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 12.5px;
+}
+
+/* Adjustment paths in a causal diagram. */
+svg.ggiraph-svg [data-id^="adj"],
+svg.ggiraph-svg [data-id="cv"] {
+  pointer-events: none;
+}
+
+svg.ggx-adjusting [data-id^="n"] {
+  cursor: copy;
+}
+
+.ggx-select {
+  padding: 4px 6px;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 6px;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
+  font: inherit;
+}
+
+.ggx-paths .ggx-verdict {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border-left: 4px solid #C0603F;
+  border-radius: 4px;
+  background: var(--ggx-faint, #EEF2F2);
+  font-size: 15px;
+}
+
+.ggx-paths .ggx-verdict.ggx-ok {
+  border-left-color: #22928F;
+}
+
+.ggx-paths .ggx-paths-msg {
+  color: #A0482C;
+}
+
+.ggx-dark .ggx-paths .ggx-paths-msg {
+  color: #E08A6A;
+}
+
+.ggx-paths-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 0 0 10px;
+}
+
+.ggx-paths-k {
+  margin-right: 4px;
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ggx-chip {
+  padding: 4px 10px;
+  border: 1px solid var(--ggx-rule, #DADADA);
+  border-radius: 999px;
+  background: var(--ggx-card, #FFFFFF);
+  color: var(--ggx-text, #2C2C2C);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ggx-chip[aria-pressed="true"] {
+  border-color: var(--ggx-title, #1F1F1F);
+  box-shadow: inset 0 0 0 1px var(--ggx-title, #1F1F1F);
+  color: var(--ggx-title, #1F1F1F);
+  font-weight: 700;
+}
+
+.ggx-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ggx-chip i {
+  font-size: 11.5px;
+  font-weight: 400;
+}
+
+.ggx-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ggx-link, #1D7C79);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ggx-chip:focus-visible,
+.ggx-link:focus-visible,
+.ggx-select:focus-visible,
+.ggx-nomo-reset:focus-visible,
+.ggx-path:focus-visible {
+  outline: 2px solid #22928F;
+  outline-offset: 2px;
+}
+
+.ggx-path-list {
+  display: grid;
+  gap: 5px;
+  margin: 6px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.ggx-path {
+  display: grid;
+  grid-template-columns: 9.5em 1fr;
+  gap: 1px 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--ggx-line, #E3E3E3);
+  border-left: 4px solid #D6DCDC;
+  border-radius: 4px;
+}
+
+.ggx-path:hover {
+  background: var(--ggx-faint, #EEF2F2);
+}
+
+.ggx-path-causal { border-left-color: #22928F; }
+.ggx-path-biasing { border-left-color: #C0603F; }
+.ggx-path-blocked { color: var(--ggx-muted, #6B6B6B); }
+
+.ggx-path-tag {
+  grid-row: span 2;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ggx-path-causal .ggx-path-tag { color: #1D7C79; }
+.ggx-path-biasing .ggx-path-tag { color: #A0482C; }
+.ggx-dark .ggx-path-causal .ggx-path-tag { color: #4CC2BE; }
+.ggx-dark .ggx-path-biasing .ggx-path-tag { color: #E08A6A; }
+
+.ggx-path-text {
+  color: var(--ggx-title, #1F1F1F);
+}
+
+.ggx-path-blocked .ggx-path-text {
+  color: var(--ggx-muted, #6B6B6B);
+}
+
+.ggx-path-why {
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 13px;
+}
+
+.ggx-paths-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0 0 6px;
+  font-size: 12.5px;
+}
+
+.ggx-paths-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ggx-paths-blocked { stroke: #9A9A9A; }
+.ggx-paths-box { stroke: var(--ggx-title, #1F1F1F); }
+.ggx-dark .ggx-paths-blocked { stroke: #637070; }
+
+.ggx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .ggx-path {
+    grid-template-columns: 1fr;
+  }
+  .ggx-path-tag {
+    grid-row: auto;
+  }
+}
+
+/* Where a league table's network estimate comes from. */
+.ggx-flow {
+  pointer-events: none;
+}
+
+.ggx-flow-box {
+  fill: none;
+  stroke: var(--ggx-title, #1F1F1F);
+}
+
+.ggx-flow-pct {
+  fill: var(--ggx-title, #1F1F1F);
+  font-family: Lato, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--ggx-page, #FFFFFF);
+  stroke-width: 3px;
+}
+
+.ggx-flow-bar {
+  display: inline-block;
+  width: 90px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 3px;
+  background: var(--ggx-faint, #EEF2F2);
+  vertical-align: 1px;
+  overflow: hidden;
+}
+
+.ggx-flow-bar i {
+  display: block;
+  height: 100%;
+  background: #22928F;
+}
+
+.ggx-panel tr.ggx-own th {
+  font-weight: 700;
+}
+
+.ggx-panel .ggx-flow-head {
+  margin-top: 14px;
+}
+
+.ggx-panel .ggx-note {
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 0.9em;
+}
+
+.ggx-readout .ggx-flow-table table {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ggx-readout .ggx-flow-table th,
+.ggx-readout .ggx-flow-table td {
+  padding: 3px 14px 3px 0;
+  border-bottom: 1px solid var(--ggx-line, #E3E3E3);
+  text-align: left;
+  font-weight: 400;
+}
+
+.ggx-readout .ggx-flow-table thead th {
+  color: var(--ggx-muted, #6B6B6B);
+}
+
+.ggx-range.ggx-wrap {
+  flex-wrap: wrap;
+}
+
+/* A diagnostic threshold explorer. */
+.ggx-dx svg [data-id],
+.ggx-dx .ggx-dx-tail,
+.ggx-dx .ggx-dx-people {
+  pointer-events: none;
+}
+
+.ggx-dx .ggx-dx-drag {
+  fill: #FFFFFF;
+  fill-opacity: 0.01;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+/* A bias and tipping point explorer. */
+.ggx-sens svg [data-id] {
+  pointer-events: none;
+}
+
+.ggx-sens .ggx-sens-hit {
+  fill: #FFFFFF;
+  fill-opacity: 0.01;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* A multiverse of analyses. */
+.ggx-mv svg {
+  touch-action: pan-y;
+}
+
+.ggx-mv svg [data-id^="o"] {
+  cursor: pointer;
+}
+
+.ggx-mv svg text.ggx-mv-on {
+  fill: #1D7C79;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.ggx-dark .ggx-mv svg text.ggx-mv-on {
+  fill: #4CC2BE;
+}
+
+.ggx-mv .ggx-mv-brush {
+  fill: #22928F;
+  fill-opacity: 0.08;
+  pointer-events: none;
+}
+
+/* A responder threshold plot. */
+.ggx-resp svg [data-id] {
+  pointer-events: none;
+}
+
+.ggx-resp .ggx-resp-drag {
+  fill: #FFFFFF;
+  fill-opacity: 0.01;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.ggx-dark .ggx-path-blocked {
+  border-left-color: #637070;
+}
+
+/* CINeMA plots (R/cinema*.R): judgment marks, the panels' tables and
+   contribution bars, and keyboard focus on the shapes a reader clicks. */
+svg.ggiraph-svg .ggx-cn-key:focus {
+  outline: none;
+}
+
+svg.ggiraph-svg .ggx-cn-key:focus-visible {
+  outline: 2px solid #22928F;
+  outline-offset: 1px;
+  stroke: #22928F;
+  stroke-width: 2.5px;
+}
+
+.ggx-cn-lv {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.ggx-cn-lv i,
+.ggx-cn-hollow {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.ggx-cn-hollow {
+  box-sizing: border-box;
+  border: 1.5px solid var(--ggx-muted, #6B6B6B);
+  background: none;
+}
+
+.ggx-cn-src {
+  margin-top: 2px;
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 12px;
+}
+
+.ggx-panel .ggx-cn-kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 6px 18px;
+  margin: 10px 0 6px;
+}
+
+.ggx-panel .ggx-cn-kv dt {
+  color: var(--ggx-muted, #6B6B6B);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ggx-panel .ggx-cn-kv dd {
+  margin: 0;
+  color: var(--ggx-title, #1F1F1F);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ggx-panel .ggx-cn-domains table {
+  width: 100%;
+}
+
+.ggx-panel .ggx-cn-domains td:nth-child(2) {
+  width: 11em;
+}
+
+.ggx-panel .ggx-cn-domains td:last-child {
+  min-width: 14em;
+}
+
+.ggx-cn-bar {
+  display: flex;
+  height: 20px;
+  margin: 6px 0 4px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ggx-cn-seg {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border-right: 2px solid var(--ggx-card, #FFFFFF);
+  color: #FEFEFE;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 20px;
+  padding-left: 4px;
+  white-space: nowrap;
+}
+
+.ggx-cn-hatch {
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.35) 0 2px, transparent 2px 6px) !important;
+}
+
+.ggx-cn-clin .ggx-cn-hit {
+  fill: #FFFFFF;
+  fill-opacity: 0.01;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.ggx-cn-guide {
+  stroke: #22928F;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.ggx-cn-strips {
+  pointer-events: none;
+}
+
+.ggx-cn-contrib .ggx-cn-hatchlayer,
+.ggx-cn-contrib svg [data-id^="r"],
+.ggx-cn-contrib svg [data-id^="mr"],
+.ggx-cn-contrib svg [data-id^="mk"],
+.ggx-cn-contrib svg [data-id^="k"],
+.ggx-cn-contrib svg [data-id^="nl"],
+.ggx-cn-contrib svg [data-id="nh"] {
+  pointer-events: none;
+}
+
+.ggx-cn-contrib svg [data-id^="b"],
+.ggx-cn-contrib svg [data-id^="m"],
+.ggx-cn-contrib svg [data-id^="c"],
+.ggx-cn-contrib svg [data-id^="s"] {
+  cursor: pointer;
+}
+
+.ggx-cn-net svg [data-id^="k"] {
+  pointer-events: none;
+}
+
+.ggx-cn-net svg [data-id^="s"] {
+  transition: stroke 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ggx-cn-net svg [data-id^="s"] {
+    transition: none;
+  }
+}
+
+.ggx-cn-net svg text[data-id^="el"] {
+  paint-order: stroke;
+  stroke: var(--ggx-page, #FFFFFF);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.ggx-panel .ggx-cn-studies table {
+  width: 100%;
+}
+
+.ggx-panel .ggx-cn-studies td:last-child {
+  min-width: 16em;
+}

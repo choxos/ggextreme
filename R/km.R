@@ -18,6 +18,16 @@
 #' between the group and log time or time, and `"constant"` shows the Cox
 #' estimate at every time.
 #'
+#' With `rmst`, the plot shades the area under each curve up to a horizon
+#' \eqn{\tau} and tabulates the restricted mean survival time, the mean time
+#' alive (or free of the event) within \eqn{\tau}, for each group, with its
+#' difference from the reference group. RMST and its standard error are those
+#' [survival::survfit()] reports for each group; the difference assumes the
+#' groups are independent, as in a randomized comparison. The widget adds a
+#' slider to explore other horizons, up to the end of follow-up in the group
+#' followed least, while the prespecified horizon stays marked, so the
+#' horizon reported is the one planned rather than the most favorable one.
+#'
 #' With `ph_tests = TRUE`, a section under the plot, collapsed until the
 #' reader opens it, gives the Cox hazard ratios, the log-rank test, the
 #' Grambsch and Therneau test for each comparison and overall, and the group
@@ -37,6 +47,9 @@
 #'   collapsed section under the plot. The time interaction models grow with
 #'   the number of events, so they are skipped with a message for very large
 #'   data.
+#' @param rmst Restricted mean survival time: `NULL` for none, the
+#'   prespecified horizon \eqn{\tau} on the time scale, or `TRUE` for the
+#'   end of follow-up in the group followed least.
 #' @param risk_table Show the numbers at risk.
 #' @param conf_int Shade the confidence bands.
 #' @param breaks Times for the axis ticks and the risk table. Defaults to
@@ -72,6 +85,7 @@ ggkm <- function(formula, data,
                  type = c("survival", "risk"),
                  hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
                  ph_tests = FALSE,
+                 rmst = NULL,
                  risk_table = TRUE,
                  conf_int = TRUE,
                  breaks = NULL,
@@ -88,6 +102,7 @@ ggkm <- function(formula, data,
   type <- match.arg(type)
   hr_time <- match.arg(hr_time)
   input <- km_prepare(formula, data, reference, hr_time, ph_tests, breaks)
+  input$rmst <- km_rmst(input, rmst)
   if (is.null(ylab)) ylab <- if (type == "survival") "Survival" else "Cumulative incidence"
   lay <- km_layout(input, type, hr_time, ph_tests, risk_table, conf_int, palette,
                    xlab, ylab, legend, legend_title, title, caption, family)
@@ -97,11 +112,13 @@ ggkm <- function(formula, data,
                         js_string("Hazard ratios and proportional hazards"), ", ",
                         js_string(lay$ph_html), ");")
   }
+  if (!is.null(lay$rmst)) on_render <- paste(on_render, "ggextremeRmst(el, data);")
   structure(
     list(plot = km_draw(lay), width = lay$page$width / 72,
          height = lay$page$height / 72, title = title,
          on_render = on_render, hover_inv = "", layout = lay,
-         ph = lay$ph_table),
+         render_data = if (!is.null(lay$rmst)) km_rmst_data(lay),
+         ph = lay$ph_table, rmst = if (!is.null(lay$rmst)) lay$rmst$table),
     class = c("ggkm", "ggx_graph")
   )
 }
@@ -226,6 +243,43 @@ km_prepare <- function(formula, data, reference, hr_time, ph_tests, breaks) {
 
   list(d = d, arms = arms, k = k, fit = fit, cox = cox, logrank = logrank,
        zph = zph, lin = lin, logt = logt, tmax = tmax, breaks = breaks)
+}
+
+# Restricted mean survival time at the prespecified horizon and on a grid of
+# horizons up to the end of follow-up in the group followed least, from
+# survfit(), with each group's difference from the reference.
+km_rmst <- function(input, rmst) {
+  if (is.null(rmst) || isFALSE(rmst)) return(NULL)
+  last <- vapply(input$arms, function(a) max(input$d$time[input$d$group == a]), numeric(1))
+  limit <- min(last)
+  tau <- if (isTRUE(rmst)) limit else rmst
+  if (!is.numeric(tau) || length(tau) != 1 || !is.finite(tau) || tau <= 0) {
+    rlang::abort("`rmst` must be `TRUE` or a positive horizon on the time scale.")
+  }
+  if (tau > limit * (1 + 1e-9)) {
+    rlang::abort(paste0("`rmst` is past the end of follow-up in the group followed least (",
+                        signif(limit, 3), ")."))
+  }
+  taus <- sort(unique(c(seq(limit / 80, limit, length.out = 80), tau)))
+  at <- lapply(taus, function(t) {
+    tb <- summary(input$fit, rmean = t)$table
+    if (is.null(dim(tb))) tb <- matrix(tb, nrow = 1, dimnames = list(NULL, names(tb)))
+    list(m = unname(tb[, "rmean"]), se = unname(tb[, "se(rmean)"]))
+  })
+  m <- do.call(rbind, lapply(at, `[[`, "m"))
+  se <- do.call(rbind, lapply(at, `[[`, "se"))
+  d <- m - m[, 1]
+  dse <- sqrt(se^2 + se[, 1]^2)
+  dse[, 1] <- 0
+  i <- match(tau, taus)
+  z <- stats::qnorm(0.975)
+  table <- data.frame(group = input$arms, rmst = m[i, ], lower = m[i, ] - z * se[i, ],
+                      upper = m[i, ] + z * se[i, ], difference = d[i, ],
+                      diff_lower = d[i, ] - z * dse[i, ], diff_upper = d[i, ] + z * dse[i, ],
+                      stringsAsFactors = FALSE)
+  table[1, c("difference", "diff_lower", "diff_upper")] <- NA
+  list(tau = tau, prespecified = !isTRUE(rmst), limit = limit, taus = taus,
+       m = m, se = se, d = d, dse = dse, index = i, table = table)
 }
 
 # The log hazard ratio of each comparison at `times`, with its standard
@@ -527,6 +581,14 @@ km_layout <- function(input, type, hr_time, ph_tests, risk_table, conf_int,
     }))
     y <- max(rows_y) + 8
   }
+  rmst <- NULL
+  if (!is.null(input$rmst)) {
+    head_y <- y + 16
+    rows_y <- head_y + 4 + seq_len(k) * dims$row_h
+    rmst <- c(input$rmst, list(head_y = head_y, y = rows_y, col_rm = plot_x0,
+                               col_diff = plot_x0 + 200))
+    y <- max(rows_y) + 10
+  }
 
   # Hazard ratios and proportional hazards tests, as an HTML section the
   # widget adds under the plot, collapsed.
@@ -564,7 +626,8 @@ km_layout <- function(input, type, hr_time, ph_tests, risk_table, conf_int,
     xlab = xlab, ylab = ylab, breaks = input$breaks, curves = curves,
     edges = edges, slice_ids = slice_ids, slice_tip = slice_tip, slice_click = slice_click,
     arm_ids = arm_ids, arm_tip = arm_tip, arm_click = arm_click,
-    risk = risk, ph_table = ph_table, ph_html = ph_html, time_text = time_text
+    risk = risk, ph_table = ph_table, ph_html = ph_html, time_text = time_text,
+    rmst = rmst
   )
 }
 
@@ -695,6 +758,79 @@ km_draw <- function(lay, until = NULL) {
     dots <- NULL
   }
 
+  # Restricted mean survival: the area under each curve up to the horizon,
+  # the horizon itself and a table of the means under the risk table.
+  rm_layers <- NULL
+  if (!is.null(lay$rmst) && interactive) {
+    rm <- lay$rmst
+    # The reference group's mean is the area under its curve; each other
+    # group's difference from it is the area between the two curves.
+    ref_pts <- km_area(lay$curves[[1]], rm$tau)
+    area <- do.call(rbind, lapply(seq_len(k), function(a) {
+      if (a == 1) {
+        tt <- c(ref_pts$t, rm$tau, 0)
+        ss <- c(ref_pts$s, 0, 0)
+        fill <- graph_ink$muted
+        alpha <- 0.1
+      } else {
+        pts <- km_area(lay$curves[[a]], rm$tau)
+        tt <- c(pts$t, rev(ref_pts$t))
+        ss <- c(pts$s, rev(ref_pts$s))
+        fill <- lay$colors[a]
+        alpha <- 0.3
+      }
+      data.frame(x = px(X(tt)), y = py(Y(lay$prob(ss))), id = paste0("rma", a), fill = fill,
+                 alpha = alpha, stringsAsFactors = FALSE)
+    }))
+    tau_line <- data.frame(x = px(X(rm$tau)), y = py(lay$plot_top), yend = py(lay$plot_bottom),
+                           id = "rmt")
+    txt <- km_rmst_text(lay, rm$index)
+    words <- rbind(
+      data.frame(x = px(X(rm$tau) + 4), y = py(lay$plot_top + 6), label = txt$tau, id = "rml",
+                 hjust = 0, colour = graph_ink$title, face = "bold", stringsAsFactors = FALSE),
+      data.frame(x = px(0), y = py(rm$head_y), label = txt$head, id = "rmh", hjust = 0,
+                 colour = graph_ink$title, face = "bold", stringsAsFactors = FALSE),
+      data.frame(x = px(c(rm$col_rm, rm$col_diff)), y = py(rep(rm$head_y + 14, 2)),
+                 label = c(txt$col_rm, txt$col_diff), id = c("rmc1", "rmc2"), hjust = 0,
+                 colour = graph_ink$muted, face = "plain", stringsAsFactors = FALSE),
+      data.frame(x = px(rep(rm$col_rm, k)), y = py(rm$y + 4), label = txt$rm,
+                 id = paste0("rmv", seq_len(k)), hjust = 0, colour = graph_ink$text, face = "plain",
+                 stringsAsFactors = FALSE),
+      data.frame(x = px(rep(rm$col_diff, k)), y = py(rm$y + 4), label = txt$diff,
+                 id = paste0("rmd", seq_len(k)), hjust = 0, colour = graph_ink$text, face = "plain",
+                 stringsAsFactors = FALSE)
+    )
+    arm_words <- texts(lay$arms, rep(11, k), rm$y + 4, dims$small_pt, graph_ink$text)
+    a <- seq(0, 2 * pi, length.out = 17)
+    rm_dots <- do.call(rbind, lapply(seq_len(k), function(i) {
+      data.frame(x = px(4 + 3.5 * cos(a)), y = py(rm$y[i] + 4 + 3.5 * sin(a)),
+                 group = 200 + i, fill = lay$colors[i], stringsAsFactors = FALSE)
+    }))
+    pre <- if (rm$prespecified) {
+      data.frame(x = px(X(rm$tau)), y = py(lay$plot_top), yend = py(lay$plot_bottom))
+    }
+    rm_layers <- list(
+      ggiraph::geom_polygon_interactive(
+        data = area, aes(x = .data$x, y = .data$y, group = .data$id, fill = .data$fill,
+                         alpha = .data$alpha, data_id = .data$id),
+        colour = NA),
+      if (!is.null(pre)) geom_segment(data = pre, aes(x = .data$x, xend = .data$x, y = .data$y, yend = .data$yend),
+                                      colour = "#7A5AA6", linewidth = 1.2 / .pt, linetype = "42"),
+      if (!is.null(pre)) draw_text(texts("prespecified", X(rm$tau) + 4, lay$plot_bottom - 7,
+                                         dims$small_pt, "#7A5AA6"), lay$family),
+      ggiraph::geom_segment_interactive(
+        data = tau_line, aes(x = .data$x, xend = .data$x, y = .data$y, yend = .data$yend,
+                             data_id = .data$id),
+        colour = graph_ink$title, linewidth = 1.4 / .pt),
+      ggiraph::geom_text_interactive(
+        data = words, aes(x = .data$x, y = .data$y, label = .data$label, data_id = .data$id,
+                          hjust = .data$hjust, fontface = .data$face),
+        size = dims$small_pt / .pt, colour = words$colour, family = lay$family),
+      draw_text(arm_words, lay$family),
+      draw_shapes(rm_dots)
+    )
+  }
+
   slices <- if (interactive) {
     data.frame(xmin = px(X(lay$edges[-length(lay$edges)])), xmax = px(X(lay$edges[-1])),
                ymin = py(lay$plot_bottom), ymax = py(lay$plot_top),
@@ -709,6 +845,7 @@ km_draw <- function(lay, until = NULL) {
     (if (!is.null(bands)) geom_polygon(data = bands,
                                        aes(x = .data$x, y = .data$y, group = .data$group),
                                        fill = bands$fill, alpha = 0.14)) +
+    rm_layers +
     km_rects(slices) +
     ggiraph::geom_path_interactive(
       data = lines,
@@ -730,6 +867,50 @@ km_draw <- function(lay, until = NULL) {
     draw_text(labels, lay$family) +
     graph_frame(lay$page, lay$family)
   p
+}
+
+# A curve's steps up to `tau`, as the upper edge of the area under it.
+km_area <- function(cv, tau) {
+  keep <- cv$t <= tau
+  tt <- cv$t[keep]
+  ss <- cv$s[keep]
+  prev <- c(1, utils::head(ss, -1))
+  list(t = c(0, as.vector(rbind(tt, tt)), tau),
+       s = c(1, as.vector(rbind(prev, ss)), if (length(ss)) ss[length(ss)] else 1))
+}
+
+km_rmst_fmt <- function(v, limit) formatC(v, format = "f", digits = if (limit >= 100) 0 else if (limit >= 10) 1 else 2)
+km_tau_fmt <- function(v, limit) {
+  if (abs(v - round(v)) < 1e-9) format(round(v)) else km_rmst_fmt(v, limit)
+}
+
+# The words of the RMST table at the horizon with index `i`.
+km_rmst_text <- function(lay, i) {
+  rm <- lay$rmst
+  f <- function(v) km_rmst_fmt(v, rm$limit)
+  z <- stats::qnorm(0.975)
+  what <- if (lay$type == "survival") "Restricted mean survival time" else "Restricted mean time free of the event"
+  list(
+    tau = paste0("\u03c4 = ", km_tau_fmt(rm$taus[i], rm$limit)),
+    head = paste0(what, " up to \u03c4 = ", km_tau_fmt(rm$taus[i], rm$limit)),
+    col_rm = "Mean (95% CI)",
+    col_diff = paste("Difference from", lay$arms[1], "(95% CI)"),
+    rm = paste0(f(rm$m[i, ]), " (", f(rm$m[i, ] - z * rm$se[i, ]), " to ", f(rm$m[i, ] + z * rm$se[i, ]), ")"),
+    diff = c("reference", paste0(f(rm$d[i, -1]), " (", f(rm$d[i, -1] - z * rm$dse[i, -1]), " to ",
+                                 f(rm$d[i, -1] + z * rm$dse[i, -1]), ")"))
+  )
+}
+
+# What the widget needs to move the horizon.
+km_rmst_data <- function(lay) {
+  rm <- lay$rmst
+  list(taus = I(rm$taus), m = rm$m, se = rm$se, d = rm$d, dse = rm$dse,
+       start = rm$index - 1L, prespecified = rm$prespecified, limit = rm$limit,
+       arms = I(lay$arms), colors = I(lay$colors), type = lay$type,
+       curves = lapply(lay$curves, function(cv) list(t = I(cv$t), s = I(cv$s))),
+       dx = lay$page$px(0), dy = lay$page$height - lay$page$py(0),
+       x0 = lay$plot_x0, x1 = lay$plot_x1, tmax = lay$tmax, top = lay$plot_top,
+       bottom = lay$plot_bottom, xlab = lay$xlab)
 }
 
 km_rects <- function(df) {

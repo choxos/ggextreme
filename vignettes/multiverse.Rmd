@@ -1,0 +1,78 @@
+---
+title: "A multiverse of analyses"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A multiverse of analyses}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+Any analysis rests on choices: how the outcome is defined, what is adjusted
+for, which model is fitted, how missing data are handled, who is included.
+When several choices are defensible, running every combination shows how
+much the answer depends on them. `ggmultiverse()` draws the result as a
+specification curve and shows which choices move it.
+
+```{r setup}
+library(ggextreme)
+```
+
+## A first multiverse
+
+The analyses below are simulated: every combination of five choices, 48 in
+all, each with an odds ratio and its interval.
+
+```{r}
+specs <- expand.grid(
+  outcome = c("Primary definition", "Broad definition"),
+  adjustment = c("Minimal", "Standard", "Extended"),
+  model = c("Logistic", "Log-binomial"),
+  missing = c("Complete cases", "Multiple imputation"),
+  sample = c("Everyone", "Excluding early deaths"),
+  stringsAsFactors = FALSE
+)
+set.seed(7)
+b <- -0.35 + 0.15 * (specs$outcome == "Broad definition") +
+  c(0, 0.12, 0.2)[match(specs$adjustment, c("Minimal", "Standard", "Extended"))] -
+  0.03 * (specs$model == "Log-binomial") + 0.05 * (specs$missing == "Multiple imputation") -
+  0.08 * (specs$sample != "Everyone") + rnorm(48, 0, 0.03)
+specs$or <- exp(b)
+specs$lo <- exp(b - 1.96 * 0.09)
+specs$hi <- exp(b + 1.96 * 0.09)
+
+mv <- ggmultiverse(
+  specs, or, lo, hi,
+  decisions = c("outcome", "adjustment", "model", "missing", "sample"),
+  primary = outcome == "Primary definition" & adjustment == "Standard" &
+    model == "Logistic" & missing == "Multiple imputation" & sample == "Everyone",
+  ylab = "Odds ratio", title = "Forty-eight ways to analyze one question"
+)
+mv
+```
+
+Each column is one analysis: its estimate and interval above, and below, a
+dot in every row of the grid for the choice it made. Colors say whether the
+interval lies below 1, above it, or includes it. The primary analysis is
+labeled. Beside each choice sits the median estimate of the analyses that
+made it, so the choices that matter stand out: here the adjustment set moves
+the median from 0.75 to 0.90.
+
+Drag across the curve to select a run of analyses, and the readout says
+which choices they share. Click a choice in the grid to keep only the
+analyses that made it; clicks on several choices combine, and the primary
+analysis stays in view.
+
+```{r}
+mv$influence
+```
+
+## Reading it well
+
+The share of analyses with intervals that exclude 1 describes this set of
+analyses. It is not a probability that the effect is real, and the analyses
+are far from independent. More than 500 analyses cannot be read as a curve,
+so `ggmultiverse()` asks for fewer.

@@ -13,14 +13,18 @@ ggswimmer(
   ongoing = NULL,
   start = NULL,
   hover = NULL,
-  sort = c("duration", "group", "response", "data"),
+  sort = c("duration", "group", "response", "change", "data"),
   palette = NULL,
   ongoing_label = "Ongoing",
   xlab = "Time",
   legend = TRUE,
   title = NULL,
   caption = NULL,
-  family = "Lato"
+  family = "Lato",
+  waterfall = NULL,
+  trajectories = NULL,
+  thresholds = c(-30, 20),
+  change_label = "Best change from baseline (\%)"
 )
 }
 \arguments{
@@ -48,8 +52,9 @@ Defaults to zero.}
 
 \item{sort}{Order of the lanes in a static copy and when the widget
 opens: \code{"duration"}, the longest first; \code{"group"}; \code{"response"}, those
-with a complete response first, then a partial one; or \code{"data"}, the
-order of \code{data}.}
+with a complete response first, then a partial one; \code{"change"}, the
+largest decrease in \code{waterfall} first; or \code{"data"}, the order of
+\code{data}.}
 
 \item{palette}{Colors for the groups, unnamed in level order or named by
 group.}
@@ -64,6 +69,25 @@ card, such as \code{"On treatment"} or \code{"Alive at last follow-up"}.}
 \item{title, caption}{Title above the plot and note below it.}
 
 \item{family}{Font family. The package ships Lato and registers it on load.}
+
+\item{waterfall}{Optional column of \code{data}, or an expression of its
+columns, giving each patient's best percent change from baseline, such as
+in the sum of target lesion diameters. A missing value is marked not
+evaluable.}
+
+\item{trajectories}{Optional data frame with one row per assessment: the
+patient's id in a column named as \code{id} is in \code{data}, the time in \code{time}
+on the same scale as \code{end}, and the percent change from baseline in
+\code{change}. A patient's line starts from no change at the start of the
+lane when no assessment comes first.}
+
+\item{thresholds}{The percent decrease that counts as a response and the
+percent increase that counts as progression, marked on the change
+panels. The default, \code{c(-30, 20)}, is the rule for target lesions in
+RECIST 1.1, which also counts new lesions and other progression; the
+panels show only the measured change.}
+
+\item{change_label}{Axis label for the percent change.}
 }
 \value{
 An object of class \code{ggswimmer}, which prints as an interactive
@@ -81,6 +105,15 @@ record. Buttons under the widget reorder the lanes, which slide into
 place.
 }
 \details{
+With \code{waterfall}, each lane also gets a bar for the patient's best change
+from baseline, beside the lanes, so the swimmer plot and the waterfall
+plot share one row per patient; an order by best change sorts both. With
+\code{trajectories}, each patient's course of change over time is drawn under
+the lanes on the same time axis. Every mark of a patient in the three
+panels shares one id, so hovering over any of them lights the patient in
+all three, and the response and progression thresholds are marked on
+both change panels, with a count of the patients past each.
+
 Events are drawn by their wording: a complete response as a star, a
 partial response or other response as a triangle, progression, relapse or
 recurrence as a diamond, and death as a cross, with any other event as a

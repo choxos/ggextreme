@@ -106,3 +106,70 @@ test_that("the click panel shows arms with data and trial estimates without", {
   expect_error(ggleague(nma, psoriasis_nma), "Give `study` and `treatment`")
   expect_error(ggleague(lm(1 ~ 1)), "netmeta")
 })
+
+triangle <- function(first = "A") {
+  d <- data.frame(study = rep(c("s1", "s2", "s3", "s4"), each = 2),
+                  treatment = c(first, "B", first, "C", "B", "C", first, "B"),
+                  r = c(10, 20, 12, 25, 18, 22, 9, 19), n = 100)
+  pw <- suppressWarnings(meta::pairwise(treat = treatment, event = r, n = n,
+                                        studlab = study, data = d, sm = "OR"))
+  list(data = d, fit = netmeta::netmeta(pw, common = FALSE))
+}
+
+test_that("contributions add up to each network estimate and match netcontrib", {
+  skip_if_not_installed("netmeta")
+  skip_if_not_installed("meta")
+  tri <- triangle()
+  flow <- nma_contributions(tri$fit)
+  expect_equal(as.vector(tapply(flow$share, flow$net_key, sum)), rep(1, 3), tolerance = 1e-8)
+  cc <- netmeta::netcontrib(tri$fit)
+  expect_equal(nma_contributions(cc)$share, flow$share)
+  expect_equal(flow$share[flow$net_key == pair_key("A", "B") & flow$dir_key == pair_key("A", "B")],
+               cc$random["A:B", "A:B"])
+  # A colon in a treatment name makes netmeta join names differently.
+  odd <- nma_contributions(triangle("A:1")$fit)
+  expect_true("A:1" %in% c(odd$net_a, odd$net_b))
+  expect_error(nma_contributions(list()), "netcontrib")
+})
+
+test_that("the league table shows where each network estimate comes from", {
+  skip_if_not_installed("netmeta")
+  skip_if_not_installed("meta")
+  tri <- triangle()
+  lg <- ggleague(tri$fit, contributions = TRUE)
+  expect_equal(ggleague(tri$fit, contributions = netmeta::netcontrib(tri$fit))$contributions,
+               lg$contributions)
+  expect_match(lg$on_render, "ggextremeLeague(el, data)", fixed = TRUE)
+  expect_length(lg$render_data$flow, 3)
+  f <- lg$render_data$flow[[1]]
+  expect_length(f$cells, 2)
+  expect_true(all(grepl("^c\\d+_\\d+$", vapply(f$sources, `[[`, "", "cell"))))
+  # Sources point at cells above the diagonal, where direct estimates sit.
+  above <- vapply(f$sources, function(s) {
+    n <- as.integer(strsplit(sub("^c", "", s$cell), "_")[[1]])
+    n[1] < n[2]
+  }, logical(1))
+  expect_true(all(above))
+  expect_equal(sum(vapply(f$sources, `[[`, 0, "share")), 1, tolerance = 1e-8)
+  cells <- layer_of(lg$plot, "GeomInteractivePolygon")[[1]]
+  expect_true(any(grepl("Where the network estimate comes from", cells$onclick, fixed = TRUE)))
+  expect_true(any(grepl("Draws most on", cells$tooltip, fixed = TRUE)))
+  expect_null(ggleague(tri$fit)$render_data)
+  other <- triangle("D")$fit
+  expect_error(ggleague(tri$fit, contributions = netmeta::netcontrib(other)), "same network")
+})
+
+test_that("the network plot widens its lines by the flow of a comparison", {
+  skip_if_not_installed("netmeta")
+  skip_if_not_installed("meta")
+  tri <- triangle()
+  net <- ggnma(tri$data, study, treatment, n = n, contributions = tri$fit)
+  expect_match(net$on_render, "ggextremeNetFlow", fixed = TRUE)
+  comps <- net$render_data$comparisons
+  expect_length(comps, 3)
+  expect_equal(comps[[1]]$label, "A vs B")
+  expect_true(all(vapply(comps[[1]]$sources, `[[`, "", "edge") %in% paste0("e", 1:3)))
+  expect_equal(comps[[1]]$direct, net$contributions$share[1])
+  expect_error(ggnma(tri$data, study, treatment, contributions = triangle("D")$fit), "Only in the fit: D")
+  expect_s3_class(graph_widget(net), "girafe")
+})

@@ -32,7 +32,7 @@ the fit, which is there when the model was fitted with a \code{data}
 argument.}
 
 \item{rob}{Name of the column of \code{data} holding each study's overall risk
-of bias judgement, which colors its point. Judgements are matched by
+of bias judgment, which colors its point. Judgments are matched by
 their wording, as in \code{\link[=ggmeta]{ggmeta()}}.}
 
 \item{hover}{Names of columns of \code{data} shown in each study's hover card.

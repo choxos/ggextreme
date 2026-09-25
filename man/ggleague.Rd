@@ -13,6 +13,7 @@ ggleague(
   small_values = NULL,
   order = NULL,
   ranking = TRUE,
+  contributions = NULL,
   title = NULL,
   caption = NULL,
   family = "Lato"
@@ -40,6 +41,13 @@ Defaults to the setting stored in \code{x}, which is worth checking.}
 ranking, best first.}
 
 \item{ranking}{Draw the P-score ranking beside the table.}
+
+\item{contributions}{Show where each network estimate comes from: \code{TRUE}
+to compute the share of it that flows through each direct comparison
+with \code{\link[netmeta:netcontrib]{netmeta::netcontrib()}}, or an object that function returned, which
+saves recomputing it for a large network. Hovering or tapping a network
+estimate then marks the direct comparisons it draws on with their
+shares, and its panel lists them.}
 
 \item{title, caption}{Title above the table and note below it. The default
 caption explains which estimates sit on each side of the diagonal.}

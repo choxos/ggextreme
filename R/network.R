@@ -52,13 +52,21 @@
 #' @param legend_title Text in front of the legend, such as `"Class"`.
 #' @param title,caption Title above the plot and note below it.
 #' @param family Font family. The package ships Lato and registers it on load.
+#' @param contributions Show where the evidence for each comparison comes
+#'   from: a fit from [netmeta::netmeta()] on the same network, whose
+#'   contributions are then computed with [netmeta::netcontrib()], or an
+#'   object that function returned. The widget gains a menu of every
+#'   comparison; picking one widens and colors each line by the share of that
+#'   network estimate flowing through it, labels the shares and says them in
+#'   words under the plot.
 #'
 #' @return An object of class `ggnma`, which prints as an interactive widget.
 #'   Use [graph_widget()], [graph_plot()] or [graph_save()] for the widget, a
 #'   static ggplot or a file. The fields `nodes` and `edges` hold the
 #'   treatments and comparisons with their study counts, `multiarm` the sets
 #'   of treatments compared in multi-arm studies, and `width` and `height`
-#'   the natural size in inches.
+#'   the natural size in inches. With `contributions`, the field
+#'   `contributions` holds the shares.
 #' @export
 #'
 #' @examples
@@ -66,6 +74,16 @@
 #'              legend_title = "Class")
 #' net
 #' net$edges
+#'
+#' \donttest{
+#' if (requireNamespace("netmeta", quietly = TRUE) &&
+#'     requireNamespace("meta", quietly = TRUE)) {
+#'   pw <- meta::pairwise(treat = treatment, event = pasi75_r, n = pasi75_n,
+#'                        studlab = study, data = psoriasis_nma, sm = "OR")
+#'   fit <- netmeta::netmeta(pw, common = FALSE)
+#'   ggnma(psoriasis_nma, study, treatment, n = n, contributions = fit)
+#' }
+#' }
 ggnma <- function(data, study, treatment, n = NULL, group = NULL,
                   hover = NULL,
                   multiarm = TRUE,
@@ -75,7 +93,8 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
                   legend_title = NULL,
                   title = NULL,
                   caption = NULL,
-                  family = "Lato") {
+                  family = "Lato",
+                  contributions = NULL) {
   if (!is.data.frame(data)) rlang::abort("`data` must be a data frame.")
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   quos <- list(study = rlang::enquo(study), treatment = rlang::enquo(treatment),
@@ -356,8 +375,7 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
     scale_linewidth_identity() +
     graph_frame(canvas, family)
 
-  structure(
-    list(
+  out <- list(
       plot = p, width = canvas$width / 72, height = canvas$height / 72,
       title = title,
       nodes = data.frame(
@@ -379,9 +397,53 @@ ggnma <- function(data, study, treatment, n = NULL, group = NULL,
         studies = vapply(multi$studies, paste, character(1), collapse = ", "),
         stringsAsFactors = FALSE
       )
-    ),
-    class = c("ggnma", "ggx_graph")
   )
+  if (!is.null(contributions)) {
+    flow <- network_flow(contributions, levels, edges, edge_ids, node_ids)
+    out$contributions <- flow$table
+    out$render_data <- flow$widget
+    out$on_render <- "ggextremeNetFlow(el, data);"
+  }
+  structure(out, class = c("ggnma", "ggx_graph"))
+}
+
+# Contributions from a fit on the same network, matched to its lines.
+network_flow <- function(contributions, levels, edges, edge_ids, node_ids) {
+  flow <- nma_contributions(contributions)
+  trts <- attr(flow, "trts")
+  if (!setequal(trts, levels)) {
+    rlang::abort(paste0(
+      "`contributions` must come from a fit on the same treatments. ",
+      if (length(setdiff(trts, levels))) paste0("Only in the fit: ", paste(setdiff(trts, levels), collapse = ", "), ". "),
+      if (length(setdiff(levels, trts))) paste0("Only in `data`: ", paste(setdiff(levels, trts), collapse = ", "), ".")
+    ))
+  }
+  line_key <- pair_key(levels[edges$from_i], levels[edges$to_i])
+  stray <- setdiff(unique(flow$dir_key), line_key)
+  if (length(stray)) {
+    rlang::abort("`contributions` has direct comparisons that `data` does not; is the fit on the same network?")
+  }
+  # Pairs in the order of the treatments, first treatment first.
+  rank <- match(flow$net_a, levels) > match(flow$net_b, levels)
+  first <- ifelse(rank, flow$net_b, flow$net_a)
+  second <- ifelse(rank, flow$net_a, flow$net_b)
+  pairs <- unique(data.frame(a = first, b = second, key = flow$net_key, stringsAsFactors = FALSE))
+  pairs <- pairs[order(match(pairs$a, levels), match(pairs$b, levels)), ]
+  line_name <- paste(levels[edges$from_i], "vs", levels[edges$to_i])
+  widget <- list(
+    method = contribution_method(flow),
+    comparisons = lapply(seq_len(nrow(pairs)), function(r) {
+      f <- flow[flow$net_key == pairs$key[r], , drop = FALSE]
+      j <- match(f$dir_key, line_key)
+      list(label = paste(pairs$a[r], "vs", pairs$b[r]),
+           a = node_ids[match(pairs$a[r], levels)], b = node_ids[match(pairs$b[r], levels)],
+           direct = sum(f$share[f$dir_key == pairs$key[r]]),
+           sources = lapply(seq_along(j), function(i) list(
+             edge = edge_ids[j[i]], share = f$share[i], label = line_name[j[i]],
+             studies = edges$studies[j[i]])))
+    })
+  )
+  list(table = flow[c("net_a", "net_b", "dir_a", "dir_b", "share")], widget = widget)
 }
 
 network_dims <- utils::modifyList(graph_dims, list(

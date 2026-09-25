@@ -141,3 +141,26 @@ test_that("the curves are drawn over follow-up into a file", {
              cores = 1, quiet = TRUE)
   expect_true(file.exists(file))
 })
+
+test_that("restricted mean survival matches survfit and stays within follow-up", {
+  skip_if_not_installed("survival")
+  d <- lung_data()
+  km <- km_fit(rmst = 365)
+  fit <- survival::survfit(survival::Surv(time, status) ~ sex, data = d)
+  tb <- summary(fit, rmean = 365)$table
+  expect_equal(km$rmst$rmst, unname(tb[, "rmean"]), tolerance = 1e-10)
+  expect_equal(km$rmst$difference[2], unname(tb[2, "rmean"] - tb[1, "rmean"]), tolerance = 1e-10)
+  se <- sqrt(sum(tb[, "se(rmean)"]^2))
+  expect_equal(km$rmst$diff_upper[2] - km$rmst$difference[2], stats::qnorm(0.975) * se, tolerance = 1e-10)
+  expect_match(km$on_render, "ggextremeRmst(el, data);", fixed = TRUE)
+  expect_true(km$render_data$prespecified)
+  expect_equal(km$render_data$taus[km$render_data$start + 1], 365)
+  # The static copy shades the reference's area and the difference.
+  ids <- unlist(lapply(km$plot$layers, function(l) if (is.data.frame(l$data)) unique(l$data$id)))
+  expect_true(all(c("rma1", "rma2", "rmt", "rmv1", "rmd2") %in% ids))
+  expect_error(km_fit(rmst = 5000), "past the end of follow-up")
+  default <- km_fit(rmst = TRUE)
+  last <- tapply(d$time, d$sex, max)
+  expect_equal(default$render_data$limit, unname(min(last)))
+  expect_false(default$render_data$prespecified)
+})

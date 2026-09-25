@@ -10,6 +10,7 @@ ggkm(
   type = c("survival", "risk"),
   hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
   ph_tests = FALSE,
+  rmst = NULL,
   risk_table = TRUE,
   conf_int = TRUE,
   breaks = NULL,
@@ -40,6 +41,10 @@ the cumulative probability of the event.}
 collapsed section under the plot. The time interaction models grow with
 the number of events, so they are skipped with a message for very large
 data.}
+
+\item{rmst}{Restricted mean survival time: \code{NULL} for none, the
+prespecified horizon \eqn{\tau} on the time scale, or \code{TRUE} for the
+end of follow-up in the group followed least.}
 
 \item{risk_table}{Show the numbers at risk.}
 
@@ -91,6 +96,16 @@ against time, which estimates the log hazard ratio as a function of time
 \code{"log"} and \code{"linear"} take it from a Cox model with an interaction
 between the group and log time or time, and \code{"constant"} shows the Cox
 estimate at every time.
+
+With \code{rmst}, the plot shades the area under each curve up to a horizon
+\eqn{\tau} and tabulates the restricted mean survival time, the mean time
+alive (or free of the event) within \eqn{\tau}, for each group, with its
+difference from the reference group. RMST and its standard error are those
+\code{\link[survival:survfit]{survival::survfit()}} reports for each group; the difference assumes the
+groups are independent, as in a randomized comparison. The widget adds a
+slider to explore other horizons, up to the end of follow-up in the group
+followed least, while the prespecified horizon stays marked, so the
+horizon reported is the one planned rather than the most favorable one.
 
 With \code{ph_tests = TRUE}, a section under the plot, collapsed until the
 reader opens it, gives the Cox hazard ratios, the log-rank test, the

@@ -6,29 +6,46 @@
 <!-- badges: end -->
 
 Presentation quality charts built on **ggplot2** that the package itself does
-not provide. There are ten so far:
+not provide. There are fifteen so far:
 
 * **Bar chart races**: an animation of a ranking that changes over time, of
   the kind used to summarize long panels in talks, teaching material and
   journal supplements.
 * **Interactive causal diagrams**: a directed acyclic graph in which every
   node and arrow carries its rationale and references, shown on hover and
-  opened in full on click.
+  opened in full on click, and which can show the paths an adjustment set
+  leaves open.
 * **Interactive network plots**: the network of a network meta-analysis,
   with the baseline characteristics and outcomes of every arm behind each
   treatment and comparison.
 * **Interactive forest plots**: a meta-analysis with each study's record and
   risk of bias traffic lights, and a cumulative replay as an animation.
 * **League tables**: every estimate of a network meta-analysis, with its
-  direct and indirect evidence and a ranking of the treatments.
+  direct and indirect evidence, where that evidence flows from, and a ranking
+  of the treatments.
+* **Confidence in a network meta-analysis**: five plots that follow CINeMA,
+  from a league table with a confidence profile in every cell to the studies
+  each estimate rests on, estimates against a movable range of little
+  difference, and direct against indirect evidence.
 * **Funnel plots**: small-study effects with significance contours, the
   pooled estimate without each study, trim and fill and the tests for
   asymmetry.
 * **Kaplan-Meier plots**: survival curves that read every group, and the
-  hazard ratio, at any time under the pointer, with a linked risk table and
-  proportional hazards tests.
+  hazard ratio, at any time under the pointer, with a linked risk table,
+  proportional hazards tests and the restricted mean survival time up to a
+  movable horizon.
 * **Swimmer plots**: one lane per patient, with responses, progression and
-  death along it, that reorders on demand.
+  death along it, that reorders on demand, with a waterfall of best change
+  and each patient's course linked to the lanes.
+* **Responder thresholds**: the whole distribution of change by arm, the
+  responders at a prespecified threshold and the difference at every other.
+* **Diagnostic thresholds**: what the cutoff of a test means for 1,000
+  people at any prevalence, beside the distributions, the ROC curve and the
+  predictive values.
+* **Bias and tipping points**: how strong unmeasured confounding would have
+  to be to change a conclusion, with E-values and measured benchmarks.
+* **A multiverse of analyses**: every defensible analysis of one question as
+  a specification curve, with the choices that move it.
 * **Nomograms**: any regression model, from logistic and Cox to mixed,
   ordinal and multinomial models, as a nomogram whose handles move, with the
   prediction and its confidence interval computed in the page.
@@ -36,7 +53,7 @@ not provide. There are ten so far:
   plays through the years, with several measures side by side for the same
   year.
 
-All ten are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
+All fifteen are drawn as ordinary `ggplot` objects. Nothing is hidden behind a
 separate rendering engine, so a frame or a diagram can be inspected, modified
 or saved on its own.
 
@@ -175,6 +192,16 @@ place the boxes by hand instead. Any other column in either data frame
 appears as a labeled field. The widget embeds a web copy of Lato and works in
 R Markdown, Quarto, 'pkgdown' and 'shiny'.
 
+With `paths = TRUE`, the diagram shows which paths between the exposure
+and the outcome are open or blocked: click a variable to adjust for it, and
+a panel under the diagram says whether the set is sufficient by the backdoor
+criterion, why each path is open or blocked, and which minimal sets would
+be.
+
+```r
+ggcausal(cleft_dag$edges, cleft_dag$nodes, paths = TRUE, adjust = "ses")
+```
+
 ## Interactive network plots
 
 `ggnma()` draws the network of a network meta-analysis from arm level data,
@@ -201,12 +228,16 @@ places them. Rows of the arm tables are named from each column's `label`
 attribute, text that is the same across a study, such as a
 reference, is listed once per study, and DOIs and URLs are linked.
 
+With `contributions`, a netmeta fit on the same network, the widget gains a
+menu of comparisons; picking one widens each line by the share of that
+network estimate flowing through it.
+
 ## Interactive forest plots
 
 `ggmeta()` draws the forest plot of a fitted meta-analysis, a metafor
 `rma()` fit or a meta object. Hovering over a study shows its effect, weight
 and chosen columns, and clicking it opens every column of its record. Risk
-of bias judgements, from RoB 2, RoB 1 or ROBINS-I, are drawn as traffic
+of bias judgments, from RoB 2, RoB 1 or ROBINS-I, are drawn as traffic
 lights beside each study.
 
 ```r
@@ -238,6 +269,36 @@ ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable")
 ```
 
 [![A league table of five treatments for plaque psoriasis](man/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
+
+`contributions = TRUE` adds where each network estimate comes from, by
+`netmeta::netcontrib()`: hovering over an estimate outlines the direct
+comparisons it draws on, with their shares.
+
+## Confidence in a network meta-analysis
+
+Five plots follow CINeMA (Nikolakopoulou et al. 2020; Papakonstantinou et
+al. 2020) in judging how far each estimate of a network meta-analysis can
+be trusted. `cinema_judge()` applies its published rules to every
+comparison in six domains, within-study bias, reporting bias, indirectness,
+imprecision, heterogeneity and incoherence, with each reason in words and
+whether a rule computed it or you gave it; judgments made elsewhere, such as
+the CINeMA web application's report, can be given instead.
+
+```r
+j <- cinema_judge(nma, rob = rob, indirectness = indirectness,
+                  reporting = data.frame(judgment = "undetected"),
+                  threshold = 1.25, small_values = "undesirable")
+cinema_league(j)        # six marks per estimate, never added into a score
+cinema_contribution(j)  # which studies each estimate rests on
+cinema_clinical(j)      # estimates against a movable range of little difference
+cinema_incoherence(j)   # direct, indirect and network estimates side by side
+cinema_network(psoriasis_nma, study, treatment, n = n, rob = rob)
+```
+
+[![A league table with a CINeMA confidence profile in every cell, from illustrative judgments](man/figures/README-cinema.png)](https://choxos.github.io/ggextreme/articles/cinema.html)
+
+The study judgments in the example are illustrative, not published
+assessments.
 
 ## Funnel plots
 
@@ -274,6 +335,10 @@ ggkm(Surv(years, status) ~ arm, data = colon, ph_tests = TRUE,
 
 [![Kaplan-Meier curves for the colon cancer trial with the numbers at risk](man/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
 
+`rmst = 5` adds the restricted mean survival time up to five years, with
+each arm's mean and its difference from the reference, and a slider that
+moves the horizon while the prespecified one stays marked.
+
 `animate_km()` draws the curves over follow-up as a GIF or MP4:
 
 ![Kaplan-Meier curves drawn over follow-up](man/figures/README-km.gif)
@@ -293,6 +358,72 @@ ggswimmer(aml, id, futime / 30.44, events = events, group = arm,
 ```
 
 [![A swimmer plot of 30 patients with acute myeloid leukemia](man/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
+
+`waterfall` adds each patient's best change from baseline beside their lane,
+and `trajectories` their change over time under the lanes, with the response
+and progression thresholds marked; hovering over a patient in any panel
+lights them in all three.
+
+## Responder thresholds
+
+`ggresponder()` draws, for two arms, the share of patients who improved by
+at least each amount, with the prespecified threshold marked, beside the
+difference in responders at every threshold, and a table of responders,
+their difference, the number needed to treat and the mean difference. A
+slider moves the threshold.
+
+```r
+ggresponder(change ~ arm, pain, threshold = 2, higher_is_better = FALSE)
+```
+
+[![Responder curves by arm and the difference in responders by threshold](man/figures/README-responder.png)](https://choxos.github.io/ggextreme/articles/responder-thresholds.html)
+
+## Diagnostic thresholds
+
+`ggdiagnostic()` shows what a cutoff on a continuous test means: the
+marker's distributions, the ROC curve and the predictive values across
+prevalence, above a grid of 1,000 people found, missed, falsely alarmed or
+cleared, and a table of every measure with its interval. Drag the cutoff,
+or set the prevalence of the population the test is for.
+
+```r
+pima <- rbind(MASS::Pima.tr, MASS::Pima.te)
+ggdiagnostic(type ~ glu, pima, cutoff = 126, prevalence = 0.1,
+             labels = c("No diabetes", "Diabetes"))
+```
+
+[![A diagnostic threshold explorer for plasma glucose and diabetes](man/figures/README-diagnostic.png)](https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html)
+
+## Bias and tipping points
+
+`ggsensitivity()` shades every pair of strengths an unmeasured confounder
+could have by what would survive it, marks the E-values for the estimate
+and its confidence limit, and compares measured covariates as benchmarks.
+Click the surface to choose a confounder.
+
+```r
+ggsensitivity(1.8, 1.4, 2.31, important = 1.25,
+              benchmarks = data.frame(label = c("Age", "Smoking"),
+                                      exposure = c(1.6, 2.3), outcome = c(1.9, 1.5)))
+```
+
+[![A bias surface with E-values and two benchmarks](man/figures/README-sensitivity.png)](https://choxos.github.io/ggextreme/articles/bias-sensitivity.html)
+
+## A multiverse of analyses
+
+`ggmultiverse()` draws every analysis of one question, one row of the data
+each, as a specification curve above a grid of the choices behind it, with
+the median estimate for each choice. Drag across the curve, or click a
+choice, to see what the analyses in view share.
+
+```r
+ggmultiverse(specs, or, lo, hi,
+             decisions = c("outcome", "adjustment", "model", "missing", "sample"),
+             primary = outcome == "Primary definition" & adjustment == "Standard",
+             ylab = "Odds ratio")
+```
+
+[![A specification curve of 48 analyses above the grid of their choices](man/figures/README-multiverse.png)](https://choxos.github.io/ggextreme/articles/multiverse.html)
 
 ## Nomograms
 

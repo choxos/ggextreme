@@ -18,7 +18,8 @@ ggnma(
   legend_title = NULL,
   title = NULL,
   caption = NULL,
-  family = "Lato"
+  family = "Lato",
+  contributions = NULL
 )
 }
 \arguments{
@@ -59,6 +60,14 @@ Defaults to \code{\link[=race_palette]{race_palette()}}.}
 \item{title, caption}{Title above the plot and note below it.}
 
 \item{family}{Font family. The package ships Lato and registers it on load.}
+
+\item{contributions}{Show where the evidence for each comparison comes
+from: a fit from \code{\link[netmeta:netmeta]{netmeta::netmeta()}} on the same network, whose
+contributions are then computed with \code{\link[netmeta:netcontrib]{netmeta::netcontrib()}}, or an
+object that function returned. The widget gains a menu of every
+comparison; picking one widens and colors each line by the share of that
+network estimate flowing through it, labels the shares and says them in
+words under the plot.}
 }
 \value{
 An object of class \code{ggnma}, which prints as an interactive widget.
@@ -66,7 +75,8 @@ Use \code{\link[=graph_widget]{graph_widget()}}, \code{\link[=graph_plot]{graph_
 static ggplot or a file. The fields \code{nodes} and \code{edges} hold the
 treatments and comparisons with their study counts, \code{multiarm} the sets
 of treatments compared in multi-arm studies, and \code{width} and \code{height}
-the natural size in inches.
+the natural size in inches. With \code{contributions}, the field
+\code{contributions} holds the shares.
 }
 \description{
 Draws the network of treatment comparisons from arm level data. Each node
@@ -101,4 +111,14 @@ net <- ggnma(psoriasis_nma, study, treatment, n = n, group = class,
              legend_title = "Class")
 net
 net$edges
+
+\donttest{
+if (requireNamespace("netmeta", quietly = TRUE) &&
+    requireNamespace("meta", quietly = TRUE)) {
+  pw <- meta::pairwise(treat = treatment, event = pasi75_r, n = pasi75_n,
+                       studlab = study, data = psoriasis_nma, sm = "OR")
+  fit <- netmeta::netmeta(pw, common = FALSE)
+  ggnma(psoriasis_nma, study, treatment, n = n, contributions = fit)
+}
+}
 }

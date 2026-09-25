@@ -32,7 +32,7 @@
 #'
 #' @inheritParams ggmeta
 #' @param rob Name of the column of `data` holding each study's overall risk
-#'   of bias judgement, which colors its point. Judgements are matched by
+#'   of bias judgment, which colors its point. Judgments are matched by
 #'   their wording, as in [ggmeta()].
 #' @param contours Significance levels for the shaded contours, against no
 #'   effect. `NULL` draws none.
@@ -68,7 +68,7 @@ ggfunnel <- function(x, data = NULL, rob = NULL, hover = NULL,
                      title = NULL,
                      caption = NULL,
                      family = "Lato") {
-  if (length(rob) > 1) rlang::abort("`rob` must name one column, the overall judgement.")
+  if (length(rob) > 1) rlang::abort("`rob` must name one column, the overall judgment.")
   if (!is.null(contours) && (!is.numeric(contours) || any(!(contours > 0 & contours < 1)))) {
     rlang::abort("`contours` must be significance levels between 0 and 1.")
   }

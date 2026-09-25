@@ -5,7 +5,7 @@
 #' effect, weight and the columns named in `hover`; clicking it opens its
 #' full record, every column of `data`, under the plot. Hovering over the
 #' pooled diamond shows the heterogeneity statistics and the prediction
-#' interval. Risk of bias judgements, given in `rob`, are drawn as traffic
+#' interval. Risk of bias judgments, given in `rob`, are drawn as traffic
 #' lights beside each study.
 #'
 #' Square area follows the study's weight in the model. The diamond is the
@@ -30,10 +30,10 @@
 #' @param columns Names of columns of `data` to print as text columns beside
 #'   the study labels, such as event counts. Name the vector to set the
 #'   column headers.
-#' @param rob Names of columns of `data` holding risk of bias judgements,
+#' @param rob Names of columns of `data` holding risk of bias judgments,
 #'   one per domain, drawn as traffic lights. Name the vector to set the
 #'   column headers, such as `c(D1 = "rob.R", Overall = "rob.overall")`.
-#'   Judgements are matched by their wording: "low", "some concerns" or
+#'   Judgments are matched by their wording: "low", "some concerns" or
 #'   "moderate", "unclear", "high" or "serious", "critical", and "no
 #'   information", in any case.
 #' @param hover Names of columns of `data` shown in each study's hover card.
@@ -219,7 +219,7 @@ rob_classes <- list(
               symbol = "?")
 )
 
-# The class of a judgement, taken from its wording.
+# The class of a judgment, taken from its wording.
 rob_class <- function(v) {
   v <- tolower(trimws(as.character(v)))
   out <- rep(NA_character_, length(v))
@@ -380,7 +380,7 @@ meta_prepare <- function(x, data, columns, rob, hover, exponentiate, xlim,
       v[!is.na(v) & is.na(rob_class(v))]
     })))
     if (length(unmatched)) {
-      rlang::abort(paste0("These risk of bias judgements are not recognized: ",
+      rlang::abort(paste0("These risk of bias judgments are not recognized: ",
                           paste(unmatched, collapse = ", ")))
     }
   }

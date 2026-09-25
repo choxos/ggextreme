@@ -82,7 +82,7 @@ test_that("risk of bias is drawn as traffic lights with a key", {
   expect_true(any(vapply(key, function(d) any(d$label == "Some concerns"), logical(1))))
 })
 
-test_that("judgements are classed by their wording", {
+test_that("judgments are classed by their wording", {
   expect_equal(
     rob_class(c("Low risk", "some concerns", "Unclear", "High", "serious",
                 "Critical", "No information", "moderate", NA)),

@@ -58,12 +58,30 @@ reference:
   - ggfunnel
   - ggleague
 
+- title: Confidence in a network meta-analysis
+  desc: Judge every estimate of a network meta-analysis in CINeMA's six domains, and see what lies behind each judgment.
+  contents:
+  - cinema_judge
+  - cinema_league
+  - cinema_contribution
+  - cinema_clinical
+  - cinema_incoherence
+  - cinema_network
+
 - title: Survival and trials
-  desc: Kaplan-Meier plots with a linked risk table and proportional hazards tests, and swimmer plots of each patient's course.
+  desc: Kaplan-Meier plots with a linked risk table, proportional hazards tests and restricted mean survival, swimmer plots of each patient's course with a waterfall and trajectories, and responder thresholds.
   contents:
   - ggkm
   - animate_km
   - ggswimmer
+  - ggresponder
+
+- title: Tests, bias and robustness
+  desc: Explore the cutoff of a diagnostic test, the strength of unmeasured confounding and a multiverse of analyses.
+  contents:
+  - ggdiagnostic
+  - ggsensitivity
+  - ggmultiverse
 
 - title: Prediction models
   desc: Nomograms of regression models, with a handle per predictor and the prediction computed in the page.
@@ -104,7 +122,12 @@ articles:
   - forest-plots
   - funnel-plots
   - league-tables
+  - cinema
   - kaplan-meier
   - swimmer-plots
+  - responder-thresholds
+  - diagnostic-thresholds
+  - bias-sensitivity
+  - multiverse
   - nomograms
   - choropleth-maps

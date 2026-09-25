@@ -345,17 +345,19 @@ trim_route <- function(pts, from, to, dims) {
 }
 
 # Stack the title, legend, graph and caption down the page. `x` and `y` are
-# every point the graph occupies, in its own top down coordinates. Returns
+# every point the graph occupies, in its own top down coordinates. The
+# caption may be several lines, one element each. Returns
 # the page size in points, functions that move graph coordinates onto the
 # page, and the title, caption and legend as drawable data frames.
 graph_canvas <- function(x, y, title, caption, key_labels, key_colors,
                          key_title, dims, family) {
+  if (!length(caption)) caption <- NULL
   graph_w <- max(x) - min(x)
   graph_h <- max(y) - min(y)
   title_w <- if (is.null(title)) 0 else
     text_width_card(title, dims$title_pt, family, 1, bold = TRUE)
   caption_w <- if (is.null(caption)) 0 else
-    text_width_card(caption, dims$caption_pt, family, 1)
+    max(text_width_card(caption, dims$caption_pt, family, 1))
   page_w <- max(graph_w, title_w, caption_w, dims$min_width) + 2 * dims$margin
 
   lay <- list(
@@ -378,8 +380,11 @@ graph_canvas <- function(x, y, title, caption, key_labels, key_colors,
   }
   graph_top <- top
   top <- top + graph_h
-  caption_y <- top + dims$gap_caption + dims$caption_pt * 0.6
-  if (!is.null(caption)) top <- top + dims$gap_caption + dims$caption_pt * 1.2
+  caption_step <- dims$caption_pt * 1.35
+  caption_y <- top + dims$gap_caption + dims$caption_pt * 0.6 + (seq_along(caption) - 1) * caption_step
+  if (!is.null(caption)) {
+    top <- top + dims$gap_caption + dims$caption_pt * 1.2 + (length(caption) - 1) * caption_step
+  }
   page_h <- top + dims$margin
 
   dx <- dims$margin + (page_w - 2 * dims$margin - graph_w) / 2 - min(x)
@@ -437,7 +442,10 @@ graph_dependency <- function() {
 #' Use an interactive graph as a widget, a ggplot or a file
 #'
 #' A graph built by [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
-#' [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()] or [ggchoropleth()]
+#' [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()], [ggchoropleth()],
+#' [ggdiagnostic()], [ggsensitivity()], [ggmultiverse()], [ggresponder()],
+#' [cinema_league()], [cinema_contribution()], [cinema_clinical()],
+#' [cinema_incoherence()] or [cinema_network()]
 #' prints as an interactive widget. These
 #' functions give the other forms it can take. `graph_widget()` returns the
 #' 'htmlwidgets' object, for use in 'shiny' or to save with
@@ -457,8 +465,10 @@ graph_dependency <- function() {
 #' follow. It also follows a page that switches theme while it is open.
 #'
 #' @param x A graph from [ggcausal()], [ggnma()], [ggmeta()], [ggfunnel()],
-#'   [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()] or
-#'   [ggchoropleth()].
+#'   [ggleague()], [ggkm()], [ggswimmer()], [ggnomogram()], [ggchoropleth()],
+#'   [ggdiagnostic()], [ggsensitivity()], [ggmultiverse()],
+#'   [ggresponder()], [cinema_league()], [cinema_contribution()],
+#'   [cinema_clinical()], [cinema_incoherence()] or [cinema_network()].
 #' @param file Output path. `.html` writes the widget as a single file, which
 #'   needs 'pandoc'; `.png` writes a static image with 'ragg'.
 #' @param res Resolution of a PNG in pixels per inch.

@@ -83,3 +83,45 @@ test_that("a static copy can be drawn in either theme", {
   graph_save(s, png, res = 40, theme = "dark")
   expect_true(file.exists(png))
 })
+
+test_that("a waterfall and trajectories share the lanes' ids and thresholds", {
+  d <- trial()
+  d$patients$best <- c(-45, -100, 10, 25, NA)
+  traj <- data.frame(patient = c("A1", "A1", "A2", "A2", "B1", "B2"),
+                     time = c(2, 4, 3, 6, 5, 2), change = c(-20, -45, -60, -100, 10, 25))
+  s <- ggswimmer(d$patients, patient, months, events = d$events, group = arm,
+                 waterfall = best, trajectories = traj, sort = "change")
+  expect_equal(s$response$patients, c(2, 1, 1, 1))
+  expect_equal(s$response$A, c(2, 0, 0, 0))
+  # The largest decrease comes first, and the patient not evaluable last.
+  change <- Filter(function(o) o$key == "change", s$render_data$orders)[[1]]
+  expect_equal(unname(change$row), c(2, 1, 3, 4, 5))
+  bars <- Filter(function(d) all(d$data_id %in% paste0("p", 1:5)) && nrow(d) == 4,
+                 layer_of(s$plot, "GeomInteractiveRect"))
+  expect_length(bars, 1)
+  lines <- layer_of(s$plot, "GeomInteractivePath")
+  expect_true(all(unlist(lapply(lines, `[[`, "data_id")) %in% paste0("p", 1:4)))
+  # Lines start from no change when no assessment comes first.
+  expect_equal(nrow(lines[[1]]), nrow(traj) + 4)
+  expect_true(s$render_data$split > 0)
+  tips <- layer_of(s$plot, "GeomInteractiveRect")
+  cards <- tips[[length(tips) - 1]]
+  expect_true(any(grepl("Best change", cards$tooltip, fixed = TRUE)))
+  text <- unlist(lapply(layer_of(s$plot, "GeomText"), `[[`, "label"))
+  expect_true(any(grepl("2 of 4 evaluable (50%) fell by 30% or more", text, fixed = TRUE)))
+  expect_true(any(grepl("not evaluable", text, fixed = TRUE)))
+  expect_s3_class(graph_widget(s), "girafe")
+})
+
+test_that("waterfall inputs are checked", {
+  d <- trial()
+  expect_error(ggswimmer(d$patients, patient, months, sort = "change"), "needs `waterfall`")
+  expect_error(ggswimmer(d$patients, patient, months, waterfall = arm), "numeric")
+  expect_error(ggswimmer(d$patients, patient, months, waterfall = age, thresholds = c(30, 20)),
+               "negative and a positive")
+  expect_error(ggswimmer(d$patients, patient, months,
+                         trajectories = data.frame(patient = "Z9", time = 1, change = 0)),
+               "not in `data`")
+  expect_error(ggswimmer(d$patients, patient, months, trajectories = data.frame(patient = "A1")),
+               "missing time, change")
+})

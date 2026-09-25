@@ -31,6 +31,12 @@
 #' @param order Order of the treatments along the diagonal. Defaults to the
 #'   ranking, best first.
 #' @param ranking Draw the P-score ranking beside the table.
+#' @param contributions Show where each network estimate comes from: `TRUE`
+#'   to compute the share of it that flows through each direct comparison
+#'   with [netmeta::netcontrib()], or an object that function returned, which
+#'   saves recomputing it for a large network. Hovering or tapping a network
+#'   estimate then marks the direct comparisons it draws on with their
+#'   shares, and its panel lists them.
 #' @param title,caption Title above the table and note below it. The default
 #'   caption explains which estimates sit on each side of the diagonal.
 #' @param family Font family. The package ships Lato and registers it on load.
@@ -53,8 +59,8 @@
 #' }
 ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
                      pooled = NULL, small_values = NULL, order = NULL,
-                     ranking = TRUE, title = NULL, caption = NULL,
-                     family = "Lato") {
+                     ranking = TRUE, contributions = NULL, title = NULL,
+                     caption = NULL, family = "Lato") {
   if (!inherits(x, "netmeta")) {
     rlang::abort("`x` must be a network meta-analysis from netmeta::netmeta().")
   }
@@ -66,6 +72,14 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
   small_values <- match.arg(small_values, c("desirable", "undesirable"))
   dims <- league_dims
   get <- function(stem) x[[paste0(stem, ".", pooled)]]
+  flow <- NULL
+  if (!is.null(contributions) && !isFALSE(contributions)) {
+    source <- if (isTRUE(contributions)) x else contributions
+    flow <- nma_contributions(source, pooled)
+    if (!setequal(attr(flow, "trts"), x$trts)) {
+      rlang::abort("`contributions` must come from the same network as `x`.")
+    }
+  }
 
   trts <- x$trts
   pscore <- netmeta::netrank(x, small.values = small_values)[[paste0("ranking.", pooled)]]
@@ -200,10 +214,50 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
       '<div class="ggx-tip-sub">', round(100 * p), "% of the network estimate comes from direct trials",
       if (length(st)) paste0(": ", esc(paste(st, collapse = ", "))), "</div>",
       '<div class="ggx-tip-body">', esc(verdict), "</div>",
-      if (length(st)) '<div class="ggx-tip-hint">Click for the direct trials.</div>'
+      if (!is.null(flow)) flow_tip(a, b),
+      if (length(st) || !is.null(flow)) paste0('<div class="ggx-tip-hint">Click for ',
+        if (length(st)) "the direct trials" else "", if (length(st) && !is.null(flow)) " and " else "",
+        if (!is.null(flow)) "where the estimate comes from" else "", ".</div>")
     )
   }
+  flow_of <- function(a, b) flow[flow$net_key == pair_key(a, b), , drop = FALSE]
+  # Direct comparisons are named in table order, like the cells.
+  flow_name <- function(f) {
+    swap <- match(f$dir_a, order) > match(f$dir_b, order)
+    paste(ifelse(swap, f$dir_b, f$dir_a), "vs", ifelse(swap, f$dir_a, f$dir_b))
+  }
+  pct <- function(v) paste0(formatC(100 * v, format = "f", digits = if (v < 0.01) 1 else 0), "%")
+  flow_tip <- function(a, b) {
+    f <- utils::head(flow_of(a, b), 3)
+    paste0('<div class="ggx-tip-sub">Draws most on: ',
+           esc(paste0(flow_name(f), " (", vapply(f$share, pct, ""), ")", collapse = ", ")), "</div>")
+  }
+  flow_panel <- function(a, b) {
+    f <- flow_of(a, b)
+    own <- f$dir_key == pair_key(a, b)
+    lead <- if (any(own)) {
+      paste0(pct(f$share[own]), " of the network estimate flows through the direct ", esc(a), " vs ",
+             esc(b), " trials, and ", pct(1 - f$share[own]), " through other comparisons.")
+    } else {
+      "All of it flows through other comparisons:" 
+    }
+    rows <- vapply(seq_len(nrow(f)), function(i) {
+      n <- length(direct_studies(f$dir_a[i], f$dir_b[i]))
+      paste0("<tr", if (own[i]) ' class="ggx-own"', "><th scope=\"row\">", esc(flow_name(f[i, ])),
+             "</th><td>", n, "</td><td><span class=\"ggx-flow-bar\"><i style=\"width:",
+             round(100 * f$share[i], 1), "%\"></i></span> ", pct(f$share[i]), "</td></tr>")
+    }, character(1))
+    paste0('<div class="ggx-title ggx-flow-head">Where the network estimate comes from</div><p>', lead, "</p>",
+           '<div class="ggx-table"><table><thead><tr><td></td><th scope="col">Trials</th>',
+           '<th scope="col">Share of the estimate</th></tr></thead><tbody class="ggx-num">',
+           paste(rows, collapse = ""), "</tbody></table></div>",
+           '<p class="ggx-note">', esc(contribution_method(flow)), "</p>")
+  }
   pair_panel <- function(a, b) {
+    out <- pair_trials(a, b)
+    if (is.null(flow)) out else paste0(out, flow_panel(a, b))
+  }
+  pair_trials <- function(a, b) {
     st <- direct_studies(a, b)
     head <- paste0('<div class="ggx-title">', esc(a), " vs ", esc(b), "</div>")
     if (!length(st)) {
@@ -386,12 +440,37 @@ ggleague <- function(x, data = NULL, study = NULL, treatment = NULL,
     )) +
     graph_frame(page, family)
 
-  structure(
-    list(plot = p, width = page$width / 72, height = page$height / 72,
-         title = title, on_render = "ggextremeLeague(el);",
-         treatments = order, pscore = pscore[order]),
-    class = c("ggleague", "ggx_graph")
-  )
+  out <- list(plot = p, width = page$width / 72, height = page$height / 72,
+              title = title, on_render = "ggextremeLeague(el, data);",
+              treatments = order, pscore = pscore[order])
+  if (!is.null(flow)) {
+    # Each pair's two cells, and the direct cell of every comparison it
+    # draws on, which sits above the diagonal.
+    cell_of <- function(u, v) {
+      i <- match(u, order)
+      j <- match(v, order)
+      paste0("c", pmin(i, j), "_", pmax(i, j))
+    }
+    net_cell <- function(u, v) {
+      i <- match(u, order)
+      j <- match(v, order)
+      paste0("c", pmax(i, j), "_", pmin(i, j))
+    }
+    pairs <- unique(flow[c("net_a", "net_b", "net_key")])
+    out$render_data <- list(flow = lapply(seq_len(nrow(pairs)), function(r) {
+      f <- flow_of(pairs$net_a[r], pairs$net_b[r])
+      first <- order[min(match(c(pairs$net_a[r], pairs$net_b[r]), order))]
+      second <- setdiff(c(pairs$net_a[r], pairs$net_b[r]), first)
+      list(cells = c(net_cell(first, second), cell_of(first, second)),
+           label = paste(first, "vs", second),
+           direct = sum(f$share[f$dir_key == pairs$net_key[r]]),
+           sources = lapply(seq_len(nrow(f)), function(i) list(
+             cell = cell_of(f$dir_a[i], f$dir_b[i]), share = f$share[i],
+             label = flow_name(f[i, ]))))
+    }))
+    out$contributions <- flow[c("net_a", "net_b", "dir_a", "dir_b", "share")]
+  }
+  structure(out, class = c("ggleague", "ggx_graph"))
 }
 
 league_ink <- list(first = "#22928F", second = "#B66399", diagonal = graph_ink$faint)
@@ -424,4 +503,63 @@ wrap_words <- function(text, width, pt, family, bold = FALSE) {
     }
   }
   c(lines, line)
+}
+
+# Where each network estimate comes from: the share of it that flows through
+# each direct comparison, from netmeta::netcontrib() (Papakonstantinou et al.
+# 2018). `x` is a netmeta fit, which is then computed, or a netcontrib
+# object. Returns one row per network comparison and direct comparison with a
+# share above zero, keyed by unordered treatment pairs.
+nma_contributions <- function(x, pooled = NULL) {
+  rlang::check_installed("netmeta")
+  if (inherits(x, "netmeta")) {
+    x <- netmeta::netcontrib(x)
+  } else if (!inherits(x, "netcontrib")) {
+    rlang::abort("Give contributions as a fit from netmeta::netmeta() or an object from netmeta::netcontrib().")
+  }
+  fit <- x$x
+  if (is.null(pooled)) pooled <- if (isTRUE(fit$random)) "random" else "common"
+  m <- x[[pooled]]
+  if (is.null(m)) rlang::abort(paste0("The contributions have no ", pooled, " effects results."))
+  # netmeta names each comparison by its two treatments joined by sep.trts,
+  # so every ordered pair is matched against the names it would get.
+  trts <- fit$trts
+  grid <- expand.grid(a = trts, b = trts, stringsAsFactors = FALSE)
+  grid <- grid[grid$a != grid$b, ]
+  grid$name <- paste(grid$a, grid$b, sep = fit$sep.trts)
+  side <- function(names, what) {
+    hit <- match(names, grid$name)
+    if (anyNA(hit)) rlang::abort(paste0("Could not match these ", what, " to treatments: ",
+                                        paste(names[is.na(hit)], collapse = ", ")))
+    grid[hit, c("a", "b")]
+  }
+  rows <- side(rownames(m), "network comparisons")
+  cols <- side(colnames(m), "direct comparisons")
+  long <- expand.grid(r = seq_len(nrow(m)), k = seq_len(ncol(m)))
+  long$share <- m[cbind(long$r, long$k)]
+  long <- long[long$share > 1e-6, ]
+  out <- data.frame(net_a = rows$a[long$r], net_b = rows$b[long$r],
+                    dir_a = cols$a[long$k], dir_b = cols$b[long$k],
+                    share = long$share, stringsAsFactors = FALSE)
+  out$net_key <- pair_key(out$net_a, out$net_b)
+  out$dir_key <- pair_key(out$dir_a, out$dir_b)
+  out <- out[order(out$net_key, -out$share), ]
+  rownames(out) <- NULL
+  attr(out, "method") <- x$method
+  attr(out, "pooled") <- pooled
+  attr(out, "trts") <- trts
+  out
+}
+
+pair_key <- function(a, b) ifelse(a < b, paste(a, b, sep = "\r"), paste(b, a, sep = "\r"))
+
+# What the method is, in words, for the panels.
+contribution_method <- function(flow) {
+  m <- attr(flow, "method")
+  name <- switch(m, shortestpath = "the shortest path method of Papakonstantinou et al. (2018)",
+                 randomwalk = "the random walk method of Davies et al. (2022)",
+                 cccp = "the method of Rucker et al.", paste0("the ", m, " method"))
+  paste0("Shares come from netmeta::netcontrib(), by ", name, ", for the ",
+         attr(flow, "pooled"), " effects model. They say how much of an estimate's ",
+         "information flows through each direct comparison, not how trustworthy it is.")
 }
