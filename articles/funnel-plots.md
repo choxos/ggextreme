@@ -83,7 +83,7 @@ bias.
 
 ## Risk of bias
 
-`rob` names the column holding each study’s overall judgement, which
+`rob` names the column holding each study’s overall judgment, which
 colors its point, with the wording matched as in
 [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md):
 
@@ -103,7 +103,7 @@ ggfunnel(metafor::rma(yi, vi, data = chi), rob = "rob.overall",
 |----|----|
 | `x` | an `rma.uni` fit from metafor, or a `meta` object |
 | `hover` | columns of the data for each study’s hover card |
-| `rob` | the column of overall risk of bias judgements |
+| `rob` | the column of overall risk of bias judgments |
 | `contours` | significance levels for the shading, or `NULL` |
 | `trim_fill` | add the imputed studies and the adjusted estimate |
 | `tests` | add the collapsed section of tests |

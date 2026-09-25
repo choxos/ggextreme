@@ -25,8 +25,13 @@
     <li><a class="dropdown-item" href="../articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="../articles/funnel-plots.html">Funnel plots</a></li>
     <li><a class="dropdown-item" href="../articles/league-tables.html">League tables</a></li>
+    <li><a class="dropdown-item" href="../articles/cinema.html">Confidence in a network meta-analysis</a></li>
     <li><a class="dropdown-item" href="../articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="../articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="../articles/responder-thresholds.html">Responder thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/diagnostic-thresholds.html">Diagnostic thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/bias-sensitivity.html">Bias and tipping points</a></li>
+    <li><a class="dropdown-item" href="../articles/multiverse.html">A multiverse of analyses</a></li>
     <li><a class="dropdown-item" href="../articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="../articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul></li>
@@ -188,9 +193,60 @@
         </dt>
         <dd>Draw an interactive league table for a network meta-analysis</dd>
       </dl></div><div class="section level2">
+      <h2 id="confidence-in-a-network-meta-analysis">Confidence in a network meta-analysis<a class="anchor" aria-label="anchor" href="#confidence-in-a-network-meta-analysis"></a></h2>
+
+      <div class="section-desc"><p>Judge every estimate of a network meta-analysis in CINeMA’s six domains, and see what lies behind each judgment.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cinema_judge.html">cinema_judge()</a></code>
+
+        </dt>
+        <dd>Judge confidence in the results of a network meta-analysis</dd>
+
+        <dt>
+
+          <code><a href="cinema_league.html">cinema_league()</a></code>
+
+        </dt>
+        <dd>Draw a league table with a CINeMA confidence profile in every cell</dd>
+
+        <dt>
+
+          <code><a href="cinema_contribution.html">cinema_contribution()</a></code>
+
+        </dt>
+        <dd>Draw where each network estimate's evidence comes from, study by study</dd>
+
+        <dt>
+
+          <code><a href="cinema_clinical.html">cinema_clinical()</a></code>
+
+        </dt>
+        <dd>Draw network estimates against a range of little difference</dd>
+
+        <dt>
+
+          <code><a href="cinema_incoherence.html">cinema_incoherence()</a></code>
+
+        </dt>
+        <dd>Draw direct, indirect and network estimates side by side</dd>
+
+        <dt>
+
+          <code><a href="cinema_network.html">cinema_network()</a></code>
+
+        </dt>
+        <dd>Draw a network plot with a strand for every study, colored by its judgment</dd>
+      </dl></div><div class="section level2">
       <h2 id="survival-and-trials">Survival and trials<a class="anchor" aria-label="anchor" href="#survival-and-trials"></a></h2>
 
-      <div class="section-desc"><p>Kaplan-Meier plots with a linked risk table and proportional hazards tests, and swimmer plots of each patient’s course.</p></div>
+      <div class="section-desc"><p>Kaplan-Meier plots with a linked risk table, proportional hazards tests and restricted mean survival, swimmer plots of each patient’s course with a waterfall and trajectories, and responder thresholds.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -217,6 +273,43 @@
 
         </dt>
         <dd>Draw an interactive swimmer plot</dd>
+
+        <dt>
+
+          <code><a href="ggresponder.html">ggresponder()</a></code>
+
+        </dt>
+        <dd>Draw an interactive responder threshold plot</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tests-bias-and-robustness">Tests, bias and robustness<a class="anchor" aria-label="anchor" href="#tests-bias-and-robustness"></a></h2>
+
+      <div class="section-desc"><p>Explore the cutoff of a diagnostic test, the strength of unmeasured confounding and a multiverse of analyses.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ggdiagnostic.html">ggdiagnostic()</a></code>
+
+        </dt>
+        <dd>Draw an interactive diagnostic threshold explorer</dd>
+
+        <dt>
+
+          <code><a href="ggsensitivity.html">ggsensitivity()</a></code>
+
+        </dt>
+        <dd>Draw an interactive bias and tipping point explorer</dd>
+
+        <dt>
+
+          <code><a href="ggmultiverse.html">ggmultiverse()</a></code>
+
+        </dt>
+        <dd>Draw an interactive multiverse of analyses</dd>
       </dl></div><div class="section level2">
       <h2 id="prediction-models">Prediction models<a class="anchor" aria-label="anchor" href="#prediction-models"></a></h2>
 

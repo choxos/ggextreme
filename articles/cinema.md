@@ -1,0 +1,314 @@
+# Confidence in a network meta-analysis
+
+A network meta-analysis gives an estimate for every pair of treatments,
+but not every estimate deserves the same confidence. CINeMA, Confidence
+in Network Meta-Analysis (Nikolakopoulou et al. 2020; Papakonstantinou
+et al. 2020), judges each estimate in six domains: within-study bias,
+reporting bias, indirectness, imprecision, heterogeneity and
+incoherence. The `cinema_` functions apply its published rules and draw
+what lies behind each judgment, so a reader can see why an estimate
+earns the confidence it gets:
+
+- [`cinema_judge()`](https://choxos.github.io/ggextreme/reference/cinema_judge.md)
+  gives every comparison a judgment in each domain, with the reason in
+  words and whether a rule computed it or you gave it;
+- [`cinema_contribution()`](https://choxos.github.io/ggextreme/reference/cinema_contribution.md)
+  shows which studies each estimate rests on;
+- [`cinema_clinical()`](https://choxos.github.io/ggextreme/reference/cinema_clinical.md)
+  sets the estimates against a range of little difference that the
+  reader can move;
+- [`cinema_incoherence()`](https://choxos.github.io/ggextreme/reference/cinema_incoherence.md)
+  puts direct, indirect and network estimates side by side;
+- [`cinema_league()`](https://choxos.github.io/ggextreme/reference/cinema_league.md)
+  draws the league table with the six judgments in every cell;
+- [`cinema_network()`](https://choxos.github.io/ggextreme/reference/cinema_network.md)
+  draws the network with one strand per study, colored by its judgment.
+
+``` r
+
+library(ggextreme)
+```
+
+## The network and some illustrative judgments
+
+The network is the package’s five trials of treatments for plaque
+psoriasis, analyzed for PASI 75 response as odds ratios with a random
+effects model.
+
+``` r
+
+pw <- meta::pairwise(
+  treat = treatment, event = pasi75_r, n = pasi75_n,
+  studlab = study, data = psoriasis_nma, sm = "OR"
+)
+nma <- netmeta::netmeta(pw, common = FALSE)
+```
+
+CINeMA starts from a judgment of each study’s risk of bias and of its
+indirectness, its relevance to the review question. **The judgments
+below are illustrative, invented for this vignette; they are not
+published assessments of these trials.** Each is a data frame with the
+study, the judgment and, optionally, the reason for it.
+
+``` r
+
+rob <- data.frame(
+  study = c("CLEAR", "ERASURE", "FEATURE", "FIXTURE", "JUNCTURE"),
+  judgment = c("high", "low", "some concerns", "low", "some concerns"),
+  reason = c(
+    "Illustrative: the reported PASI 75 analysis could not be matched to a prespecified plan.",
+    "Illustrative: placebo controlled and double blind, with almost everyone analyzed.",
+    "Illustrative: the masking of outcome assessors was poorly reported.",
+    "Illustrative: double blind against placebo and etanercept, with almost everyone analyzed.",
+    "Illustrative: allocation concealment was poorly reported."
+  )
+)
+indirectness <- data.frame(
+  study = rob$study,
+  judgment = c("low", "low", "high", "low", "moderate"),
+  reason = c(
+    "Illustrative: population, doses and outcome match the review question.",
+    "Illustrative: population, doses and outcome match the review question.",
+    "Illustrative: participants had to be willing to self-inject, and BMI was not reported.",
+    "Illustrative: population, doses and outcome match the review question.",
+    "Illustrative: an autoinjector trial that may favor people comfortable with self-injection."
+  )
+)
+```
+
+Reporting bias cannot be computed from the data, so it is your judgment:
+undetected or suspected, for every comparison at once or one by one.
+
+``` r
+
+reporting <- data.frame(
+  judgment = "suspected",
+  reason = "Illustrative: every trial was funded by the maker of one of its drugs."
+)
+```
+
+## Judging every comparison
+
+[`cinema_judge()`](https://choxos.github.io/ggextreme/reference/cinema_judge.md)
+applies CINeMA’s rules. Imprecision, heterogeneity and, in part,
+incoherence need a range of little difference: the effects too small to
+matter to patients, chosen before looking at the results. Here it is an
+odds ratio from 0.8 to 1.25, given as one number. For a response, larger
+odds ratios are better, so `small_values = "undesirable"`.
+
+``` r
+
+j <- cinema_judge(
+  nma, rob = rob, indirectness = indirectness, reporting = reporting,
+  threshold = 1.25, small_values = "undesirable"
+)
+j
+#> CINeMA judgments for 10 comparisons of 5 treatments (random effects, odds ratio)
+#> Range of little difference: 0.80 to 1.25, for the first treatment against the second
+#>  Comparison                               Within-study bias Reporting bias
+#>  Secukinumab 300 mg vs Secukinumab 150 mg No concerns       Suspected     
+#>  Secukinumab 300 mg vs Ustekinumab        Major concerns    Suspected     
+#>  Secukinumab 300 mg vs Etanercept         No concerns       Suspected     
+#>  Secukinumab 300 mg vs Placebo            No concerns       Suspected     
+#>  Secukinumab 150 mg vs Ustekinumab        Some concerns     Suspected     
+#>  Secukinumab 150 mg vs Etanercept         No concerns       Suspected     
+#>  Secukinumab 150 mg vs Placebo            No concerns       Suspected     
+#>  Ustekinumab vs Etanercept                Some concerns     Suspected     
+#>  Ustekinumab vs Placebo                   Some concerns     Suspected     
+#>  Etanercept vs Placebo                    No concerns       Suspected     
+#>  Indirectness Imprecision   Heterogeneity Incoherence
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  Some concerns No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  Some concerns No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#>  No concerns  No concerns   No concerns   No concerns
+#> 
+#> Within-study bias: computed, average rule over the study judgments, weighted by contribution
+#> Reporting bias: Yours
+#> Indirectness: computed, average rule over the study judgments, weighted by contribution
+#> Imprecision: computed, CI against the limits
+#> Heterogeneity: computed, prediction interval against the limits
+#> Incoherence: computed, global design by treatment test; computed, local test of direct against indirect evidence
+#> Domains are shown side by side and never added into a score. The reasons are in $judgments.
+```
+
+Each judgment comes with its reason and its source:
+
+``` r
+
+imp <- j$judgments[j$judgments$domain == "Imprecision", ]
+imp$reason[5]
+#> [1] "The 95% CI, 0.94 to 2.65, crosses no effect into the range of little difference on the other side, but not beyond 0.80; the limits of little difference are 0.80 and 1.25."
+```
+
+Computing the contribution of each study, with
+[`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html),
+takes a few seconds, so judge once and give the result to each plot.
+Every plot also accepts the netmeta fit with the arguments of
+[`cinema_judge()`](https://choxos.github.io/ggextreme/reference/cinema_judge.md).
+
+## Where each estimate’s evidence comes from
+
+An estimate’s within-study bias and indirectness depend on the studies
+it rests on, weighted by how much each contributes.
+[`cinema_contribution()`](https://choxos.github.io/ggextreme/reference/cinema_contribution.md)
+splits each estimate into its studies, grouped low, moderate and high as
+CINeMA draws them, beside a comparison by study matrix and a small
+network.
+
+``` r
+
+cinema_contribution(j, caption = "Illustrative judgments, not published assessments.")
+```
+
+Switch between risk of bias and indirectness; select a comparison, a
+study or part of a bar, and the bars, the matrix and the network follow.
+Selecting Ustekinumab vs Placebo shows that no trial compares them
+directly, and that two fifths of the estimate flows through CLEAR, the
+trial with the high illustrative risk of bias.
+
+## Against a range of little difference
+
+[`cinema_clinical()`](https://choxos.github.io/ggextreme/reference/cinema_clinical.md)
+draws each network estimate with its confidence and prediction intervals
+against the range of little difference, and says in words what each
+interval is compatible with. The sliders move the lower and upper limits
+independently, while the prespecified limits stay marked; the readings,
+the imprecision and heterogeneity judgments at those limits and the
+sensitivity strips under the estimates follow.
+
+``` r
+
+cinema_clinical(j)
+```
+
+The strips show, for each comparison, where the reading changes as one
+limit moves with the other held. Here Secukinumab 300 mg vs Secukinumab
+150 mg would also be compatible with little difference if the upper
+limit were raised above 1.33, the lower end of its interval, and the two
+comparisons with ustekinumab whose intervals start near 0.95 would be
+compatible with an important harm if the lower limit were raised past
+it. With five trials the between-study variance is poorly estimated, so
+the prediction intervals are only a rough guide.
+
+## Direct and indirect evidence
+
+[`cinema_incoherence()`](https://choxos.github.io/ggextreme/reference/cinema_incoherence.md)
+places the direct estimate, from the trials of each pair, beside the
+indirect estimate from the rest of the network, with the inconsistency
+factor and its confidence interval. Comparisons with only direct or only
+indirect evidence cannot be checked locally and are marked as such;
+CINeMA judges them from the global design by treatment test instead.
+
+``` r
+
+cinema_incoherence(j)
+```
+
+Wide intervals of the inconsistency factor, such as those of the two
+secukinumab doses against placebo, show how weak these tests are: a
+large p-value does not mean that direct and indirect evidence agree.
+
+## The confidence profile of every estimate
+
+[`cinema_league()`](https://choxos.github.io/ggextreme/reference/cinema_league.md)
+lays out the league table as
+[`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
+does, network estimates below the diagonal and direct estimates above
+it, and adds six marks under each network estimate, one per domain.
+Click a cell for every judgment with its reason and source, and a bar of
+the estimate’s contributions.
+
+``` r
+
+cinema_league(j, caption = "Illustrative judgments, not published assessments.")
+```
+
+The marks are never added into a score. CINeMA leaves any overall rating
+to the reviewers, and warns that the domains are related: one trial at
+high risk of bias can raise concerns in more than one of them.
+
+## Judgments on the network
+
+[`cinema_network()`](https://choxos.github.io/ggextreme/reference/cinema_network.md)
+draws the network from the arm level data with each line split into one
+strand per study, so a comparison that mixes studies at low and high
+risk of bias shows both colors instead of an average. It takes the study
+judgments directly; here the treatments are placed by hand so that no
+lines cross.
+
+``` r
+
+positions <- data.frame(
+  treatment = c("Secukinumab 300 mg", "Ustekinumab", "Secukinumab 150 mg",
+                "Etanercept", "Placebo"),
+  x = c(210, 372, 62, 358, 210),
+  y = -c(40, 40, 200, 200, 138)
+)
+cinema_network(
+  psoriasis_nma, study, treatment, n = n,
+  rob = rob, indirectness = indirectness, positions = positions,
+  caption = "Illustrative judgments, not published assessments."
+)
+```
+
+## Judgments you made yourself
+
+A judgment the rules would get wrong can be replaced, and judgments made
+elsewhere, such as the report the CINeMA web application exports, can be
+drawn as they are. Give them in `judgments`, wide with one column per
+domain or long with a `domain` column; they are labeled as yours in
+every plot.
+
+``` r
+
+mine <- data.frame(
+  comparison = "Secukinumab 150 mg:Ustekinumab",
+  Imprecision = "major concerns",
+  "Imprecision reason" = "Illustrative: the upper limit we would accept is lower.",
+  check.names = FALSE
+)
+j2 <- cinema_judge(
+  nma, rob = rob, reporting = reporting, threshold = 1.25,
+  small_values = "undesirable", judgments = mine
+)
+j2$judgments[j2$judgments$domain == "Imprecision", c("treat1", "treat2", "judgment", "source")][5, ]
+#>                treat1      treat2       judgment source
+#> 28 Secukinumab 150 mg Ustekinumab Major concerns  Yours
+```
+
+## The rules
+
+| Domain | Rule | Source of the judgment |
+|----|----|----|
+| Within-study bias | study judgments weighted by their contributions, by the average, majority or highest rule | computed from your study judgments |
+| Reporting bias | none: undetected or suspected | yours |
+| Indirectness | as within-study bias | computed from your study judgments |
+| Imprecision | the CI against the range of little difference and the side of no effect | computed |
+| Heterogeneity | the prediction interval by the same rule, compared with the CI | computed |
+| Incoherence | the local test of direct against indirect evidence, and where it is 0.10 or less the areas both CIs reach; otherwise the global test | computed |
+
+The help page of
+[`cinema_judge()`](https://choxos.github.io/ggextreme/reference/cinema_judge.md)
+gives each rule in full, with the choices made where the papers leave a
+detail open.
+
+## References
+
+Nikolakopoulou A, Higgins JPT, Papakonstantinou T, et al. CINeMA: an
+approach for assessing confidence in the results of a network
+meta-analysis. PLoS Medicine 2020;17(4):e1003082.
+
+Papakonstantinou T, Nikolakopoulou A, Higgins JPT, Egger M, Salanti G.
+CINeMA: software for semiautomated assessment of the confidence in the
+results of network meta-analysis. Campbell Systematic Reviews
+2020;16:e1080.
+
+Papakonstantinou T, Nikolakopoulou A, Rucker G, et al. Estimating the
+contribution of studies in network meta-analysis: paths, flows and
+streams. F1000Research 2018;7:610.

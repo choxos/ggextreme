@@ -35,8 +35,13 @@ also makes the diagram usable on touch screens."></head><body>
     <li><a class="dropdown-item" href="../articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="../articles/funnel-plots.html">Funnel plots</a></li>
     <li><a class="dropdown-item" href="../articles/league-tables.html">League tables</a></li>
+    <li><a class="dropdown-item" href="../articles/cinema.html">Confidence in a network meta-analysis</a></li>
     <li><a class="dropdown-item" href="../articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="../articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="../articles/responder-thresholds.html">Responder thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/diagnostic-thresholds.html">Diagnostic thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/bias-sensitivity.html">Bias and tipping points</a></li>
+    <li><a class="dropdown-item" href="../articles/multiverse.html">A multiverse of analyses</a></li>
     <li><a class="dropdown-item" href="../articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="../articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul></li>
@@ -76,7 +81,11 @@ also makes the diagram usable on touch screens.</p>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  caption <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  family <span class="op">=</span> <span class="st">"Lato"</span></span>
+<span>  family <span class="op">=</span> <span class="st">"Lato"</span>,</span>
+<span>  paths <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  adjust <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -124,6 +133,23 @@ out keep their default color.</p></dd>
 <dt id="arg-family">family<a class="anchor" aria-label="anchor" href="#arg-family"></a></dt>
 <dd><p>Font family. The package ships Lato and registers it on load.</p></dd>
 
+
+<dt id="arg-paths">paths<a class="anchor" aria-label="anchor" href="#arg-paths"></a></dt>
+<dd><p>Show which paths between the exposure and the outcome are
+open or blocked for an adjustment set. The widget then lets the reader
+choose the exposure and outcome, click variables to adjust for them, and
+read why each path is open or blocked, whether the set is sufficient and
+which minimal sets would be.</p></dd>
+
+
+<dt id="arg-exposure-outcome">exposure, outcome<a class="anchor" aria-label="anchor" href="#arg-exposure-outcome"></a></dt>
+<dd><p>Names of the exposure and the outcome. Default to
+the nodes whose role is <code>exposure</code> and <code>outcome</code>.</p></dd>
+
+
+<dt id="arg-adjust">adjust<a class="anchor" aria-label="anchor" href="#arg-adjust"></a></dt>
+<dd><p>Names of the nodes adjusted for at the start.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -147,6 +173,21 @@ border. Any other role is allowed and takes the next color from
 row, or text with several references separated by <code>|</code> or a line break.
 A reference that contains a URL is linked to it; otherwise one that
 contains a DOI is linked to <code>https://doi.org/</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="adjustment-paths">Adjustment paths<a class="anchor" aria-label="anchor" href="#adjustment-paths"></a></h2>
+
+
+<p>A path between the exposure and the outcome is causal when every arrow on
+it points from the exposure toward the outcome, and biasing otherwise. A
+path is blocked when it passes through a variable that is adjusted for,
+unless that variable is a collider, where two arrows meet head to head;
+a collider blocks a path until it, or one of its descendants, is adjusted
+for, which opens it. An adjustment set is sufficient by the backdoor
+criterion when it blocks every biasing path and contains no descendant of
+the exposure (Pearl 2009). Unobserved and latent variables cannot be
+adjusted for. Adjustment is conditioning, not intervention, and a diagram
+gives no size of effect.</p>
     </div>
 
     <div class="section level2">

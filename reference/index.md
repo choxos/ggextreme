@@ -53,10 +53,31 @@ Forest plots and league tables for fitted models.
 - [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md)
   : Draw an interactive league table for a network meta-analysis
 
+## Confidence in a network meta-analysis
+
+Judge every estimate of a network meta-analysis in CINeMA’s six domains,
+and see what lies behind each judgment.
+
+- [`cinema_judge()`](https://choxos.github.io/ggextreme/reference/cinema_judge.md)
+  : Judge confidence in the results of a network meta-analysis
+- [`cinema_league()`](https://choxos.github.io/ggextreme/reference/cinema_league.md)
+  : Draw a league table with a CINeMA confidence profile in every cell
+- [`cinema_contribution()`](https://choxos.github.io/ggextreme/reference/cinema_contribution.md)
+  : Draw where each network estimate's evidence comes from, study by
+  study
+- [`cinema_clinical()`](https://choxos.github.io/ggextreme/reference/cinema_clinical.md)
+  : Draw network estimates against a range of little difference
+- [`cinema_incoherence()`](https://choxos.github.io/ggextreme/reference/cinema_incoherence.md)
+  : Draw direct, indirect and network estimates side by side
+- [`cinema_network()`](https://choxos.github.io/ggextreme/reference/cinema_network.md)
+  : Draw a network plot with a strand for every study, colored by its
+  judgment
+
 ## Survival and trials
 
-Kaplan-Meier plots with a linked risk table and proportional hazards
-tests, and swimmer plots of each patient’s course.
+Kaplan-Meier plots with a linked risk table, proportional hazards tests
+and restricted mean survival, swimmer plots of each patient’s course
+with a waterfall and trajectories, and responder thresholds.
 
 - [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md) :
   Draw an interactive Kaplan-Meier plot
@@ -64,6 +85,20 @@ tests, and swimmer plots of each patient’s course.
   : Animate a Kaplan-Meier plot
 - [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md)
   : Draw an interactive swimmer plot
+- [`ggresponder()`](https://choxos.github.io/ggextreme/reference/ggresponder.md)
+  : Draw an interactive responder threshold plot
+
+## Tests, bias and robustness
+
+Explore the cutoff of a diagnostic test, the strength of unmeasured
+confounding and a multiverse of analyses.
+
+- [`ggdiagnostic()`](https://choxos.github.io/ggextreme/reference/ggdiagnostic.md)
+  : Draw an interactive diagnostic threshold explorer
+- [`ggsensitivity()`](https://choxos.github.io/ggextreme/reference/ggsensitivity.md)
+  : Draw an interactive bias and tipping point explorer
+- [`ggmultiverse()`](https://choxos.github.io/ggextreme/reference/ggmultiverse.md)
+  : Draw an interactive multiverse of analyses
 
 ## Prediction models
 

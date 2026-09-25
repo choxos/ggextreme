@@ -19,7 +19,11 @@ ggcausal(
   legend_title = NULL,
   title = NULL,
   caption = NULL,
-  family = "Lato"
+  family = "Lato",
+  paths = FALSE,
+  exposure = NULL,
+  outcome = NULL,
+  adjust = character(0)
 )
 ```
 
@@ -66,6 +70,23 @@ ggcausal(
 
   Font family. The package ships Lato and registers it on load.
 
+- paths:
+
+  Show which paths between the exposure and the outcome are open or
+  blocked for an adjustment set. The widget then lets the reader choose
+  the exposure and outcome, click variables to adjust for them, and read
+  why each path is open or blocked, whether the set is sufficient and
+  which minimal sets would be.
+
+- exposure, outcome:
+
+  Names of the exposure and the outcome. Default to the nodes whose role
+  is `exposure` and `outcome`.
+
+- adjust:
+
+  Names of the nodes adjusted for at the start.
+
 ## Value
 
 An object of class `ggcausal`, which prints as an interactive widget.
@@ -94,6 +115,19 @@ border. Any other role is allowed and takes the next color from
 text with several references separated by `|` or a line break. A
 reference that contains a URL is linked to it; otherwise one that
 contains a DOI is linked to `https://doi.org/`.
+
+## Adjustment paths
+
+A path between the exposure and the outcome is causal when every arrow
+on it points from the exposure toward the outcome, and biasing
+otherwise. A path is blocked when it passes through a variable that is
+adjusted for, unless that variable is a collider, where two arrows meet
+head to head; a collider blocks a path until it, or one of its
+descendants, is adjusted for, which opens it. An adjustment set is
+sufficient by the backdoor criterion when it blocks every biasing path
+and contains no descendant of the exposure (Pearl 2009). Unobserved and
+latent variables cannot be adjusted for. Adjustment is conditioning, not
+intervention, and a diagram gives no size of effect.
 
 ## Examples
 

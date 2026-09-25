@@ -28,7 +28,8 @@ ggnma(
   legend_title = NULL,
   title = NULL,
   caption = NULL,
-  family = "Lato"
+  family = "Lato",
+  contributions = NULL
 )
 ```
 
@@ -97,6 +98,17 @@ ggnma(
 
   Font family. The package ships Lato and registers it on load.
 
+- contributions:
+
+  Show where the evidence for each comparison comes from: a fit from
+  [`netmeta::netmeta()`](https://rdrr.io/pkg/netmeta/man/netmeta.html)
+  on the same network, whose contributions are then computed with
+  [`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html),
+  or an object that function returned. The widget gains a menu of every
+  comparison; picking one widens and colors each line by the share of
+  that network estimate flowing through it, labels the shares and says
+  them in words under the plot.
+
 ## Value
 
 An object of class `ggnma`, which prints as an interactive widget. Use
@@ -107,7 +119,8 @@ or
 for the widget, a static ggplot or a file. The fields `nodes` and
 `edges` hold the treatments and comparisons with their study counts,
 `multiarm` the sets of treatments compared in multi-arm studies, and
-`width` and `height` the natural size in inches.
+`width` and `height` the natural size in inches. With `contributions`,
+the field `contributions` holds the shares.
 
 ## Details
 
@@ -141,4 +154,14 @@ net$edges
 #> 5         Etanercept Secukinumab 300 mg       1  653
 #> 6        Ustekinumab Secukinumab 300 mg       1  676
 #> 7 Secukinumab 150 mg Secukinumab 300 mg       4 1383
+
+# \donttest{
+if (requireNamespace("netmeta", quietly = TRUE) &&
+    requireNamespace("meta", quietly = TRUE)) {
+  pw <- meta::pairwise(treat = treatment, event = pasi75_r, n = pasi75_n,
+                       studlab = study, data = psoriasis_nma, sm = "OR")
+  fit <- netmeta::netmeta(pw, common = FALSE)
+  ggnma(psoriasis_nma, study, treatment, n = n, contributions = fit)
+}
+# }
 ```

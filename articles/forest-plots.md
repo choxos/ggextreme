@@ -1,14 +1,14 @@
 # Interactive forest plots
 
 A forest plot summarizes a meta-analysis in one figure, but the
-judgements behind it, what each trial measured, how it was run and how
+judgments behind it, what each trial measured, how it was run and how
 far it can be trusted, live in an extraction sheet the reader never
 sees.
 [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md)
 draws the forest plot of a fitted model and keeps that sheet with it.
 Hovering over a study shows its effect, weight and chosen columns;
-clicking it opens its full record; and risk of bias judgements sit
-beside each study as traffic lights.
+clicking it opens its full record; and risk of bias judgments sit beside
+each study as traffic lights.
 
 ``` r
 
@@ -80,9 +80,9 @@ order of the model.
 
 ## Risk of bias
 
-`rob` names the columns that hold judgements, one per domain, in the
-order they should appear. Judgements are matched by their wording, so
-the RoB 2, RoB 1 and ROBINS-I scales all work as written:
+`rob` names the columns that hold judgments, one per domain, in the
+order they should appear. Judgments are matched by their wording, so the
+RoB 2, RoB 1 and ROBINS-I scales all work as written:
 
 | wording                 | light       |
 |-------------------------|-------------|
@@ -93,8 +93,8 @@ the RoB 2, RoB 1 and ROBINS-I scales all work as written:
 | critical                | dark red, ! |
 | no information          | grey, ?     |
 
-Each light carries its own hover card, and a key of the judgements in
-use is drawn above the plot. A wording outside these is refused with a
+Each light carries its own hover card, and a key of the judgments in use
+is drawn above the plot. A wording outside these is refused with a
 message naming it, rather than drawn in a color that might mislead.
 
 ## Cumulative meta-analysis

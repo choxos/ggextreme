@@ -79,6 +79,29 @@ row. Without them, the panel lists each direct trial’s own estimate:
 ggleague(nma, small_values = "undesirable", ranking = FALSE)
 ```
 
+## Where each estimate comes from
+
+A network estimate draws on every direct comparison connected to it, not
+only the trials of its own pair. `contributions = TRUE` computes, with
+[`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html),
+the share of each network estimate that flows through each direct
+comparison. Computing it takes a few seconds for a large network, so it
+can also be given as the object that function returns, to share with
+[`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md):
+
+``` r
+
+flow <- netmeta::netcontrib(nma)
+ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable",
+         contributions = flow)
+```
+
+Hover over or tap any estimate: the direct comparisons it draws on are
+outlined above the diagonal with their shares, and a sentence under the
+table names the largest. Its panel gains a table of every contribution.
+The shares say where the information comes from, not how trustworthy it
+is.
+
 ## Options
 
 | argument  | effect                                                         |

@@ -49,7 +49,7 @@ ggfunnel(
 - rob:
 
   Name of the column of `data` holding each study's overall risk of bias
-  judgement, which colors its point. Judgements are matched by their
+  judgment, which colors its point. Judgments are matched by their
   wording, as in
   [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md).
 

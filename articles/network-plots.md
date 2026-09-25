@@ -185,6 +185,28 @@ ggnma(
 )
 ```
 
+## Where the evidence for a comparison comes from
+
+Give a netmeta fit on the same network, or the result of
+[`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html)
+for it, as `contributions`, and the widget gains a menu of every
+comparison. Picking one widens and colors each line by the share of that
+network estimate flowing through it, labels the shares and lists them
+under the plot, while the lines it does not use fade.
+
+``` r
+
+pw <- meta::pairwise(treat = treatment, event = pasi75_r, n = pasi75_n,
+                     studlab = study, data = psoriasis_nma, sm = "OR")
+fit <- netmeta::netmeta(pw, common = FALSE)
+ggnma(psoriasis_nma, study, treatment, n = n, group = class,
+      legend_title = "Class", contributions = fit)
+```
+
+No trial compares ustekinumab with placebo, so its estimate flows
+entirely through the other comparisons, most of it through the one trial
+of ustekinumab against secukinumab.
+
 ## Other forms
 
 As with causal diagrams, the plot prints as a widget in the RStudio

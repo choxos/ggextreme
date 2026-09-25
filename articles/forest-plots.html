@@ -42,8 +42,13 @@
     <li><a class="dropdown-item" href="../articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="../articles/funnel-plots.html">Funnel plots</a></li>
     <li><a class="dropdown-item" href="../articles/league-tables.html">League tables</a></li>
+    <li><a class="dropdown-item" href="../articles/cinema.html">Confidence in a network meta-analysis</a></li>
     <li><a class="dropdown-item" href="../articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="../articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="../articles/responder-thresholds.html">Responder thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/diagnostic-thresholds.html">Diagnostic thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/bias-sensitivity.html">Bias and tipping points</a></li>
+    <li><a class="dropdown-item" href="../articles/multiverse.html">A multiverse of analyses</a></li>
     <li><a class="dropdown-item" href="../articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="../articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul>
@@ -80,12 +85,12 @@
     
     
 <p>A forest plot summarizes a meta-analysis in one figure, but the
-judgements behind it, what each trial measured, how it was run and how
+judgments behind it, what each trial measured, how it was run and how
 far it can be trusted, live in an extraction sheet the reader never
 sees. <code><a href="../reference/ggmeta.html">ggmeta()</a></code> draws the forest plot of a fitted model and
 keeps that sheet with it. Hovering over a study shows its effect, weight
 and chosen columns; clicking it opens its full record; and risk of bias
-judgements sit beside each study as traffic lights.</p>
+judgments sit beside each study as traffic lights.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://choxos.github.io/ggextreme/">ggextreme</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
@@ -181,8 +186,8 @@ headers</td>
 <div class="section level2">
 <h2 id="risk-of-bias">Risk of bias<a class="anchor" aria-label="anchor" href="#risk-of-bias"></a>
 </h2>
-<p><code>rob</code> names the columns that hold judgements, one per
-domain, in the order they should appear. Judgements are matched by their
+<p><code>rob</code> names the columns that hold judgments, one per
+domain, in the order they should appear. Judgments are matched by their
 wording, so the RoB 2, RoB 1 and ROBINS-I scales all work as
 written:</p>
 <table class="table">
@@ -217,7 +222,7 @@ written:</p>
 </tr>
 </tbody>
 </table>
-<p>Each light carries its own hover card, and a key of the judgements in
+<p>Each light carries its own hover card, and a key of the judgments in
 use is drawn above the plot. A wording outside these is refused with a
 message naming it, rather than drawn in a color that might mislead.</p>
 </div>

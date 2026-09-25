@@ -2,18 +2,23 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  bias-sensitivity: bias-sensitivity.html
   causal-diagrams: causal-diagrams.html
   choropleth-maps: choropleth-maps.html
+  cinema: cinema.html
+  diagnostic-thresholds: diagnostic-thresholds.html
   forest-plots: forest-plots.html
   funnel-plots: funnel-plots.html
   ggextreme: ggextreme.html
   how-the-animation-works: how-the-animation-works.html
   kaplan-meier: kaplan-meier.html
   league-tables: league-tables.html
+  multiverse: multiverse.html
   network-plots: network-plots.html
   nomograms: nomograms.html
+  responder-thresholds: responder-thresholds.html
   swimmer-plots: swimmer-plots.html
-last_built: 2026-09-24T23:07Z
+last_built: 2026-09-25T11:20Z
 urls:
   reference: https://choxos.github.io/ggextreme/reference
   article: https://choxos.github.io/ggextreme/articles

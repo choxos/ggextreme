@@ -156,6 +156,59 @@ edges <- data.frame(
 ggcausal(edges, nodes)
 ```
 
+## Adjustment paths
+
+A diagram is drawn to decide what to adjust for. With `paths = TRUE`,
+[`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md)
+finds every path between the exposure and the outcome and says, for the
+variables adjusted for, which ones stay open. A path is causal when
+every arrow on it points away from the exposure, and biasing otherwise.
+Adjusting for a variable blocks a path through it, except at a collider,
+where two arrows meet head to head: a collider blocks its path until it,
+or one of its consequences, is adjusted for, which opens it.
+
+``` r
+
+ggcausal(cleft_dag$edges, cleft_dag$nodes, legend_title = "Role", paths = TRUE)
+```
+
+In the widget, click a variable to adjust for it; it is boxed, the
+arrows recolor, and the panel under the diagram says whether the set is
+sufficient by the backdoor criterion, lists every path with the reason
+it is open or blocked, and offers the minimal sufficient sets, which
+apply with one click. Hover over a path in the list to find it in the
+diagram. The menus change the exposure and the outcome, and the switch
+next to them turns clicks back to opening each variable’s rationale.
+Unobserved variables cannot be adjusted for.
+
+Here the two backdoor paths through socioeconomic status are open, and
+adjusting for it closes both. Adjusting for live birth as well opens the
+path through it, since live birth is a collider and a consequence of the
+exposure:
+
+``` r
+
+both <- ggcausal(cleft_dag$edges, cleft_dag$nodes, paths = TRUE,
+                 adjust = c("ses", "birth"))
+both$adjustment$verdict
+#> [1] "Adjusting for Socioeconomic status, Live birth is not sufficient: 1 biasing path stays open, and Live birth is a consequence of the exposure and should not be adjusted for."
+both$paths
+#>                                                                                 path
+#> 1                                                 Maternal smoking → Orofacial cleft
+#> 2                                    Maternal smoking → Live birth ← Orofacial cleft
+#> 3 Maternal smoking ← Socioeconomic status → Folic acid supplements → Orofacial cleft
+#> 4                          Maternal smoking ← Socioeconomic status → Orofacial cleft
+#>      kind  status                                                reason
+#> 1  causal    open the effect to estimate; nothing on it is adjusted for
+#> 2 biasing    open        adjusting for the collider Live birth opens it
+#> 3 biasing blocked          adjusting for Socioeconomic status blocks it
+#> 4 biasing blocked          adjusting for Socioeconomic status blocks it
+```
+
+`exposure` and `outcome` default to the nodes with those roles. The
+verdict is only as good as the arrows drawn, and says nothing about the
+size of the effect.
+
 ## Other forms
 
 The diagram prints as a widget in the RStudio viewer, in R Markdown and

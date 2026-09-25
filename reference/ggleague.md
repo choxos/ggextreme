@@ -20,6 +20,7 @@ ggleague(
   small_values = NULL,
   order = NULL,
   ranking = TRUE,
+  contributions = NULL,
   title = NULL,
   caption = NULL,
   family = "Lato"
@@ -66,6 +67,16 @@ ggleague(
 - ranking:
 
   Draw the P-score ranking beside the table.
+
+- contributions:
+
+  Show where each network estimate comes from: `TRUE` to compute the
+  share of it that flows through each direct comparison with
+  [`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html),
+  or an object that function returned, which saves recomputing it for a
+  large network. Hovering or tapping a network estimate then marks the
+  direct comparisons it draws on with their shares, and its panel lists
+  them.
 
 - title, caption:
 

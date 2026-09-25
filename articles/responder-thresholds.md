@@ -1,0 +1,65 @@
+# Responder thresholds
+
+Trials often report the share of patients who improved by at least some
+amount, the responders. The threshold makes the result easy to state,
+and throws away how much each patient changed.
+[`ggresponder()`](https://choxos.github.io/ggextreme/reference/ggresponder.md)
+keeps both in view: the whole distribution of change, the responders at
+the prespecified threshold, and how the difference would look at any
+other.
+
+``` r
+
+library(ggextreme)
+```
+
+## A first plot
+
+In this simulated trial, pain is scored from 0 to 10 and a drop of 2
+points is the prespecified threshold for a responder.
+`higher_is_better = FALSE` turns the change around so that improvement
+is positive:
+
+``` r
+
+set.seed(3)
+pain <- data.frame(
+  arm = factor(rep(c("Placebo", "Active"), each = 120), levels = c("Placebo", "Active")),
+  change = c(rnorm(120, -1.3, 2), rnorm(120, -2.2, 2))
+)
+r <- ggresponder(change ~ arm, pain, threshold = 2, higher_is_better = FALSE,
+                 xlab = "Improvement in pain (points on a 0 to 10 scale)",
+                 title = "Who counts as a responder?")
+r
+```
+
+On the left, each curve gives the share of an arm who improved by at
+least each amount; the threshold picks one point on each. On the right,
+the difference in responders is drawn at every threshold with its
+confidence band: its shape shows how much the conclusion depends on
+where the line is drawn. Under them, the table gives the responders in
+each arm, their difference, the number needed to treat and the mean
+difference, which uses every patient.
+
+Move the slider, or drag either panel, to try another threshold; a
+button returns to the prespecified one. A threshold picked after seeing
+the data can make almost any difference look real, and the readout says
+so.
+
+``` r
+
+r$responders
+#>               measure  estimate      lower     upper
+#> 1  Responders, Active 0.5166667 0.42813580 0.6041636
+#> 2 Responders, Placebo 0.3750000 0.29352430 0.4642305
+#> 3          Difference 0.1416667 0.01596943 0.2612242
+#> 4     Mean difference 0.9477786 0.44028539 1.4552719
+```
+
+## Intervals
+
+Responders have Wilson score intervals and their difference the hybrid
+score interval of Newcombe. When the interval of the difference includes
+zero, the interval of the number needed to treat runs from benefit
+through infinity to harm, as Altman describes. The mean difference has a
+Welch interval.

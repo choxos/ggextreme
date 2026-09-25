@@ -127,6 +127,43 @@ The interaction models are fitted on data split at every event time, so
 they grow with the size of the study; for very large data they are
 skipped with a message.
 
+## Restricted mean survival time
+
+When hazards are not proportional, a single hazard ratio can mislead.
+The restricted mean survival time up to a horizon τ is the average time
+alive, or free of the event, over the first τ units of follow-up: the
+area under the curve. `rmst` gives the prespecified horizon, or `TRUE`
+for the end of follow-up in the arm followed least.
+
+``` r
+
+rm <- ggkm(survival::Surv(years, status) ~ arm, data = colon, rmst = 5,
+           xlab = "Years since randomization")
+rm
+```
+
+``` r
+
+rm$rmst
+#>                       group     rmst    lower    upper  difference  diff_lower
+#> 1               Observation 3.666546 3.486934 3.846158          NA          NA
+#> 2                Levamisole 3.622394 3.438812 3.805976 -0.04415199 -0.30098448
+#> 3 Levamisole + fluorouracil 3.971726 3.794494 4.148958  0.30517998  0.05284752
+#>   diff_upper
+#> 1         NA
+#> 2  0.2126805
+#> 3  0.5575124
+```
+
+The plot shades the reference arm’s area and the difference each other
+arm makes, and a table under the risk table gives each arm’s mean with
+its confidence interval and its difference from the reference. In the
+widget, a slider moves the horizon, the shading and the table follow,
+and a sentence says what the difference means at that horizon; the
+prespecified horizon stays marked and one button returns to it. A
+horizon chosen after looking at the curves is exploratory, and the
+differences treat the arms as independent.
+
 ## Options
 
 | argument | effect |

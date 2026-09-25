@@ -46,8 +46,13 @@
     <li><a class="dropdown-item" href="articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="articles/funnel-plots.html">Funnel plots</a></li>
     <li><a class="dropdown-item" href="articles/league-tables.html">League tables</a></li>
+    <li><a class="dropdown-item" href="articles/cinema.html">Confidence in a network meta-analysis</a></li>
     <li><a class="dropdown-item" href="articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="articles/responder-thresholds.html">Responder thresholds</a></li>
+    <li><a class="dropdown-item" href="articles/diagnostic-thresholds.html">Diagnostic thresholds</a></li>
+    <li><a class="dropdown-item" href="articles/bias-sensitivity.html">Bias and tipping points</a></li>
+    <li><a class="dropdown-item" href="articles/multiverse.html">A multiverse of analyses</a></li>
     <li><a class="dropdown-item" href="articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul>
@@ -70,30 +75,40 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are ten so far:</p>
+<p>Presentation quality charts built on <strong>ggplot2</strong> that the package itself does not provide. There are fifteen so far:</p>
 <ul>
 <li>
 <strong>Bar chart races</strong>: an animation of a ranking that changes over time, of the kind used to summarize long panels in talks, teaching material and journal supplements.</li>
 <li>
-<strong>Interactive causal diagrams</strong>: a directed acyclic graph in which every node and arrow carries its rationale and references, shown on hover and opened in full on click.</li>
+<strong>Interactive causal diagrams</strong>: a directed acyclic graph in which every node and arrow carries its rationale and references, shown on hover and opened in full on click, and which can show the paths an adjustment set leaves open.</li>
 <li>
 <strong>Interactive network plots</strong>: the network of a network meta-analysis, with the baseline characteristics and outcomes of every arm behind each treatment and comparison.</li>
 <li>
 <strong>Interactive forest plots</strong>: a meta-analysis with each study’s record and risk of bias traffic lights, and a cumulative replay as an animation.</li>
 <li>
-<strong>League tables</strong>: every estimate of a network meta-analysis, with its direct and indirect evidence and a ranking of the treatments.</li>
+<strong>League tables</strong>: every estimate of a network meta-analysis, with its direct and indirect evidence, where that evidence flows from, and a ranking of the treatments.</li>
+<li>
+<strong>Confidence in a network meta-analysis</strong>: five plots that follow CINeMA, from a league table with a confidence profile in every cell to the studies each estimate rests on, estimates against a movable range of little difference, and direct against indirect evidence.</li>
 <li>
 <strong>Funnel plots</strong>: small-study effects with significance contours, the pooled estimate without each study, trim and fill and the tests for asymmetry.</li>
 <li>
-<strong>Kaplan-Meier plots</strong>: survival curves that read every group, and the hazard ratio, at any time under the pointer, with a linked risk table and proportional hazards tests.</li>
+<strong>Kaplan-Meier plots</strong>: survival curves that read every group, and the hazard ratio, at any time under the pointer, with a linked risk table, proportional hazards tests and the restricted mean survival time up to a movable horizon.</li>
 <li>
-<strong>Swimmer plots</strong>: one lane per patient, with responses, progression and death along it, that reorders on demand.</li>
+<strong>Swimmer plots</strong>: one lane per patient, with responses, progression and death along it, that reorders on demand, with a waterfall of best change and each patient’s course linked to the lanes.</li>
+<li>
+<strong>Responder thresholds</strong>: the whole distribution of change by arm, the responders at a prespecified threshold and the difference at every other.</li>
+<li>
+<strong>Diagnostic thresholds</strong>: what the cutoff of a test means for 1,000 people at any prevalence, beside the distributions, the ROC curve and the predictive values.</li>
+<li>
+<strong>Bias and tipping points</strong>: how strong unmeasured confounding would have to be to change a conclusion, with E-values and measured benchmarks.</li>
+<li>
+<strong>A multiverse of analyses</strong>: every defensible analysis of one question as a specification curve, with the choices that move it.</li>
 <li>
 <strong>Nomograms</strong>: any regression model, from logistic and Cox to mixed, ordinal and multinomial models, as a nomogram whose handles move, with the prediction and its confidence interval computed in the page.</li>
 <li>
 <strong>Choropleth maps</strong>: a map of the world, or of any ‘sf’ map, that steps or plays through the years, with several measures side by side for the same year.</li>
 </ul>
-<p>All ten are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
+<p>All fifteen are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
 <img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
@@ -236,24 +251,28 @@
 <p><a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html"><img src="reference/figures/README-dag.png" alt="An illustrative causal diagram for maternal smoking and orofacial clefts"></a></p>
 <p>GitHub cannot run the widget, so the image above is static. The <a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html">interactive version</a> is on the package website.</p>
 <p>Nodes are colored by <code>role</code>, with fixed colors for exposures, outcomes, confounders, mediators, colliders, instruments and unobserved variables. The layout is layered so that every arrow points the same way, and an arrow that skips a layer bends around the boxes in between; <code>x</code> and <code>y</code> columns place the boxes by hand instead. Any other column in either data frame appears as a labeled field. The widget embeds a web copy of Lato and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.</p>
+<p>With <code>paths = TRUE</code>, the diagram shows which paths between the exposure and the outcome are open or blocked: click a variable to adjust for it, and a panel under the diagram says whether the set is sufficient by the backdoor criterion, why each path is open or blocked, and which minimal sets would be.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggcausal.html">ggcausal</a></span><span class="op">(</span><span class="va">cleft_dag</span><span class="op">$</span><span class="va">edges</span>, <span class="va">cleft_dag</span><span class="op">$</span><span class="va">nodes</span>, paths <span class="op">=</span> <span class="cn">TRUE</span>, adjust <span class="op">=</span> <span class="st">"ses"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="interactive-network-plots">Interactive network plots<a class="anchor" aria-label="anchor" href="#interactive-network-plots"></a>
 </h2>
 <p><code><a href="reference/ggnma.html">ggnma()</a></code> draws the network of a network meta-analysis from arm level data, one row per study arm. Nodes are treatments and lines join treatments compared directly in at least one study; node area follows the number of participants, line width the number of studies, and a shaded polygon joins the treatments of each multi-arm study. Hovering over a node, line or polygon shows its arms side by side, in the manner of a trial’s baseline table, with the columns chosen in <code>hover</code>; clicking opens the full table with every other column of the data as a row.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggnma.html">ggnma</a></span><span class="op">(</span><span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, n <span class="op">=</span> <span class="va">n</span>, group <span class="op">=</span> <span class="va">class</span>,</span>
 <span>             legend_title <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span></span>
 <span><span class="va">net</span>                              <span class="co"># interactive widget</span></span>
 <span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"network.html"</span><span class="op">)</span>  <span class="co"># a single file for a supplement</span></span></code></pre></div>
 <p><a href="https://choxos.github.io/ggextreme/articles/network-plots.html"><img src="reference/figures/README-network.png" alt="A network plot of five treatments for plaque psoriasis"></a></p>
 <p>The <a href="https://choxos.github.io/ggextreme/articles/network-plots.html">interactive version</a> is on the package website. Nodes sit on a circle or wherever <code>positions</code> places them. Rows of the arm tables are named from each column’s <code>label</code> attribute, text that is the same across a study, such as a reference, is listed once per study, and DOIs and URLs are linked.</p>
+<p>With <code>contributions</code>, a netmeta fit on the same network, the widget gains a menu of comparisons; picking one widens each line by the share of that network estimate flowing through it.</p>
 </div>
 <div class="section level2">
 <h2 id="interactive-forest-plots">Interactive forest plots<a class="anchor" aria-label="anchor" href="#interactive-forest-plots"></a>
 </h2>
-<p><code><a href="reference/ggmeta.html">ggmeta()</a></code> draws the forest plot of a fitted meta-analysis, a metafor <code>rma()</code> fit or a meta object. Hovering over a study shows its effect, weight and chosen columns, and clicking it opens every column of its record. Risk of bias judgements, from RoB 2, RoB 1 or ROBINS-I, are drawn as traffic lights beside each study.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p><code><a href="reference/ggmeta.html">ggmeta()</a></code> draws the forest plot of a fitted meta-analysis, a metafor <code>rma()</code> fit or a meta object. Hovering over a study shows its effect, weight and chosen columns, and clicking it opens every column of its record. Risk of bias judgments, from RoB 2, RoB 1 or ROBINS-I, are drawn as traffic lights beside each study.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggmeta.html">ggmeta</a></span><span class="op">(</span><span class="va">fit</span>,</span>
 <span>       columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P2Y12 inhibitor"</span> <span class="op">=</span> <span class="st">"p2y12"</span>, Aspirin <span class="op">=</span> <span class="st">"aspirin"</span><span class="op">)</span>,</span>
 <span>       rob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>R <span class="op">=</span> <span class="st">"rob.R"</span>, D <span class="op">=</span> <span class="st">"rob.D"</span>, Mi <span class="op">=</span> <span class="st">"rob.Mi"</span>, Me <span class="op">=</span> <span class="st">"rob.Me"</span>,</span>
@@ -269,15 +288,32 @@
 <h2 id="league-tables">League tables<a class="anchor" aria-label="anchor" href="#league-tables"></a>
 </h2>
 <p><code><a href="reference/ggleague.html">ggleague()</a></code> draws every estimate of a netmeta fit as a grid, network estimates below the diagonal and direct estimates above it, following <code><a href="https://rdrr.io/pkg/netmeta/man/netleague.html" class="external-link">netmeta::netleague()</a></code>, with a P-score ranking beside it. Hovering over a cell shows the network, direct and indirect estimates and the share that comes from direct trials; clicking it opens the direct trials arm by arm.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggleague.html">ggleague</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, small_values <span class="op">=</span> <span class="st">"undesirable"</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://choxos.github.io/ggextreme/articles/league-tables.html"><img src="reference/figures/README-league.png" alt="A league table of five treatments for plaque psoriasis"></a></p>
+<p><code>contributions = TRUE</code> adds where each network estimate comes from, by <code><a href="https://rdrr.io/pkg/netmeta/man/netcontrib.html" class="external-link">netmeta::netcontrib()</a></code>: hovering over an estimate outlines the direct comparisons it draws on, with their shares.</p>
+</div>
+<div class="section level2">
+<h2 id="confidence-in-a-network-meta-analysis">Confidence in a network meta-analysis<a class="anchor" aria-label="anchor" href="#confidence-in-a-network-meta-analysis"></a>
+</h2>
+<p>Five plots follow CINeMA (Nikolakopoulou et al. 2020; Papakonstantinou et al. 2020) in judging how far each estimate of a network meta-analysis can be trusted. <code><a href="reference/cinema_judge.html">cinema_judge()</a></code> applies its published rules to every comparison in six domains, within-study bias, reporting bias, indirectness, imprecision, heterogeneity and incoherence, with each reason in words and whether a rule computed it or you gave it; judgments made elsewhere, such as the CINeMA web application’s report, can be given instead.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cinema_judge.html">cinema_judge</a></span><span class="op">(</span><span class="va">nma</span>, rob <span class="op">=</span> <span class="va">rob</span>, indirectness <span class="op">=</span> <span class="va">indirectness</span>,</span>
+<span>                  reporting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>judgment <span class="op">=</span> <span class="st">"undetected"</span><span class="op">)</span>,</span>
+<span>                  threshold <span class="op">=</span> <span class="fl">1.25</span>, small_values <span class="op">=</span> <span class="st">"undesirable"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/cinema_league.html">cinema_league</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>        <span class="co"># six marks per estimate, never added into a score</span></span>
+<span><span class="fu"><a href="reference/cinema_contribution.html">cinema_contribution</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>  <span class="co"># which studies each estimate rests on</span></span>
+<span><span class="fu"><a href="reference/cinema_clinical.html">cinema_clinical</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>      <span class="co"># estimates against a movable range of little difference</span></span>
+<span><span class="fu"><a href="reference/cinema_incoherence.html">cinema_incoherence</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>   <span class="co"># direct, indirect and network estimates side by side</span></span>
+<span><span class="fu"><a href="reference/cinema_network.html">cinema_network</a></span><span class="op">(</span><span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, n <span class="op">=</span> <span class="va">n</span>, rob <span class="op">=</span> <span class="va">rob</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/cinema.html"><img src="reference/figures/README-cinema.png" alt="A league table with a CINeMA confidence profile in every cell, from illustrative judgments"></a></p>
+<p>The study judgments in the example are illustrative, not published assessments.</p>
 </div>
 <div class="section level2">
 <h2 id="funnel-plots">Funnel plots<a class="anchor" aria-label="anchor" href="#funnel-plots"></a>
 </h2>
 <p><code><a href="reference/ggfunnel.html">ggfunnel()</a></code> draws the funnel plot of a metafor or meta fit, shaded where a study would be significant against no effect, so a gap where studies would not be significant points to publication bias rather than heterogeneity. Hovering over a study shows its effect, weight and risk of bias; clicking it gives the pooled estimate without it. With <code>trim_fill = TRUE</code> the imputed studies and the adjusted estimate are added behind a switch, and a collapsed section under the plot gives Egger’s and Begg’s tests.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggfunnel.html">ggfunnel</a></span><span class="op">(</span><span class="va">fit</span>, hover <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alloc"</span>, <span class="st">"ablat"</span><span class="op">)</span>, trim_fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://choxos.github.io/ggextreme/articles/funnel-plots.html"><img src="reference/figures/README-funnel.png" alt="A contour-enhanced funnel plot of the BCG vaccine trials"></a></p>
 </div>
@@ -285,10 +321,11 @@
 <h2 id="kaplan-meier-plots">Kaplan-Meier plots<a class="anchor" aria-label="anchor" href="#kaplan-meier-plots"></a>
 </h2>
 <p><code><a href="reference/ggkm.html">ggkm()</a></code> draws Kaplan-Meier curves by group from a <code>Surv(time, status) ~ group</code> formula. Hovering anywhere along the time axis shows each group’s survival with its confidence interval, the number at risk and the events so far, and the hazard ratio against the reference group at that time, from the smoothed Schoenfeld residuals or a time interaction model, while the matching column of the risk table lights up. With <code>ph_tests = TRUE</code>, a collapsed section under the plot gives the Cox hazard ratios, the log-rank test, the Grambsch and Therneau test and the group by time and group by log time interactions.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggkm.html">ggkm</a></span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">years</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">colon</span>, ph_tests <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Years since randomization"</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://choxos.github.io/ggextreme/articles/kaplan-meier.html"><img src="reference/figures/README-km.png" alt="Kaplan-Meier curves for the colon cancer trial with the numbers at risk"></a></p>
+<p><code>rmst = 5</code> adds the restricted mean survival time up to five years, with each arm’s mean and its difference from the reference, and a slider that moves the horizon while the prespecified one stays marked.</p>
 <p><code><a href="reference/animate_km.html">animate_km()</a></code> draws the curves over follow-up as a GIF or MP4:</p>
 <div class="float">
 <img src="reference/figures/README-km.gif" alt="Kaplan-Meier curves drawn over follow-up"><div class="figcaption">Kaplan-Meier curves drawn over follow-up</div>
@@ -298,17 +335,57 @@
 <h2 id="swimmer-plots">Swimmer plots<a class="anchor" aria-label="anchor" href="#swimmer-plots"></a>
 </h2>
 <p><code><a href="reference/ggswimmer.html">ggswimmer()</a></code> gives every patient a lane: the time on treatment or on study, with responses, progression, relapse and death marked along it and an arrow for patients still ongoing. Hovering over a lane shows the patient’s record and fades the rest, clicking it lists their events in order, and buttons under the plot reorder the lanes by duration, arm or best response.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggswimmer.html">ggswimmer</a></span><span class="op">(</span><span class="va">aml</span>, <span class="va">id</span>, <span class="va">futime</span> <span class="op">/</span> <span class="fl">30.44</span>, events <span class="op">=</span> <span class="va">events</span>, group <span class="op">=</span> <span class="va">arm</span>,</span>
 <span>          ongoing <span class="op">=</span> <span class="va">death</span> <span class="op">==</span> <span class="fl">0</span>, ongoing_label <span class="op">=</span> <span class="st">"Alive at last follow-up"</span>,</span>
 <span>          xlab <span class="op">=</span> <span class="st">"Months since randomization"</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://choxos.github.io/ggextreme/articles/swimmer-plots.html"><img src="reference/figures/README-swimmer.png" alt="A swimmer plot of 30 patients with acute myeloid leukemia"></a></p>
+<p><code>waterfall</code> adds each patient’s best change from baseline beside their lane, and <code>trajectories</code> their change over time under the lanes, with the response and progression thresholds marked; hovering over a patient in any panel lights them in all three.</p>
+</div>
+<div class="section level2">
+<h2 id="responder-thresholds">Responder thresholds<a class="anchor" aria-label="anchor" href="#responder-thresholds"></a>
+</h2>
+<p><code><a href="reference/ggresponder.html">ggresponder()</a></code> draws, for two arms, the share of patients who improved by at least each amount, with the prespecified threshold marked, beside the difference in responders at every threshold, and a table of responders, their difference, the number needed to treat and the mean difference. A slider moves the threshold.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggresponder.html">ggresponder</a></span><span class="op">(</span><span class="va">change</span> <span class="op">~</span> <span class="va">arm</span>, <span class="va">pain</span>, threshold <span class="op">=</span> <span class="fl">2</span>, higher_is_better <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/responder-thresholds.html"><img src="reference/figures/README-responder.png" alt="Responder curves by arm and the difference in responders by threshold"></a></p>
+</div>
+<div class="section level2">
+<h2 id="diagnostic-thresholds">Diagnostic thresholds<a class="anchor" aria-label="anchor" href="#diagnostic-thresholds"></a>
+</h2>
+<p><code><a href="reference/ggdiagnostic.html">ggdiagnostic()</a></code> shows what a cutoff on a continuous test means: the marker’s distributions, the ROC curve and the predictive values across prevalence, above a grid of 1,000 people found, missed, falsely alarmed or cleared, and a table of every measure with its interval. Drag the cutoff, or set the prevalence of the population the test is for.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/MASS/man/Pima.tr.html" class="external-link">Pima.tr</a></span>, <span class="fu">MASS</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/MASS/man/Pima.tr.html" class="external-link">Pima.te</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ggdiagnostic.html">ggdiagnostic</a></span><span class="op">(</span><span class="va">type</span> <span class="op">~</span> <span class="va">glu</span>, <span class="va">pima</span>, cutoff <span class="op">=</span> <span class="fl">126</span>, prevalence <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>             labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No diabetes"</span>, <span class="st">"Diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html"><img src="reference/figures/README-diagnostic.png" alt="A diagnostic threshold explorer for plasma glucose and diabetes"></a></p>
+</div>
+<div class="section level2">
+<h2 id="bias-and-tipping-points">Bias and tipping points<a class="anchor" aria-label="anchor" href="#bias-and-tipping-points"></a>
+</h2>
+<p><code><a href="reference/ggsensitivity.html">ggsensitivity()</a></code> shades every pair of strengths an unmeasured confounder could have by what would survive it, marks the E-values for the estimate and its confidence limit, and compares measured covariates as benchmarks. Click the surface to choose a confounder.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggsensitivity.html">ggsensitivity</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="fl">1.4</span>, <span class="fl">2.31</span>, important <span class="op">=</span> <span class="fl">1.25</span>,</span>
+<span>              benchmarks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Age"</span>, <span class="st">"Smoking"</span><span class="op">)</span>,</span>
+<span>                                      exposure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.6</span>, <span class="fl">2.3</span><span class="op">)</span>, outcome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.9</span>, <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/bias-sensitivity.html"><img src="reference/figures/README-sensitivity.png" alt="A bias surface with E-values and two benchmarks"></a></p>
+</div>
+<div class="section level2">
+<h2 id="a-multiverse-of-analyses">A multiverse of analyses<a class="anchor" aria-label="anchor" href="#a-multiverse-of-analyses"></a>
+</h2>
+<p><code><a href="reference/ggmultiverse.html">ggmultiverse()</a></code> draws every analysis of one question, one row of the data each, as a specification curve above a grid of the choices behind it, with the median estimate for each choice. Drag across the curve, or click a choice, to see what the analyses in view share.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ggmultiverse.html">ggmultiverse</a></span><span class="op">(</span><span class="va">specs</span>, <span class="va">or</span>, <span class="va">lo</span>, <span class="va">hi</span>,</span>
+<span>             decisions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outcome"</span>, <span class="st">"adjustment"</span>, <span class="st">"model"</span>, <span class="st">"missing"</span>, <span class="st">"sample"</span><span class="op">)</span>,</span>
+<span>             primary <span class="op">=</span> <span class="va">outcome</span> <span class="op">==</span> <span class="st">"Primary definition"</span> <span class="op">&amp;</span> <span class="va">adjustment</span> <span class="op">==</span> <span class="st">"Standard"</span>,</span>
+<span>             ylab <span class="op">=</span> <span class="st">"Odds ratio"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://choxos.github.io/ggextreme/articles/multiverse.html"><img src="reference/figures/README-multiverse.png" alt="A specification curve of 48 analyses above the grid of their choices"></a></p>
 </div>
 <div class="section level2">
 <h2 id="nomograms">Nomograms<a class="anchor" aria-label="anchor" href="#nomograms"></a>
 </h2>
 <p><code><a href="reference/ggnomogram.html">ggnomogram()</a></code> draws the nomogram of a fitted model and gives every predictor a handle: drag it, click a category or use the arrow keys, and the points, the total and the prediction with its 95% confidence interval follow. It reads linear, generalized linear, mixed (lme4, nlme, glmmTMB), Cox, parametric survival, ordinal and multinomial models, and models from rms and mgcv. Splines, polynomials and interactions work, because the points come from the model’s design matrix, and every class is checked against its own <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">low</span> <span class="op">~</span> <span class="fu">splines</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/splines/ns.html" class="external-link">ns</a></span><span class="op">(</span><span class="va">age</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="va">lwt</span> <span class="op">+</span> <span class="va">race</span> <span class="op">+</span> <span class="va">smoke</span> <span class="op">*</span> <span class="va">ht</span>,</span>
 <span>           family <span class="op">=</span> <span class="va">binomial</span>, data <span class="op">=</span> <span class="va">bw</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ggnomogram.html">ggnomogram</a></span><span class="op">(</span><span class="va">fit</span>, outcome <span class="op">=</span> <span class="st">"Risk of low birth weight"</span><span class="op">)</span></span></code></pre></div>
@@ -318,7 +395,7 @@
 <h2 id="choropleth-maps">Choropleth maps<a class="anchor" aria-label="anchor" href="#choropleth-maps"></a>
 </h2>
 <p><code><a href="reference/ggchoropleth.html">ggchoropleth()</a></code> colors every country by a measure, one map per measure side by side, with a slider and a play button under them that step through the years. All the maps show the same year: hovering over a country outlines it on every map and lists its value and rank on each measure, and clicking it opens its whole series. Countries match by ISO code or by name, including the forms the WHO and the Global Burden of Disease study use, and any ‘sf’ map of polygons can replace the bundled world map.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qci</span> <span class="op">&lt;-</span> <span class="va">clefts_qci_world</span></span>
 <span><span class="va">first</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">qci</span><span class="op">$</span><span class="va">iso3</span>, <span class="va">qci</span><span class="op">$</span><span class="va">iso3</span><span class="op">[</span><span class="va">qci</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1990</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">qci</span><span class="op">$</span><span class="va">change</span> <span class="op">&lt;-</span> <span class="va">qci</span><span class="op">$</span><span class="va">qci</span> <span class="op">-</span> <span class="va">first</span></span>

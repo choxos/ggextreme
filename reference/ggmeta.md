@@ -5,7 +5,7 @@ every study a hover and a click away. Hovering over a study shows its
 effect, weight and the columns named in `hover`; clicking it opens its
 full record, every column of `data`, under the plot. Hovering over the
 pooled diamond shows the heterogeneity statistics and the prediction
-interval. Risk of bias judgements, given in `rob`, are drawn as traffic
+interval. Risk of bias judgments, given in `rob`, are drawn as traffic
 lights beside each study.
 
 ## Usage
@@ -53,12 +53,12 @@ ggmeta(
 
 - rob:
 
-  Names of columns of `data` holding risk of bias judgements, one per
+  Names of columns of `data` holding risk of bias judgments, one per
   domain, drawn as traffic lights. Name the vector to set the column
-  headers, such as `c(D1 = "rob.R", Overall = "rob.overall")`.
-  Judgements are matched by their wording: "low", "some concerns" or
-  "moderate", "unclear", "high" or "serious", "critical", and "no
-  information", in any case.
+  headers, such as `c(D1 = "rob.R", Overall = "rob.overall")`. Judgments
+  are matched by their wording: "low", "some concerns" or "moderate",
+  "unclear", "high" or "serious", "critical", and "no information", in
+  any case.
 
 - hover:
 

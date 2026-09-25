@@ -19,6 +19,7 @@ ggkm(
   type = c("survival", "risk"),
   hr_time = c("schoenfeld", "log", "linear", "constant", "none"),
   ph_tests = FALSE,
+  rmst = NULL,
   risk_table = TRUE,
   conf_int = TRUE,
   breaks = NULL,
@@ -61,6 +62,12 @@ ggkm(
   section under the plot. The time interaction models grow with the
   number of events, so they are skipped with a message for very large
   data.
+
+- rmst:
+
+  Restricted mean survival time: `NULL` for none, the prespecified
+  horizon \\\tau\\ on the time scale, or `TRUE` for the end of follow-up
+  in the group followed least.
 
 - risk_table:
 
@@ -129,6 +136,18 @@ against time, which estimates the log hazard ratio as a function of time
 draws. `"log"` and `"linear"` take it from a Cox model with an
 interaction between the group and log time or time, and `"constant"`
 shows the Cox estimate at every time.
+
+With `rmst`, the plot shades the area under each curve up to a horizon
+\\\tau\\ and tabulates the restricted mean survival time, the mean time
+alive (or free of the event) within \\\tau\\, for each group, with its
+difference from the reference group. RMST and its standard error are
+those
+[`survival::survfit()`](https://rdrr.io/pkg/survival/man/survfit.html)
+reports for each group; the difference assumes the groups are
+independent, as in a randomized comparison. The widget adds a slider to
+explore other horizons, up to the end of follow-up in the group followed
+least, while the prespecified horizon stays marked, so the horizon
+reported is the one planned rather than the most favorable one.
 
 With `ph_tests = TRUE`, a section under the plot, collapsed until the
 reader opens it, gives the Cox hazard ratios, the log-rank test, the

@@ -8,9 +8,18 @@ A graph built by
 [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
 [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
 [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md),
-[`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
+[`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md),
+[`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md),
+[`ggdiagnostic()`](https://choxos.github.io/ggextreme/reference/ggdiagnostic.md),
+[`ggsensitivity()`](https://choxos.github.io/ggextreme/reference/ggsensitivity.md),
+[`ggmultiverse()`](https://choxos.github.io/ggextreme/reference/ggmultiverse.md),
+[`ggresponder()`](https://choxos.github.io/ggextreme/reference/ggresponder.md),
+[`cinema_league()`](https://choxos.github.io/ggextreme/reference/cinema_league.md),
+[`cinema_contribution()`](https://choxos.github.io/ggextreme/reference/cinema_contribution.md),
+[`cinema_clinical()`](https://choxos.github.io/ggextreme/reference/cinema_clinical.md),
+[`cinema_incoherence()`](https://choxos.github.io/ggextreme/reference/cinema_incoherence.md)
 or
-[`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md)
+[`cinema_network()`](https://choxos.github.io/ggextreme/reference/cinema_network.md)
 prints as an interactive widget. These functions give the other forms it
 can take. `graph_widget()` returns the 'htmlwidgets' object, for use in
 'shiny' or to save with
@@ -44,9 +53,18 @@ knit_print(x, ...)
   [`ggleague()`](https://choxos.github.io/ggextreme/reference/ggleague.md),
   [`ggkm()`](https://choxos.github.io/ggextreme/reference/ggkm.md),
   [`ggswimmer()`](https://choxos.github.io/ggextreme/reference/ggswimmer.md),
-  [`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md)
+  [`ggnomogram()`](https://choxos.github.io/ggextreme/reference/ggnomogram.md),
+  [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md),
+  [`ggdiagnostic()`](https://choxos.github.io/ggextreme/reference/ggdiagnostic.md),
+  [`ggsensitivity()`](https://choxos.github.io/ggextreme/reference/ggsensitivity.md),
+  [`ggmultiverse()`](https://choxos.github.io/ggextreme/reference/ggmultiverse.md),
+  [`ggresponder()`](https://choxos.github.io/ggextreme/reference/ggresponder.md),
+  [`cinema_league()`](https://choxos.github.io/ggextreme/reference/cinema_league.md),
+  [`cinema_contribution()`](https://choxos.github.io/ggextreme/reference/cinema_contribution.md),
+  [`cinema_clinical()`](https://choxos.github.io/ggextreme/reference/cinema_clinical.md),
+  [`cinema_incoherence()`](https://choxos.github.io/ggextreme/reference/cinema_incoherence.md)
   or
-  [`ggchoropleth()`](https://choxos.github.io/ggextreme/reference/ggchoropleth.md).
+  [`cinema_network()`](https://choxos.github.io/ggextreme/reference/cinema_network.md).
 
 - theme:
 

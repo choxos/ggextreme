@@ -41,8 +41,13 @@ opens the group's survival at each break."></head><body>
     <li><a class="dropdown-item" href="../articles/forest-plots.html">Interactive forest plots</a></li>
     <li><a class="dropdown-item" href="../articles/funnel-plots.html">Funnel plots</a></li>
     <li><a class="dropdown-item" href="../articles/league-tables.html">League tables</a></li>
+    <li><a class="dropdown-item" href="../articles/cinema.html">Confidence in a network meta-analysis</a></li>
     <li><a class="dropdown-item" href="../articles/kaplan-meier.html">Kaplan-Meier plots</a></li>
     <li><a class="dropdown-item" href="../articles/swimmer-plots.html">Swimmer plots</a></li>
+    <li><a class="dropdown-item" href="../articles/responder-thresholds.html">Responder thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/diagnostic-thresholds.html">Diagnostic thresholds</a></li>
+    <li><a class="dropdown-item" href="../articles/bias-sensitivity.html">Bias and tipping points</a></li>
+    <li><a class="dropdown-item" href="../articles/multiverse.html">A multiverse of analyses</a></li>
     <li><a class="dropdown-item" href="../articles/nomograms.html">Nomograms</a></li>
     <li><a class="dropdown-item" href="../articles/choropleth-maps.html">Choropleth maps over time</a></li>
   </ul></li>
@@ -82,6 +87,7 @@ opens the group's survival at each break.</p>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"survival"</span>, <span class="st">"risk"</span><span class="op">)</span>,</span>
 <span>  hr_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"schoenfeld"</span>, <span class="st">"log"</span>, <span class="st">"linear"</span>, <span class="st">"constant"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  ph_tests <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rmst <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  risk_table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  conf_int <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -125,6 +131,12 @@ the cumulative probability of the event.</p></dd>
 collapsed section under the plot. The time interaction models grow with
 the number of events, so they are skipped with a message for very large
 data.</p></dd>
+
+
+<dt id="arg-rmst">rmst<a class="anchor" aria-label="anchor" href="#arg-rmst"></a></dt>
+<dd><p>Restricted mean survival time: <code>NULL</code> for none, the
+prespecified horizon \(\tau\) on the time scale, or <code>TRUE</code> for the
+end of follow-up in the group followed least.</p></dd>
 
 
 <dt id="arg-risk-table">risk_table<a class="anchor" aria-label="anchor" href="#arg-risk-table"></a></dt>
@@ -188,6 +200,15 @@ against time, which estimates the log hazard ratio as a function of time
 <code>"log"</code> and <code>"linear"</code> take it from a Cox model with an interaction
 between the group and log time or time, and <code>"constant"</code> shows the Cox
 estimate at every time.</p>
+<p>With <code>rmst</code>, the plot shades the area under each curve up to a horizon
+\(\tau\) and tabulates the restricted mean survival time, the mean time
+alive (or free of the event) within \(\tau\), for each group, with its
+difference from the reference group. RMST and its standard error are those
+<code><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survival::survfit()</a></code> reports for each group; the difference assumes the
+groups are independent, as in a randomized comparison. The widget adds a
+slider to explore other horizons, up to the end of follow-up in the group
+followed least, while the prespecified horizon stays marked, so the
+horizon reported is the one planned rather than the most favorable one.</p>
 <p>With <code>ph_tests = TRUE</code>, a section under the plot, collapsed until the
 reader opens it, gives the Cox hazard ratios, the log-rank test, the
 Grambsch and Therneau test for each comparison and overall, and the group

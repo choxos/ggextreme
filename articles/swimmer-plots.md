@@ -62,6 +62,42 @@ Events are drawn by their wording, whatever the case:
 | death, died                          | cross                               |
 | anything else                        | a circle or square in its own color |
 
+## Waterfall and trajectories
+
+In a solid tumor trial the lanes are only half the story: how far each
+tumor shrank matters too. `waterfall` gives each patient’s best percent
+change from baseline, drawn beside their lane, and `trajectories` their
+change at each assessment, drawn under the lanes on the same time axis.
+The three panels share one row, or one line, per patient: hovering over
+any of them lights the patient in all three. The order “Best change”
+sorts the lanes as a waterfall, and the response and progression
+thresholds, by default the 30 percent decrease and 20 percent increase
+of RECIST 1.1 for target lesions, are marked on both change panels with
+a count past each.
+
+``` r
+
+set.seed(4)
+n <- 16
+pts <- data.frame(patient = sprintf("P%02d", 1:n), arm = rep(c("Drug", "Control"), each = n / 2),
+                  months = round(pmax(2, rexp(n, 1 / 10)), 1))
+slope <- ifelse(pts$arm == "Drug", -9, -2) + rnorm(n, 0, 5)
+traj <- do.call(rbind, lapply(1:n, function(i) {
+  t <- seq(2, pts$months[i], by = 2)
+  if (!length(t)) return(NULL)
+  data.frame(patient = pts$patient[i], time = t,
+             change = round(pmax(-100, cumsum(slope[i] + rnorm(length(t), 0, 6)))))
+}))
+pts$best <- as.numeric(tapply(traj$change, traj$patient, min)[pts$patient])
+
+ggswimmer(pts, patient, months, group = arm, waterfall = best,
+          trajectories = traj, sort = "change", xlab = "Months since first dose")
+```
+
+These data are simulated. The measured change is not the whole of
+RECIST: new lesions and other progression count too. `response` in the
+result holds the counts past each threshold.
+
 ## Options
 
 | argument | effect |
@@ -69,9 +105,11 @@ Events are drawn by their wording, whatever the case:
 | `start` | where each bar starts; zero by default |
 | `group` | the column that colors the bars, such as the arm |
 | `ongoing`, `ongoing_label` | who gets an arrow, and what it means |
-| `sort` | the order of a static copy: `"duration"`, `"group"`, `"response"` or `"data"` |
+| `sort` | the order of a static copy: `"duration"`, `"group"`, `"response"`, `"change"` or `"data"` |
 | `palette` | colors for the groups |
 | `hover` | columns for each lane’s hover card |
+| `waterfall`, `trajectories` | best change beside the lanes, and change over time under them |
+| `thresholds`, `change_label` | the response and progression thresholds, and the axis label |
 
 On a dark page the plot takes a dark palette of its own, and
 `graph_save(s, "swimmer.png", theme = "dark")` writes a dark static
