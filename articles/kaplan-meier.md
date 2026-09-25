@@ -172,7 +172,7 @@ differences treat the arms as independent.
 | `reference` | the group the hazard ratios compare against |
 | `breaks` | times for the axis and the risk table |
 | `risk_table`, `ph_tests`, `conf_int` | show the risk table, the collapsed tests and the bands |
-| `palette` | group colors; the reference group defaults to grey |
+| `palette` | group colors; the reference group defaults to gray |
 
 ## Dark pages
 

@@ -90,7 +90,7 @@ ggkm(
 - palette:
 
   Colors for the groups, unnamed in level order or named by group. The
-  reference group defaults to a neutral grey.
+  reference group defaults to a neutral gray.
 
 - xlab, ylab:
 

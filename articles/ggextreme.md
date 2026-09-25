@@ -94,8 +94,8 @@ race_frame(race, race$n_frames)
 
 Frames are set in Lato, which the package registers when it loads.
 Devices that understand registered fonts, such as
-[`ragg::agg_png()`](https://ragg.r-lib.org/reference/agg_png.html), will
-use it; the older [`pdf()`](https://rdrr.io/r/grDevices/pdf.html) and
+[`ragg::agg_png()`](https://rdrr.io/pkg/ragg/man/agg_png.html), will use
+it; the older [`pdf()`](https://rdrr.io/r/grDevices/pdf.html) and
 [`png()`](https://rdrr.io/r/grDevices/png.html) devices will not, so
 draw with ragg or pass `family = ""` to fall back to the device default.
 

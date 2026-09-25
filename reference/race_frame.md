@@ -33,8 +33,8 @@ object.
 
 Frames are set in Lato, which the package registers with 'systemfonts'.
 Draw them on a device that understands registered fonts, such as
-[`ragg::agg_png()`](https://ragg.r-lib.org/reference/agg_png.html),
-which is what
+[`ragg::agg_png()`](https://rdrr.io/pkg/ragg/man/agg_png.html), which is
+what
 [`animate_race()`](https://choxos.github.io/ggextreme/reference/animate_race.md)
 uses. On other devices pass `family = ""` to
 [`ggrace()`](https://choxos.github.io/ggextreme/reference/ggrace.md) to

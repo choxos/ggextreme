@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Ahmad Sofi-Mahmudi**. Author, maintainer.
+- **Ahmad Sofi-Mahmudi**. Author, maintainer, copyright holder.
 
 ## Citation
 

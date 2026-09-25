@@ -91,7 +91,7 @@ RoB 2, RoB 1 and ROBINS-I scales all work as written:
 | unclear                 | amber, ?    |
 | high, serious           | red, ×      |
 | critical                | dark red, ! |
-| no information          | grey, ?     |
+| no information          | gray, ?     |
 
 Each light carries its own hover card, and a key of the judgments in use
 is drawn above the plot. A wording outside these is refused with a

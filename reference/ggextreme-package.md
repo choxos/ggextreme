@@ -56,8 +56,9 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Ahmad Sofi-Mahmudi <ahmad.pub@gmail.com>
+**Maintainer**: Ahmad Sofi-Mahmudi <a.sofimahmudi@gmail.com> \[copyright
+holder\]
 
 Authors:
 
-- Ahmad Sofi-Mahmudi <ahmad.pub@gmail.com>
+- Ahmad Sofi-Mahmudi <a.sofimahmudi@gmail.com> \[copyright holder\]
