@@ -156,4 +156,4 @@ one year’s shade to the next:
 animate_choropleth(m, "qci.gif", step = 0.4)
 ```
 
-![](../reference/figures/README-map.gif)
+![](../../reference/figures/README-map.gif)

@@ -127,7 +127,7 @@ same motion as the bar chart race, with the year shown behind the plot:
 animate_meta(ggmeta(bcg_fit), "bcg.gif", time = bcg$year)
 ```
 
-![](../reference/figures/README-meta-cumulative.gif)
+![](../../reference/figures/README-meta-cumulative.gif)
 
 ## Other forms
 

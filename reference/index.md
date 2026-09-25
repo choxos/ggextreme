@@ -128,6 +128,7 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
   [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`knit_print(`*`<ggx_graph>`*`)`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  [`knit_print(`*`<ggrace>`*`)`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   : Use an interactive graph as a widget, a ggplot or a file
 
 ## Data

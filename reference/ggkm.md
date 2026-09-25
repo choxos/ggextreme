@@ -167,8 +167,15 @@ if (requireNamespace("survival", quietly = TRUE)) {
   colon <- subset(survival::colon, etype == 2)
   colon$years <- colon$time / 365.25
   km <- ggkm(survival::Surv(years, status) ~ rx, data = colon,
-             ph_tests = TRUE, xlab = "Years since randomization")
+             xlab = "Years since randomization")
   km
+}
+# \donttest{
+# The proportional hazards tests fit interaction models, which takes a
+# few seconds.
+if (requireNamespace("survival", quietly = TRUE)) {
+  km <- ggkm(survival::Surv(years, status) ~ rx, data = colon,
+             ph_tests = TRUE, xlab = "Years since randomization")
   km$ph
 }
 #>                    test     comparison                    estimate
@@ -197,4 +204,5 @@ if (requireNamespace("survival", quietly = TRUE)) {
 #> 10        z = -1.14 0.253301079
 #> 11        z = -1.75 0.080646010
 #> 12  χ² = 3.15, df 2 0.207143210
+# }
 ```

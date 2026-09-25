@@ -159,7 +159,19 @@ ggrace(
 
 ## Value
 
-An object of class `ggrace`.
+An object of class `ggrace`. It prints as an interactive widget, like
+the package's other graphs: the card's play button and timeline work,
+and hovering over a bar shows its value and rank. Use
+[`graph_widget()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+or
+[`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+with a `.html` file for the widget,
+[`race_frame()`](https://choxos.github.io/ggextreme/reference/race_frame.md)
+or
+[`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+for a static frame, and
+[`animate_race()`](https://choxos.github.io/ggextreme/reference/animate_race.md)
+for a GIF or video.
 
 ## Details
 
@@ -187,10 +199,6 @@ phones$year <- as.numeric(as.character(phones$year))
 
 race <- ggrace(phones, phones, region, year, top_n = 7, duration = 5)
 race
-#> <ggrace>
-#>  entities: 7 (top 7 shown)
-#>  keyframes: 7 
-#>  frames:   300 at 60 fps
 
 # Frames are set in Lato, which only devices that understand registered
 # fonts can use, so draw them with ragg rather than the default device.
@@ -199,7 +207,7 @@ ragg::agg_png(file, width = race$width, height = 500, units = "px",
                res = race$res)
 print(race_frame(race, 60))
 dev.off()
-#> agg_record_243d6b71bb85 
+#> agg_record_23692bed80c9 
 #>                       2 
 # \donttest{
 animate_race(race, tempfile(fileext = ".gif"), cores = 1)

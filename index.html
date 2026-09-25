@@ -110,7 +110,7 @@
 </ul>
 <p>All fifteen are drawn as ordinary <code>ggplot</code> objects. Nothing is hidden behind a separate rendering engine, so a frame or a diagram can be inspected, modified or saved on its own.</p>
 <div class="float">
-<img src="reference/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
+<img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-race.gif" alt="A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019"><div class="figcaption">A bar chart race of the Quality of Care Index for orofacial clefts in fifteen countries, 1990 to 2019</div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -138,8 +138,11 @@
 <span>  caption <span class="op">=</span> <span class="st">"Source: Sofi-Mahmudi et al. 2025, PLOS ONE 20(1): e0317267"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/race_frame.html">race_frame</a></span><span class="op">(</span><span class="va">race</span>, <span class="fl">200</span><span class="op">)</span>          <span class="co"># one frame, as a ggplot</span></span>
-<span><span class="fu"><a href="reference/animate_race.html">animate_race</a></span><span class="op">(</span><span class="va">race</span>, <span class="st">"race.mp4"</span><span class="op">)</span> <span class="co"># draw every frame and encode</span></span></code></pre></div>
+<span><span class="va">race</span>                            <span class="co"># plays in the page, as an interactive widget</span></span>
+<span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">race</span>, <span class="st">"race.html"</span><span class="op">)</span>   <span class="co"># the same, as a single web page</span></span>
+<span><span class="fu"><a href="reference/race_frame.html">race_frame</a></span><span class="op">(</span><span class="va">race</span>, <span class="fl">200</span><span class="op">)</span>           <span class="co"># one frame, as a ggplot</span></span>
+<span><span class="fu"><a href="reference/animate_race.html">animate_race</a></span><span class="op">(</span><span class="va">race</span>, <span class="st">"race.mp4"</span><span class="op">)</span>  <span class="co"># draw every frame and encode</span></span></code></pre></div>
+<p>Printed, the race plays like the package’s other interactive graphs: the card’s round button plays and pauses it, the timeline seeks, and hovering over a bar shows its value and rank, while a click follows it through the race.</p>
 <p><code>time</code> may be numeric or a <code>Date</code>. Each entity and time pair must appear once; a repeat is an error rather than a silent average. The encoder is chosen from the file extension, and frames are drawn across cores by default.</p>
 <p>Selected arguments:</p>
 <table class="table">
@@ -248,7 +251,7 @@
 <span><span class="va">dag</span>                           <span class="co"># interactive widget</span></span>
 <span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"dag.html"</span><span class="op">)</span>   <span class="co"># a single file for a supplement</span></span>
 <span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"dag.png"</span><span class="op">)</span>    <span class="co"># a static figure</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html"><img src="reference/figures/README-dag.png" alt="An illustrative causal diagram for maternal smoking and orofacial clefts"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-dag.png" alt="An illustrative causal diagram for maternal smoking and orofacial clefts"></a></p>
 <p>GitHub cannot run the widget, so the image above is static. The <a href="https://choxos.github.io/ggextreme/articles/causal-diagrams.html">interactive version</a> is on the package website.</p>
 <p>Nodes are colored by <code>role</code>, with fixed colors for exposures, outcomes, confounders, mediators, colliders, instruments and unobserved variables. The layout is layered so that every arrow points the same way, and an arrow that skips a layer bends around the boxes in between; <code>x</code> and <code>y</code> columns place the boxes by hand instead. Any other column in either data frame appears as a labeled field. The widget embeds a web copy of Lato and works in R Markdown, Quarto, ‘pkgdown’ and ‘shiny’.</p>
 <p>With <code>paths = TRUE</code>, the diagram shows which paths between the exposure and the outcome are open or blocked: click a variable to adjust for it, and a panel under the diagram says whether the set is sufficient by the backdoor criterion, why each path is open or blocked, and which minimal sets would be.</p>
@@ -264,7 +267,7 @@
 <span>             legend_title <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span></span>
 <span><span class="va">net</span>                              <span class="co"># interactive widget</span></span>
 <span><span class="fu"><a href="reference/graph_widget.html">graph_save</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"network.html"</span><span class="op">)</span>  <span class="co"># a single file for a supplement</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/network-plots.html"><img src="reference/figures/README-network.png" alt="A network plot of five treatments for plaque psoriasis"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/network-plots.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-network.png" alt="A network plot of five treatments for plaque psoriasis"></a></p>
 <p>The <a href="https://choxos.github.io/ggextreme/articles/network-plots.html">interactive version</a> is on the package website. Nodes sit on a circle or wherever <code>positions</code> places them. Rows of the arm tables are named from each column’s <code>label</code> attribute, text that is the same across a study, such as a reference, is listed once per study, and DOIs and URLs are linked.</p>
 <p>With <code>contributions</code>, a netmeta fit on the same network, the widget gains a menu of comparisons; picking one widens each line by the share of that network estimate flowing through it.</p>
 </div>
@@ -278,10 +281,10 @@
 <span>       rob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>R <span class="op">=</span> <span class="st">"rob.R"</span>, D <span class="op">=</span> <span class="st">"rob.D"</span>, Mi <span class="op">=</span> <span class="st">"rob.Mi"</span>, Me <span class="op">=</span> <span class="st">"rob.Me"</span>,</span>
 <span>               S <span class="op">=</span> <span class="st">"rob.S"</span>, Overall <span class="op">=</span> <span class="st">"rob.overall"</span><span class="op">)</span>,</span>
 <span>       favors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Favors P2Y12 inhibitor"</span>, <span class="st">"Favors aspirin"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/forest-plots.html"><img src="reference/figures/README-forest.png" alt="A forest plot of P2Y12 inhibitors against aspirin with risk of bias traffic lights"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/forest-plots.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-forest.png" alt="A forest plot of P2Y12 inhibitors against aspirin with risk of bias traffic lights"></a></p>
 <p><code>cumulative = TRUE</code> shows the pooled estimate after each study, and <code><a href="reference/animate_meta.html">animate_meta()</a></code> replays it as a GIF or MP4, each trial fading in as the pooled diamond eases to its new value:</p>
 <div class="float">
-<img src="reference/figures/README-meta-cumulative.gif" alt="A cumulative meta-analysis of the BCG vaccine trials, replayed one trial at a time"><div class="figcaption">A cumulative meta-analysis of the BCG vaccine trials, replayed one trial at a time</div>
+<img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-meta-cumulative.gif" alt="A cumulative meta-analysis of the BCG vaccine trials, replayed one trial at a time"><div class="figcaption">A cumulative meta-analysis of the BCG vaccine trials, replayed one trial at a time</div>
 </div>
 </div>
 <div class="section level2">
@@ -290,7 +293,7 @@
 <p><code><a href="reference/ggleague.html">ggleague()</a></code> draws every estimate of a netmeta fit as a grid, network estimates below the diagonal and direct estimates above it, following <code><a href="https://rdrr.io/pkg/netmeta/man/netleague.html" class="external-link">netmeta::netleague()</a></code>, with a P-score ranking beside it. Hovering over a cell shows the network, direct and indirect estimates and the share that comes from direct trials; clicking it opens the direct trials arm by arm.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggleague.html">ggleague</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, small_values <span class="op">=</span> <span class="st">"undesirable"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/league-tables.html"><img src="reference/figures/README-league.png" alt="A league table of five treatments for plaque psoriasis"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/league-tables.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-league.png" alt="A league table of five treatments for plaque psoriasis"></a></p>
 <p><code>contributions = TRUE</code> adds where each network estimate comes from, by <code><a href="https://rdrr.io/pkg/netmeta/man/netcontrib.html" class="external-link">netmeta::netcontrib()</a></code>: hovering over an estimate outlines the direct comparisons it draws on, with their shares.</p>
 </div>
 <div class="section level2">
@@ -306,7 +309,7 @@
 <span><span class="fu"><a href="reference/cinema_clinical.html">cinema_clinical</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>      <span class="co"># estimates against a movable range of little difference</span></span>
 <span><span class="fu"><a href="reference/cinema_incoherence.html">cinema_incoherence</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span>   <span class="co"># direct, indirect and network estimates side by side</span></span>
 <span><span class="fu"><a href="reference/cinema_network.html">cinema_network</a></span><span class="op">(</span><span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>, n <span class="op">=</span> <span class="va">n</span>, rob <span class="op">=</span> <span class="va">rob</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/cinema.html"><img src="reference/figures/README-cinema.png" alt="A league table with a CINeMA confidence profile in every cell, from illustrative judgments"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/cinema.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-cinema.png" alt="A league table with a CINeMA confidence profile in every cell, from illustrative judgments"></a></p>
 <p>The study judgments in the example are illustrative, not published assessments.</p>
 </div>
 <div class="section level2">
@@ -315,7 +318,7 @@
 <p><code><a href="reference/ggfunnel.html">ggfunnel()</a></code> draws the funnel plot of a metafor or meta fit, shaded where a study would be significant against no effect, so a gap where studies would not be significant points to publication bias rather than heterogeneity. Hovering over a study shows its effect, weight and risk of bias; clicking it gives the pooled estimate without it. With <code>trim_fill = TRUE</code> the imputed studies and the adjusted estimate are added behind a switch, and a collapsed section under the plot gives Egger’s and Begg’s tests.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggfunnel.html">ggfunnel</a></span><span class="op">(</span><span class="va">fit</span>, hover <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alloc"</span>, <span class="st">"ablat"</span><span class="op">)</span>, trim_fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/funnel-plots.html"><img src="reference/figures/README-funnel.png" alt="A contour-enhanced funnel plot of the BCG vaccine trials"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/funnel-plots.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-funnel.png" alt="A contour-enhanced funnel plot of the BCG vaccine trials"></a></p>
 </div>
 <div class="section level2">
 <h2 id="kaplan-meier-plots">Kaplan-Meier plots<a class="anchor" aria-label="anchor" href="#kaplan-meier-plots"></a>
@@ -324,11 +327,11 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggkm.html">ggkm</a></span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">years</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">colon</span>, ph_tests <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Years since randomization"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/kaplan-meier.html"><img src="reference/figures/README-km.png" alt="Kaplan-Meier curves for the colon cancer trial with the numbers at risk"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/kaplan-meier.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-km.png" alt="Kaplan-Meier curves for the colon cancer trial with the numbers at risk"></a></p>
 <p><code>rmst = 5</code> adds the restricted mean survival time up to five years, with each arm’s mean and its difference from the reference, and a slider that moves the horizon while the prespecified one stays marked.</p>
 <p><code><a href="reference/animate_km.html">animate_km()</a></code> draws the curves over follow-up as a GIF or MP4:</p>
 <div class="float">
-<img src="reference/figures/README-km.gif" alt="Kaplan-Meier curves drawn over follow-up"><div class="figcaption">Kaplan-Meier curves drawn over follow-up</div>
+<img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-km.gif" alt="Kaplan-Meier curves drawn over follow-up"><div class="figcaption">Kaplan-Meier curves drawn over follow-up</div>
 </div>
 </div>
 <div class="section level2">
@@ -339,7 +342,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggswimmer.html">ggswimmer</a></span><span class="op">(</span><span class="va">aml</span>, <span class="va">id</span>, <span class="va">futime</span> <span class="op">/</span> <span class="fl">30.44</span>, events <span class="op">=</span> <span class="va">events</span>, group <span class="op">=</span> <span class="va">arm</span>,</span>
 <span>          ongoing <span class="op">=</span> <span class="va">death</span> <span class="op">==</span> <span class="fl">0</span>, ongoing_label <span class="op">=</span> <span class="st">"Alive at last follow-up"</span>,</span>
 <span>          xlab <span class="op">=</span> <span class="st">"Months since randomization"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/swimmer-plots.html"><img src="reference/figures/README-swimmer.png" alt="A swimmer plot of 30 patients with acute myeloid leukemia"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/swimmer-plots.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-swimmer.png" alt="A swimmer plot of 30 patients with acute myeloid leukemia"></a></p>
 <p><code>waterfall</code> adds each patient’s best change from baseline beside their lane, and <code>trajectories</code> their change over time under the lanes, with the response and progression thresholds marked; hovering over a patient in any panel lights them in all three.</p>
 </div>
 <div class="section level2">
@@ -348,7 +351,7 @@
 <p><code><a href="reference/ggresponder.html">ggresponder()</a></code> draws, for two arms, the share of patients who improved by at least each amount, with the prespecified threshold marked, beside the difference in responders at every threshold, and a table of responders, their difference, the number needed to treat and the mean difference. A slider moves the threshold.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggresponder.html">ggresponder</a></span><span class="op">(</span><span class="va">change</span> <span class="op">~</span> <span class="va">arm</span>, <span class="va">pain</span>, threshold <span class="op">=</span> <span class="fl">2</span>, higher_is_better <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/responder-thresholds.html"><img src="reference/figures/README-responder.png" alt="Responder curves by arm and the difference in responders by threshold"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/responder-thresholds.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-responder.png" alt="Responder curves by arm and the difference in responders by threshold"></a></p>
 </div>
 <div class="section level2">
 <h2 id="diagnostic-thresholds">Diagnostic thresholds<a class="anchor" aria-label="anchor" href="#diagnostic-thresholds"></a>
@@ -358,7 +361,7 @@
 <code class="sourceCode R"><span><span class="va">pima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">MASS</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/MASS/man/Pima.tr.html" class="external-link">Pima.tr</a></span>, <span class="fu">MASS</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/MASS/man/Pima.tr.html" class="external-link">Pima.te</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ggdiagnostic.html">ggdiagnostic</a></span><span class="op">(</span><span class="va">type</span> <span class="op">~</span> <span class="va">glu</span>, <span class="va">pima</span>, cutoff <span class="op">=</span> <span class="fl">126</span>, prevalence <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>             labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No diabetes"</span>, <span class="st">"Diabetes"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html"><img src="reference/figures/README-diagnostic.png" alt="A diagnostic threshold explorer for plasma glucose and diabetes"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-diagnostic.png" alt="A diagnostic threshold explorer for plasma glucose and diabetes"></a></p>
 </div>
 <div class="section level2">
 <h2 id="bias-and-tipping-points">Bias and tipping points<a class="anchor" aria-label="anchor" href="#bias-and-tipping-points"></a>
@@ -368,7 +371,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggsensitivity.html">ggsensitivity</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="fl">1.4</span>, <span class="fl">2.31</span>, important <span class="op">=</span> <span class="fl">1.25</span>,</span>
 <span>              benchmarks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Age"</span>, <span class="st">"Smoking"</span><span class="op">)</span>,</span>
 <span>                                      exposure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.6</span>, <span class="fl">2.3</span><span class="op">)</span>, outcome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.9</span>, <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/bias-sensitivity.html"><img src="reference/figures/README-sensitivity.png" alt="A bias surface with E-values and two benchmarks"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/bias-sensitivity.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-sensitivity.png" alt="A bias surface with E-values and two benchmarks"></a></p>
 </div>
 <div class="section level2">
 <h2 id="a-multiverse-of-analyses">A multiverse of analyses<a class="anchor" aria-label="anchor" href="#a-multiverse-of-analyses"></a>
@@ -379,7 +382,7 @@
 <span>             decisions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outcome"</span>, <span class="st">"adjustment"</span>, <span class="st">"model"</span>, <span class="st">"missing"</span>, <span class="st">"sample"</span><span class="op">)</span>,</span>
 <span>             primary <span class="op">=</span> <span class="va">outcome</span> <span class="op">==</span> <span class="st">"Primary definition"</span> <span class="op">&amp;</span> <span class="va">adjustment</span> <span class="op">==</span> <span class="st">"Standard"</span>,</span>
 <span>             ylab <span class="op">=</span> <span class="st">"Odds ratio"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/multiverse.html"><img src="reference/figures/README-multiverse.png" alt="A specification curve of 48 analyses above the grid of their choices"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/multiverse.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-multiverse.png" alt="A specification curve of 48 analyses above the grid of their choices"></a></p>
 </div>
 <div class="section level2">
 <h2 id="nomograms">Nomograms<a class="anchor" aria-label="anchor" href="#nomograms"></a>
@@ -389,7 +392,7 @@
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">low</span> <span class="op">~</span> <span class="fu">splines</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/splines/ns.html" class="external-link">ns</a></span><span class="op">(</span><span class="va">age</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="va">lwt</span> <span class="op">+</span> <span class="va">race</span> <span class="op">+</span> <span class="va">smoke</span> <span class="op">*</span> <span class="va">ht</span>,</span>
 <span>           family <span class="op">=</span> <span class="va">binomial</span>, data <span class="op">=</span> <span class="va">bw</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ggnomogram.html">ggnomogram</a></span><span class="op">(</span><span class="va">fit</span>, outcome <span class="op">=</span> <span class="st">"Risk of low birth weight"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/nomograms.html"><img src="reference/figures/README-nomogram.png" alt="A nomogram for the risk of low birth weight"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/nomograms.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-nomogram.png" alt="A nomogram for the risk of low birth weight"></a></p>
 </div>
 <div class="section level2">
 <h2 id="choropleth-maps">Choropleth maps<a class="anchor" aria-label="anchor" href="#choropleth-maps"></a>
@@ -404,10 +407,10 @@
 <span>             values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quality of Care Index"</span> <span class="op">=</span> <span class="st">"qci"</span>,</span>
 <span>                        <span class="st">"Change since 1990"</span> <span class="op">=</span> <span class="st">"change"</span><span class="op">)</span>,</span>
 <span>             title <span class="op">=</span> <span class="st">"Quality of care for orofacial clefts"</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://choxos.github.io/ggextreme/articles/choropleth-maps.html"><img src="reference/figures/README-map.png" alt="Two world maps of the Quality of Care Index for orofacial clefts and its change since 1990"></a></p>
+<p><a href="https://choxos.github.io/ggextreme/articles/choropleth-maps.html"><img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-map.png" alt="Two world maps of the Quality of Care Index for orofacial clefts and its change since 1990"></a></p>
 <p><code><a href="reference/animate_choropleth.html">animate_choropleth()</a></code> plays the years as a GIF or MP4:</p>
 <div class="float">
-<img src="reference/figures/README-map.gif" alt="The Quality of Care Index for orofacial clefts from 1990 to 2019"><div class="figcaption">The Quality of Care Index for orofacial clefts from 1990 to 2019</div>
+<img src="https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-map.gif" alt="The Quality of Care Index for orofacial clefts from 1990 to 2019"><div class="figcaption">The Quality of Care Index for orofacial clefts from 1990 to 2019</div>
 </div>
 </div>
 <div class="section level2">
@@ -466,8 +469,13 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://CRAN.R-project.org/package=ggextreme" class="external-link"><img src="https://www.r-pkg.org/badges/version/ggextreme" alt="CRAN status"></a></li>
+<li><a href="https://cran.r-project.org/package=ggextreme" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/ggextreme" alt="CRAN downloads"></a></li>
 <li><a href="https://github.com/choxos/ggextreme/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/choxos/ggextreme/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a></li>
+<li><a href="https://choxos.github.io/ggextreme/"><img src="https://github.com/choxos/ggextreme/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a></li>
+<li><a href="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/choxos/ggextreme" class="external-link"><img src="https://archive.softwareheritage.org/badge/origin/https://github.com/choxos/ggextreme/" alt="Archived on Software Heritage"></a></li>
 </ul>
 </div>
 

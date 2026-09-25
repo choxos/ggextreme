@@ -1,6 +1,8 @@
 # Use an interactive graph as a widget, a ggplot or a file
 
-A graph built by
+A bar chart race from
+[`ggrace()`](https://choxos.github.io/ggextreme/reference/ggrace.md), or
+a graph built by
 [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
 [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
 [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md),
@@ -39,13 +41,18 @@ graph_save(x, file, res = 300, theme = NULL)
 
 # S3 method for class 'ggx_graph'
 knit_print(x, ...)
+
+# S3 method for class 'ggrace'
+knit_print(x, ...)
 ```
 
 ## Arguments
 
 - x:
 
-  A graph from
+  A race from
+  [`ggrace()`](https://choxos.github.io/ggextreme/reference/ggrace.md),
+  whose static copy is its last frame, or a graph from
   [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
   [`ggnma()`](https://choxos.github.io/ggextreme/reference/ggnma.md),
   [`ggmeta()`](https://choxos.github.io/ggextreme/reference/ggmeta.md),

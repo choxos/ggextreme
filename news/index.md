@@ -9,7 +9,10 @@
   [`race_size()`](https://choxos.github.io/ggextreme/reference/race_size.md)
   and
   [`animate_race()`](https://choxos.github.io/ggextreme/reference/animate_race.md),
-  with country flags on the bars.
+  with country flags on the bars. A race prints as an interactive widget
+  whose play button and timeline work, and plays the same frames
+  [`animate_race()`](https://choxos.github.io/ggextreme/reference/animate_race.md)
+  writes.
 - Interactive causal diagrams with
   [`ggcausal()`](https://choxos.github.io/ggextreme/reference/ggcausal.md),
   including the paths an adjustment set leaves open.

@@ -1976,6 +1976,301 @@
     paint();
   };
 
+  // A bar chart race (R/race_widget.R). Every frame's visible bars arrive
+  // laid out and labeled in R; this draws the card in page units and plays
+  // the frames at the race's own rate. The card's round button plays and
+  // pauses, the timeline seeks, and hovering over a bar shows its value and
+  // rank; clicking one follows it through the race.
+  window.ggextremeRace = function (el, data) {
+    var svg = el.querySelector('svg');
+    if (!svg || !data) return;
+    el.classList.add('ggx-race');
+    if (window.getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    var NS = 'http://www.w3.org/2000/svg';
+    var L = data.lay, P = data.pad;
+    function mk(tag, attrs, parent) {
+      var node = document.createElementNS(NS, tag);
+      for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) node.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(node);
+      return node;
+    }
+    function cx(v) { return v + P; }
+    var vb = (svg.getAttribute('viewBox') || '0 0 ' + data.page_w + ' ' + data.page_h).split(/[ ,]+/).map(Number);
+    var s = vb[2] / data.page_w;
+    [].slice.call(svg.childNodes).forEach(function (c) {
+      if (c.tagName && c.tagName.toLowerCase() !== 'defs' && c.tagName.toLowerCase() !== 'style') c.style.display = 'none';
+    });
+    var root = mk('g', { 'class': 'ggx-race-root', transform: 'scale(' + s + ')', 'font-family': (data.family || 'Lato') + ', sans-serif' }, svg);
+    function layer() { return mk('g', {}, root); }
+    function text(parent, x, y, label, pt, cls, anchor, bold) {
+      var t = mk('text', { x: x, y: y, 'font-size': pt, 'class': cls, 'text-anchor': anchor || 'start',
+        'dominant-baseline': 'central', 'font-weight': bold ? 700 : null }, parent);
+      t.textContent = label;
+      return t;
+    }
+    var anchorOf = function (h) { return h >= 1 ? 'end' : h > 0 ? 'middle' : 'start'; };
+
+    // The card.
+    var page = layer();
+    mk('rect', { x: 0, y: 0, width: data.page_w, height: data.page_h, 'class': data.card ? 'ggx-race-page' : 'ggx-race-card' }, page);
+    if (data.card) {
+      for (var k = P; k >= 1; k--) {
+        mk('rect', { x: cx(-k), y: cx(-k), width: L.card_w + 2 * k, height: L.card_h + 2 * k, rx: k,
+          'class': 'ggx-race-shadow', 'fill-opacity': (0.5 / P).toFixed(3) }, page);
+      }
+    }
+    mk('rect', { x: cx(0), y: cx(0), width: L.card_w, height: L.card_h, 'class': 'ggx-race-card' }, page);
+    var behind = layer();
+    var year = text(behind, cx(L.year_right), cx(L.year_mid), '', L.year_pt, 'ggx-race-year', 'end', true);
+    var ink = layer();
+    mk('rect', { x: cx(L.content_l), y: cx(L.rule_y), width: L.content_r - L.content_l, height: L.rule_h, 'class': 'ggx-race-rule' }, ink);
+    var gridG = mk('g', {}, ink);
+    var shapes = layer();
+    (data.legend_shapes || []).forEach(function (d) { mk('polygon', { points: d.points, fill: d.fill }, shapes); });
+    var fore = layer();
+    var barsG = mk('g', {}, fore);
+    mk('rect', { x: cx(L.content_l), y: cx(L.foot_rule_y), width: L.content_r - L.content_l, height: L.rule_h, 'class': 'ggx-race-rule' }, fore);
+    (data.timeline_rects || []).forEach(function (r) {
+      mk('rect', { x: r.x0, y: r.y0, width: r.x1 - r.x0, height: r.y1 - r.y0, 'class': 'ggx-race-timeline' }, fore);
+    });
+    var imagesG = layer();
+    var words = layer();
+    var axisG = mk('g', {}, words);
+    var labelsG = mk('g', {}, words);
+    if (data.title) text(words, cx(L.content_l), cx(L.title_mid), data.title, L.title_pt, 'ggx-race-title', 'start', true);
+    if (data.caption) text(words, cx(L.content_l), cx(L.source_mid), data.caption, L.source_pt, 'ggx-race-source');
+    (data.timeline_text || []).forEach(function (t) { text(words, t.x, t.y, t.label, t.pt, 'ggx-race-timeline-text', anchorOf(t.hjust)); });
+    (data.legend_text || []).forEach(function (t) { text(words, t.x, t.y, t.label, t.pt, t.face === 'bold' ? 'ggx-race-title' : 'ggx-race-name', anchorOf(t.hjust), t.face === 'bold'); });
+
+    // The marker on the timeline, and the button.
+    var marker = data.timeline ? mk('polygon', { 'class': 'ggx-race-marker' }, shapes) : null;
+    var button = null, icon = null;
+    if (data.play_button) {
+      button = mk('g', { 'class': 'ggx-race-button', tabindex: 0, role: 'button', 'aria-label': 'Play' }, root);
+      mk('circle', { cx: cx(L.button_x), cy: cx(L.button_y), r: L.button_r, 'class': 'ggx-race-button-disc' }, button);
+      icon = mk('g', { 'class': 'ggx-race-button-icon' }, button);
+    }
+    function drawIcon(playing) {
+      if (!icon) return;
+      while (icon.firstChild) icon.removeChild(icon.firstChild);
+      var bx = cx(L.button_x), by = cx(L.button_y);
+      if (playing) {
+        var gap = L.button_bar_gap / 2, w = L.button_bar_w, h = L.button_bar_h;
+        mk('rect', { x: bx - gap - w, y: by - h / 2, width: w, height: h }, icon);
+        mk('rect', { x: bx + gap, y: by - h / 2, width: w, height: h }, icon);
+      } else {
+        var r = L.button_bar_h * 0.62;
+        mk('polygon', { points: (bx - r * 0.45) + ',' + (by - r * 0.7) + ' ' + (bx + r * 0.75) + ',' + by + ' ' + (bx - r * 0.45) + ',' + (by + r * 0.7) }, icon);
+      }
+      button.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    }
+
+    // Bars, names, values and images, one set per entity, made when first seen.
+    var clipId = 'ggx-race-clip-' + Math.random().toString(36).slice(2, 8);
+    var defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
+    var clip = mk('clipPath', { id: clipId }, defs);
+    mk('circle', { cx: 0, cy: 0, r: data.image_d / 2 }, clip);
+    var parts = {};
+    function partsOf(e) {
+      if (parts[e]) return parts[e];
+      var name = data.names[e];
+      var p = { bar: mk('rect', { fill: data.colors[e], height: 0, 'data-e': e, 'class': 'ggx-race-bar' }, barsG) };
+      p.name = text(labelsG, 0, 0, name, L.name_pt, 'ggx-race-name', 'end');
+      p.value = text(labelsG, 0, 0, '', L.value_pt, 'ggx-race-value', 'start');
+      p.name.setAttribute('data-e', e);
+      if (data.images && data.images[name]) {
+        p.img = mk('g', { 'clip-path': 'url(#' + clipId + ')', 'data-e': e }, imagesG);
+        var d = data.image_d;
+        mk('image', { href: data.images[name], x: -d / 2, y: -d / 2, width: d, height: d, preserveAspectRatio: 'xMidYMid slice' }, p.img);
+      }
+      parts[e] = p;
+      return p;
+    }
+    var follow = null;
+    var current = -1;
+    function draw(f) {
+      f = Math.max(0, Math.min(data.n - 1, f));
+      current = f;
+      year.textContent = data.time_labels[data.time_index[f]];
+      // Gridlines and their labels drift as the axis grows.
+      while (gridG.firstChild) gridG.removeChild(gridG.firstChild);
+      while (axisG.firstChild) axisG.removeChild(axisG.firstChild);
+      var set = data.breaks[data.break_index[f]];
+      var unit = (L.bar_x1 - L.bar_x0) / data.top[f];
+      var vs = [].concat(set.v), ss = [].concat(set.s);
+      vs.forEach(function (b, i) {
+        var bx = cx(L.bar_x0 + L.grid_dx + b * unit);
+        mk('rect', { x: bx - L.grid_w / 2, y: cx(L.bars_top), width: L.grid_w, height: L.bars_bottom - L.bars_top, 'class': 'ggx-race-grid' }, gridG);
+        text(axisG, bx, cx(L.axis_mid), ss[i], L.axis_pt, 'ggx-race-axis', 'middle');
+      });
+      var seen = {};
+      for (var i = data.start[f]; i < data.start[f + 1]; i++) {
+        var e = data.entity[i], p = partsOf(e), rank = data.rank[i], end = data.end[i];
+        seen[e] = true;
+        var center = L.bars_top + (rank - 0.5) * L.pitch;
+        var y0 = Math.max(center - L.bar_h / 2, L.bars_top), y1 = Math.min(center + L.bar_h / 2, L.bars_bottom);
+        p.bar.setAttribute('x', cx(L.bar_x0));
+        p.bar.setAttribute('width', Math.max(0, end - L.bar_x0));
+        p.bar.setAttribute('y', cx(y0));
+        p.bar.setAttribute('height', Math.max(0, y1 - y0));
+        p.row = i;
+        var labeled = center > L.bars_top && center < L.bars_bottom;
+        var ly = cx(center + L.label_dy);
+        p.name.setAttribute('x', cx(L.bar_x0 - L.name_gap)); p.name.setAttribute('y', ly);
+        p.value.setAttribute('x', cx(end + L.value_gap)); p.value.setAttribute('y', ly);
+        p.value.textContent = data.value[i];
+        p.name.style.display = p.value.style.display = labeled ? '' : 'none';
+        if (p.img) {
+          var d = data.image_d;
+          var ix = Math.max(end - L.image_gap - d / 2, L.bar_x0 + d / 2);
+          p.img.setAttribute('transform', 'translate(' + cx(ix) + ',' + cx(center) + ')');
+          p.img.style.display = labeled ? '' : 'none';
+        }
+        var dim = follow !== null && follow !== e;
+        p.bar.style.opacity = p.name.style.opacity = p.value.style.opacity = dim ? '0.3' : '';
+        if (p.img) p.img.style.opacity = dim ? '0.3' : '';
+      }
+      for (var k in parts) {
+        if (!seen[k]) {
+          var q = parts[k];
+          q.bar.setAttribute('height', 0);
+          q.name.style.display = q.value.style.display = 'none';
+          if (q.img) q.img.style.display = 'none';
+          q.row = null;
+        }
+      }
+      if (marker) {
+        var mx = cx(L.time_l + f / (data.n - 1) * (L.time_r - L.time_l)), my = cx(L.time_y);
+        marker.setAttribute('points', (mx - 10) + ',' + (my - 14.5) + ' ' + (mx + 10) + ',' + (my - 14.5) + ' ' + mx + ',' + (my - 0.5));
+      }
+    }
+
+    // Playing: the frame follows the clock, and the last frame holds for the
+    // end pause before the race stops.
+    var playing = false, t0 = 0, f0 = 0, raf = null;
+    function tick(now) {
+      var f = f0 + Math.floor((now - t0) / 1000 * data.fps);
+      if (f >= data.n - 1) {
+        draw(data.n - 1);
+        if ((now - t0) / 1000 >= (data.n - 1 - f0) / data.fps + data.end_pause) { stop(); return; }
+      } else draw(f);
+      raf = window.requestAnimationFrame(tick);
+    }
+    function play() {
+      if (playing) return;
+      if (current >= data.n - 1) current = 0;
+      playing = true;
+      f0 = Math.max(0, current);
+      t0 = window.performance.now();
+      drawIcon(true);
+      raf = window.requestAnimationFrame(tick);
+    }
+    function stop() {
+      playing = false;
+      if (raf) window.cancelAnimationFrame(raf);
+      raf = null;
+      drawIcon(false);
+    }
+    function toggle() { if (playing) stop(); else play(); }
+    if (button) {
+      button.addEventListener('click', toggle);
+      button.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); }
+      });
+    }
+
+    // The timeline seeks; so do the arrow keys, from one time point to the next.
+    function pointer(ev) {
+      var pt = svg.createSVGPoint();
+      pt.x = ev.clientX; pt.y = ev.clientY;
+      var loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return { x: loc.x / s, y: loc.y / s };
+    }
+    if (data.timeline) {
+      var hit = mk('rect', { x: cx(L.time_l - 8), y: cx(L.time_y - 20), width: L.time_r - L.time_l + 16,
+        height: L.time_label_mid - L.time_y + 30, 'class': 'ggx-race-scrub' }, root);
+      var resume = false, dragging = false;
+      var seek = function (ev) {
+        var u = (pointer(ev).x - cx(L.time_l)) / (L.time_r - L.time_l);
+        draw(Math.round(Math.max(0, Math.min(1, u)) * (data.n - 1)));
+      };
+      hit.addEventListener('pointerdown', function (ev) {
+        resume = playing;
+        stop();
+        dragging = true;
+        hit.setPointerCapture(ev.pointerId);
+        seek(ev);
+      });
+      hit.addEventListener('pointermove', function (ev) { if (dragging) seek(ev); });
+      var release = function () { if (!dragging) return; dragging = false; if (resume) play(); };
+      hit.addEventListener('pointerup', release);
+      hit.addEventListener('pointercancel', release);
+    }
+    el.setAttribute('tabindex', el.getAttribute('tabindex') || '0');
+    el.addEventListener('keydown', function (ev) {
+      if (ev.target !== el) return;
+      var keys = data.key_frames;
+      if (ev.key === ' ') { ev.preventDefault(); toggle(); return; }
+      if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+      ev.preventDefault();
+      stop();
+      var next = ev.key === 'ArrowRight' ?
+        keys.filter(function (k) { return k > current; })[0] :
+        keys.filter(function (k) { return k < current; }).pop();
+      if (next === undefined) next = ev.key === 'ArrowRight' ? data.n - 1 : 0;
+      draw(next);
+    });
+
+    // Hovering over a bar shows its record now; a click follows it.
+    var tip = document.createElement('div');
+    tip.className = 'ggx-float-tip';
+    tip.hidden = true;
+    el.appendChild(tip);
+    function entityAt(ev) {
+      var t = ev.target;
+      var e = t && t.getAttribute ? t.getAttribute('data-e') : null;
+      if (e === null && t && t.parentNode && t.parentNode.getAttribute) e = t.parentNode.getAttribute('data-e');
+      return e === null ? null : Number(e);
+    }
+    svg.addEventListener('pointermove', function (ev) {
+      var e = entityAt(ev);
+      if (e === null || !parts[e] || parts[e].row === null || parts[e].row === undefined) { tip.hidden = true; return; }
+      var i = parts[e].row;
+      var rank = Math.round(data.rank[i]);
+      tip.innerHTML = '<div class="ggx-tip-title">' + escapeHtml(data.names[e]) + '</div>' +
+        (data.groups ? '<div class="ggx-tip-sub">' + escapeHtml(data.groups[e]) + '</div>' : '') +
+        '<div class="ggx-tip-row"><span>' + escapeHtml(data.time_labels[data.time_index[current]]) + '</span><span>' +
+        escapeHtml(data.value[i]) + '</span></div>' +
+        '<div class="ggx-tip-row"><span>Rank</span><span>' + (rank > data.names.length ? '' : rank) + '</span></div>' +
+        '<div class="ggx-tip-hint">' + (follow === e ? 'Click to stop following.' : 'Click to follow it through the race.') + '</div>';
+      tip.hidden = false;
+      var box = el.getBoundingClientRect();
+      var x = ev.clientX - box.left + 14, y = ev.clientY - box.top + 14;
+      if (x + tip.offsetWidth > box.width - 4) x = ev.clientX - box.left - tip.offsetWidth - 14;
+      tip.style.left = Math.max(4, x) + 'px';
+      tip.style.top = Math.max(4, y) + 'px';
+    });
+    svg.addEventListener('pointerleave', function () { tip.hidden = true; });
+    svg.addEventListener('click', function (ev) {
+      var e = entityAt(ev);
+      if (e === null) return;
+      follow = follow === e ? null : e;
+      draw(current);
+    });
+
+    draw(0);
+    drawIcon(false);
+    // Start when the race first scrolls into view, unless the reader asks for
+    // less motion.
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!still && 'IntersectionObserver' in window) {
+      var seen = new IntersectionObserver(function (entries) {
+        if (entries.some(function (en) { return en.isIntersecting; })) { seen.disconnect(); play(); }
+      }, { threshold: 0.5 });
+      seen.observe(el);
+    }
+  };
+
   // Restricted mean survival in a Kaplan-Meier plot: a slider moves the
   // horizon, and the shaded areas, the table under the risk table and the
   // sentence below it follow. The prespecified horizon stays marked.

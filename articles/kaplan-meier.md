@@ -194,4 +194,4 @@ writes a GIF or MP4 for a talk:
 animate_km(km, "colon.gif")
 ```
 
-![](../reference/figures/README-km.gif)
+![](../../reference/figures/README-km.gif)

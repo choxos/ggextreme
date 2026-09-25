@@ -167,7 +167,8 @@ diagonal or in the ranking lights its row and column.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"netmeta"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"netmeta"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"meta"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu">meta</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/meta/man/pairwise.html" class="external-link">pairwise</a></span><span class="op">(</span>treat <span class="op">=</span> <span class="va">treatment</span>, event <span class="op">=</span> <span class="va">pasi75_r</span>,</span></span>
 <span class="r-in"><span>                       n <span class="op">=</span> <span class="va">pasi75_n</span>, studlab <span class="op">=</span> <span class="va">study</span>,</span></span>
@@ -176,6 +177,7 @@ diagonal or in the ranking lights its row and column.</p>
 <span class="r-in"><span>  <span class="fu">ggleague</span><span class="op">(</span><span class="va">nma</span>, <span class="va">psoriasis_nma</span>, <span class="va">study</span>, <span class="va">treatment</span>,</span></span>
 <span class="r-in"><span>           small_values <span class="op">=</span> <span class="st">"undesirable"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

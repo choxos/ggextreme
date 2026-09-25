@@ -112,6 +112,7 @@ treatment on the diagonal or in the ranking lights its row and column.
 ## Examples
 
 ``` r
+# \donttest{
 if (requireNamespace("netmeta", quietly = TRUE) &&
     requireNamespace("meta", quietly = TRUE)) {
   pw <- meta::pairwise(treat = treatment, event = pasi75_r,
@@ -121,4 +122,5 @@ if (requireNamespace("netmeta", quietly = TRUE) &&
   ggleague(nma, psoriasis_nma, study, treatment,
            small_values = "undesirable")
 }
+# }
 ```

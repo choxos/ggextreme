@@ -56,7 +56,8 @@ behind a separate rendering engine, so a frame or a diagram can be
 inspected, modified or saved on its own.
 
 ![A bar chart race of the Quality of Care Index for orofacial clefts in
-fifteen countries, 1990 to 2019](reference/figures/README-race.gif)
+fifteen countries, 1990 to
+2019](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-race.gif)
 
 A bar chart race of the Quality of Care Index for orofacial clefts in
 fifteen countries, 1990 to 2019
@@ -94,9 +95,16 @@ race <- ggrace(
   caption = "Source: Sofi-Mahmudi et al. 2025, PLOS ONE 20(1): e0317267"
 )
 
-race_frame(race, 200)          # one frame, as a ggplot
-animate_race(race, "race.mp4") # draw every frame and encode
+race                            # plays in the page, as an interactive widget
+graph_save(race, "race.html")   # the same, as a single web page
+race_frame(race, 200)           # one frame, as a ggplot
+animate_race(race, "race.mp4")  # draw every frame and encode
 ```
+
+Printed, the race plays like the package’s other interactive graphs: the
+card’s round button plays and pauses it, the timeline seeks, and
+hovering over a bar shows its value and rank, while a click follows it
+through the race.
 
 `time` may be numeric or a `Date`. Each entity and time pair must appear
 once; a repeat is an error rather than a silent average. The encoder is
@@ -194,7 +202,7 @@ graph_save(dag, "dag.png")    # a static figure
 ```
 
 [![An illustrative causal diagram for maternal smoking and orofacial
-clefts](reference/figures/README-dag.png)](https://choxos.github.io/ggextreme/articles/causal-diagrams.html)
+clefts](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-dag.png)](https://choxos.github.io/ggextreme/articles/causal-diagrams.html)
 
 GitHub cannot run the widget, so the image above is static. The
 [interactive
@@ -241,7 +249,7 @@ graph_save(net, "network.html")  # a single file for a supplement
 ```
 
 [![A network plot of five treatments for plaque
-psoriasis](reference/figures/README-network.png)](https://choxos.github.io/ggextreme/articles/network-plots.html)
+psoriasis](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-network.png)](https://choxos.github.io/ggextreme/articles/network-plots.html)
 
 The [interactive
 version](https://choxos.github.io/ggextreme/articles/network-plots.html)
@@ -274,7 +282,7 @@ ggmeta(fit,
 
 [![A forest plot of P2Y12 inhibitors against aspirin with risk of bias
 traffic
-lights](reference/figures/README-forest.png)](https://choxos.github.io/ggextreme/articles/forest-plots.html)
+lights](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-forest.png)](https://choxos.github.io/ggextreme/articles/forest-plots.html)
 
 `cumulative = TRUE` shows the pooled estimate after each study, and
 [`animate_meta()`](https://choxos.github.io/ggextreme/reference/animate_meta.md)
@@ -282,7 +290,8 @@ replays it as a GIF or MP4, each trial fading in as the pooled diamond
 eases to its new value:
 
 ![A cumulative meta-analysis of the BCG vaccine trials, replayed one
-trial at a time](reference/figures/README-meta-cumulative.gif)
+trial at a
+time](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-meta-cumulative.gif)
 
 A cumulative meta-analysis of the BCG vaccine trials, replayed one trial
 at a time
@@ -303,7 +312,7 @@ ggleague(nma, psoriasis_nma, study, treatment, small_values = "undesirable")
 ```
 
 [![A league table of five treatments for plaque
-psoriasis](reference/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
+psoriasis](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-league.png)](https://choxos.github.io/ggextreme/articles/league-tables.html)
 
 `contributions = TRUE` adds where each network estimate comes from, by
 [`netmeta::netcontrib()`](https://rdrr.io/pkg/netmeta/man/netcontrib.html):
@@ -336,7 +345,7 @@ cinema_network(psoriasis_nma, study, treatment, n = n, rob = rob)
 
 [![A league table with a CINeMA confidence profile in every cell, from
 illustrative
-judgments](reference/figures/README-cinema.png)](https://choxos.github.io/ggextreme/articles/cinema.html)
+judgments](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-cinema.png)](https://choxos.github.io/ggextreme/articles/cinema.html)
 
 The study judgments in the example are illustrative, not published
 assessments.
@@ -359,7 +368,7 @@ ggfunnel(fit, hover = c("alloc", "ablat"), trim_fill = TRUE)
 ```
 
 [![A contour-enhanced funnel plot of the BCG vaccine
-trials](reference/figures/README-funnel.png)](https://choxos.github.io/ggextreme/articles/funnel-plots.html)
+trials](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-funnel.png)](https://choxos.github.io/ggextreme/articles/funnel-plots.html)
 
 ## Kaplan-Meier plots
 
@@ -381,7 +390,7 @@ ggkm(Surv(years, status) ~ arm, data = colon, ph_tests = TRUE,
 ```
 
 [![Kaplan-Meier curves for the colon cancer trial with the numbers at
-risk](reference/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
+risk](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-km.png)](https://choxos.github.io/ggextreme/articles/kaplan-meier.html)
 
 `rmst = 5` adds the restricted mean survival time up to five years, with
 each arm’s mean and its difference from the reference, and a slider that
@@ -391,7 +400,7 @@ moves the horizon while the prespecified one stays marked.
 draws the curves over follow-up as a GIF or MP4:
 
 ![Kaplan-Meier curves drawn over
-follow-up](reference/figures/README-km.gif)
+follow-up](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-km.gif)
 
 Kaplan-Meier curves drawn over follow-up
 
@@ -413,7 +422,7 @@ ggswimmer(aml, id, futime / 30.44, events = events, group = arm,
 ```
 
 [![A swimmer plot of 30 patients with acute myeloid
-leukemia](reference/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
+leukemia](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-swimmer.png)](https://choxos.github.io/ggextreme/articles/swimmer-plots.html)
 
 `waterfall` adds each patient’s best change from baseline beside their
 lane, and `trajectories` their change over time under the lanes, with
@@ -435,7 +444,7 @@ ggresponder(change ~ arm, pain, threshold = 2, higher_is_better = FALSE)
 ```
 
 [![Responder curves by arm and the difference in responders by
-threshold](reference/figures/README-responder.png)](https://choxos.github.io/ggextreme/articles/responder-thresholds.html)
+threshold](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-responder.png)](https://choxos.github.io/ggextreme/articles/responder-thresholds.html)
 
 ## Diagnostic thresholds
 
@@ -454,7 +463,7 @@ ggdiagnostic(type ~ glu, pima, cutoff = 126, prevalence = 0.1,
 ```
 
 [![A diagnostic threshold explorer for plasma glucose and
-diabetes](reference/figures/README-diagnostic.png)](https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html)
+diabetes](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-diagnostic.png)](https://choxos.github.io/ggextreme/articles/diagnostic-thresholds.html)
 
 ## Bias and tipping points
 
@@ -472,7 +481,7 @@ ggsensitivity(1.8, 1.4, 2.31, important = 1.25,
 ```
 
 [![A bias surface with E-values and two
-benchmarks](reference/figures/README-sensitivity.png)](https://choxos.github.io/ggextreme/articles/bias-sensitivity.html)
+benchmarks](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-sensitivity.png)](https://choxos.github.io/ggextreme/articles/bias-sensitivity.html)
 
 ## A multiverse of analyses
 
@@ -491,7 +500,7 @@ ggmultiverse(specs, or, lo, hi,
 ```
 
 [![A specification curve of 48 analyses above the grid of their
-choices](reference/figures/README-multiverse.png)](https://choxos.github.io/ggextreme/articles/multiverse.html)
+choices](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-multiverse.png)](https://choxos.github.io/ggextreme/articles/multiverse.html)
 
 ## Nomograms
 
@@ -513,7 +522,7 @@ ggnomogram(fit, outcome = "Risk of low birth weight")
 ```
 
 [![A nomogram for the risk of low birth
-weight](reference/figures/README-nomogram.png)](https://choxos.github.io/ggextreme/articles/nomograms.html)
+weight](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-nomogram.png)](https://choxos.github.io/ggextreme/articles/nomograms.html)
 
 ## Choropleth maps
 
@@ -540,13 +549,13 @@ ggchoropleth(qci, iso3, year,
 
 [![Two world maps of the Quality of Care Index for orofacial clefts and
 its change since
-1990](reference/figures/README-map.png)](https://choxos.github.io/ggextreme/articles/choropleth-maps.html)
+1990](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-map.png)](https://choxos.github.io/ggextreme/articles/choropleth-maps.html)
 
 [`animate_choropleth()`](https://choxos.github.io/ggextreme/reference/animate_choropleth.md)
 plays the years as a GIF or MP4:
 
 ![The Quality of Care Index for orofacial clefts from 1990 to
-2019](reference/figures/README-map.gif)
+2019](https://raw.githubusercontent.com/choxos/ggextreme/main/man/figures/README-map.gif)
 
 The Quality of Care Index for orofacial clefts from 1990 to 2019
 
@@ -728,6 +737,7 @@ Turn any of the interactive graphs into a widget, a ggplot or a file.
   [`graph_plot()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`graph_save()`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   [`knit_print(`*`<ggx_graph>`*`)`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
+  [`knit_print(`*`<ggrace>`*`)`](https://choxos.github.io/ggextreme/reference/graph_widget.md)
   : Use an interactive graph as a widget, a ggplot or a file
 
 ## Data

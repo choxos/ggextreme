@@ -1264,3 +1264,94 @@ svg.ggiraph-svg .ggx-cn-key:focus-visible {
 .ggx-panel .ggx-cn-studies td:last-child {
   min-width: 16em;
 }
+
+/* A bar chart race. The card's colors are variables so a dark page gets a
+   dark card; the bars keep their own colors. */
+.ggx-race {
+  --race-page: #F7F7F7;
+  --race-shadow: #BDBDBD;
+  --race-card: #FFFFFF;
+  --race-title: #1F1F1F;
+  --race-rule: #D9D9D9;
+  --race-axis: #262626;
+  --race-grid: #DADADA;
+  --race-name: #2C2C2C;
+  --race-value: #494949;
+  --race-year: #C6C6C6;
+  --race-button: #2C2C2C;
+  --race-icon: #FFFFFF;
+  --race-timeline: #A1A1A1;
+  --race-marker: #A3A3A3;
+  --race-source: #242424;
+  outline: none;
+}
+
+.ggx-race.ggx-dark {
+  --race-page: #161C1C;
+  --race-shadow: #000000;
+  --race-card: #1D2424;
+  --race-title: #EEF2F2;
+  --race-rule: #334040;
+  --race-axis: #DDE4E4;
+  --race-grid: #2F3B3B;
+  --race-name: #DDE4E4;
+  --race-value: #B8C2C2;
+  --race-year: #3A4747;
+  --race-button: #DDE4E4;
+  --race-icon: #1D2424;
+  --race-timeline: #7D8A8A;
+  --race-marker: #9AA6A6;
+  --race-source: #C9D1D1;
+}
+
+.ggx-race .ggx-race-page { fill: var(--race-page); }
+.ggx-race .ggx-race-shadow { fill: var(--race-shadow); }
+.ggx-race .ggx-race-card { fill: var(--race-card); }
+.ggx-race .ggx-race-title { fill: var(--race-title); }
+.ggx-race .ggx-race-rule { fill: var(--race-rule); }
+.ggx-race .ggx-race-axis { fill: var(--race-axis); }
+.ggx-race .ggx-race-grid { fill: var(--race-grid); }
+.ggx-race .ggx-race-name { fill: var(--race-name); }
+.ggx-race .ggx-race-value { fill: var(--race-value); }
+.ggx-race .ggx-race-year { fill: var(--race-year); }
+.ggx-race .ggx-race-button-disc { fill: var(--race-button); }
+.ggx-race .ggx-race-button-icon { fill: var(--race-icon); }
+.ggx-race .ggx-race-timeline { fill: var(--race-timeline); }
+.ggx-race .ggx-race-timeline-text { fill: var(--race-timeline); }
+.ggx-race .ggx-race-marker { fill: var(--race-marker); }
+.ggx-race .ggx-race-source { fill: var(--race-source); }
+
+.ggx-race .ggx-race-root text {
+  pointer-events: none;
+}
+
+.ggx-race .ggx-race-root text.ggx-race-name {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ggx-race .ggx-race-bar {
+  cursor: pointer;
+}
+
+.ggx-race .ggx-race-button {
+  cursor: pointer;
+  outline: none;
+}
+
+.ggx-race .ggx-race-button:focus-visible .ggx-race-button-disc {
+  stroke: #22928F;
+  stroke-width: 3;
+}
+
+.ggx-race .ggx-race-scrub {
+  fill: #FFFFFF;
+  fill-opacity: 0.01;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.ggx-race:focus-visible {
+  outline: 2px solid #22928F;
+  outline-offset: 2px;
+}

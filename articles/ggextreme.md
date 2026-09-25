@@ -50,14 +50,20 @@ race <- ggrace(
 )
 
 race
-#> <ggrace>
-#>  entities: 15 (top 15 shown)
-#>  keyframes: 30 
-#>  frames:   900 at 60 fps
 ```
 
-The object holds one row per entity per frame, already interpolated.
-Nothing has been drawn yet.
+Printed, the race plays in the page, like the package’s other graphs:
+the round button plays and pauses it, clicking or dragging along the
+timeline moves to any time, and the arrow keys step from one year to the
+next. Hovering over a bar shows its value and rank at that moment, and
+clicking one follows it through the race while the others fade.
+`graph_save(race, "race.html")` writes it as a single web page.
+
+The object holds one row per entity per frame, already interpolated, and
+the widget plays exactly these frames, so it matches the GIF or video
+that
+[`animate_race()`](https://choxos.github.io/ggextreme/reference/animate_race.md)
+writes.
 
 ``` r
 
@@ -94,8 +100,8 @@ race_frame(race, race$n_frames)
 
 Frames are set in Lato, which the package registers when it loads.
 Devices that understand registered fonts, such as
-[`ragg::agg_png()`](https://rdrr.io/pkg/ragg/man/agg_png.html), will use
-it; the older [`pdf()`](https://rdrr.io/r/grDevices/pdf.html) and
+[`ragg::agg_png()`](https://ragg.r-lib.org/reference/agg_png.html), will
+use it; the older [`pdf()`](https://rdrr.io/r/grDevices/pdf.html) and
 [`png()`](https://rdrr.io/r/grDevices/png.html) devices will not, so
 draw with ragg or pass `family = ""` to fall back to the device default.
 

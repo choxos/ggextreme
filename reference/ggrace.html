@@ -213,7 +213,12 @@ it also fixes every font size.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>ggrace</code>.</p>
+    <p>An object of class <code>ggrace</code>. It prints as an interactive widget,
+like the package's other graphs: the card's play button and timeline
+work, and hovering over a bar shows its value and rank. Use
+<code><a href="graph_widget.html">graph_widget()</a></code> or <code><a href="graph_widget.html">graph_save()</a></code> with a <code>.html</code> file for the widget,
+<code><a href="race_frame.html">race_frame()</a></code> or <code><a href="graph_widget.html">graph_plot()</a></code> for a static frame, and
+<code><a href="animate_race.html">animate_race()</a></code> for a GIF or video.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -239,19 +244,15 @@ current frame, so gridlines drift as the field grows.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">race</span> <span class="op">&lt;-</span> <span class="fu">ggrace</span><span class="op">(</span><span class="va">phones</span>, <span class="va">phones</span>, <span class="va">region</span>, <span class="va">year</span>, top_n <span class="op">=</span> <span class="fl">7</span>, duration <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">race</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;ggrace&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  entities: 7 (top 7 shown)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  keyframes: 7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  frames:   300 at 60 fps</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Frames are set in Lato, which only devices that understand registered</span></span></span>
 <span class="r-in"><span><span class="co"># fonts can use, so draw them with ragg rather than the default device.</span></span></span>
 <span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">ragg</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ragg/man/agg_png.html" class="external-link">agg_png</a></span><span class="op">(</span><span class="va">file</span>, width <span class="op">=</span> <span class="va">race</span><span class="op">$</span><span class="va">width</span>, height <span class="op">=</span> <span class="fl">500</span>, units <span class="op">=</span> <span class="st">"px"</span>,</span></span>
+<span class="r-in"><span><span class="fu">ragg</span><span class="fu">::</span><span class="fu"><a href="https://ragg.r-lib.org/reference/agg_png.html" class="external-link">agg_png</a></span><span class="op">(</span><span class="va">file</span>, width <span class="op">=</span> <span class="va">race</span><span class="op">$</span><span class="va">width</span>, height <span class="op">=</span> <span class="fl">500</span>, units <span class="op">=</span> <span class="st">"px"</span>,</span></span>
 <span class="r-in"><span>               res <span class="op">=</span> <span class="va">race</span><span class="op">$</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="race_frame.html">race_frame</a></span><span class="op">(</span><span class="va">race</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> agg_record_243d6b71bb85 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> agg_record_23692bed80c9 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                       2 </span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="animate_race.html">animate_race</a></span><span class="op">(</span><span class="va">race</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".gif"</span><span class="op">)</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
