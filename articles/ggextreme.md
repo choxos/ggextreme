@@ -211,10 +211,10 @@ flagged <- ggrace(
   title = "Quality of care for orofacial clefts"
 )
 
-race_frame(flagged, flagged$n_frames)
+flagged
 ```
 
-![](ggextreme_files/figure-html/flags-1.png)
+The flags travel with their bars in the widget, as in the GIF and video.
 
 Lookup tries the two letter code, the three letter code, the full
 country name, then a unique partial match. The names follow the World
