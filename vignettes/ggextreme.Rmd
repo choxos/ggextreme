@@ -176,7 +176,7 @@ The package bundles a circular flag for every ISO 3166-1 country, plus
 Kurdistan, so country races need no extra files. `race_flags()` maps names or
 codes to those paths.
 
-```{r flags, fig.height = 5.51, eval = requireNamespace("magick", quietly = TRUE) && requireNamespace("rsvg", quietly = TRUE)}
+```{r flags, eval = requireNamespace("magick", quietly = TRUE) && requireNamespace("rsvg", quietly = TRUE)}
 key <- unique(clefts_qci[c("country", "iso")])
 flags <- setNames(race_flags(key$iso), key$country)
 
@@ -189,8 +189,10 @@ flagged <- ggrace(
   title = "Quality of care for orofacial clefts"
 )
 
-race_frame(flagged, flagged$n_frames)
+flagged
 ```
+
+The flags travel with their bars in the widget, as in the GIF and video.
 
 Lookup tries the two letter code, the three letter code, the full country
 name, then a unique partial match. The names follow the World Bank style, so
