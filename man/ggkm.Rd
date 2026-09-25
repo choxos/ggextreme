@@ -57,7 +57,7 @@ about eight evenly spaced times.}
 the first level.}
 
 \item{palette}{Colors for the groups, unnamed in level order or named by
-group. The reference group defaults to a neutral grey.}
+group. The reference group defaults to a neutral gray.}
 
 \item{xlab, ylab}{Axis labels. \code{xlab} also names the time in the hover
 card, so include its unit, such as \code{"Years since randomization"}.}

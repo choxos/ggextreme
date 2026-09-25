@@ -2,8 +2,8 @@ Package: ggextreme
 Type: Package
 Title: Bar Chart Races and Interactive Plots for Clinical Research
 Version: 0.1.0
-Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "ahmad.pub@gmail.com",
-    role = c("aut", "cre"))
+Authors@R: person("Ahmad", "Sofi-Mahmudi", email = "a.sofimahmudi@gmail.com",
+    role = c("aut", "cre", "cph"))
 Description: Presentation quality charts built on 'ggplot2' that the package
     itself does not provide. The bar chart race interpolates values on a
     uniform time grid, ranks every frame on its own values and eases bars
@@ -49,6 +49,8 @@ Description: Presentation quality charts built on 'ggplot2' that the package
     indirect evidence, and a league table and a network marked with the
     judgments.
 License: MIT + file LICENSE
+Copyright: See file inst/COPYRIGHTS for the bundled Lato font, country
+    flag artwork and world map.
 Encoding: UTF-8
 LazyData: true
 Depends:

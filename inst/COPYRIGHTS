@@ -1,0 +1,36 @@
+Copyright of the components of ggextreme
+=========================================
+
+The R code, JavaScript and style sheets of ggextreme are copyright
+Ahmad Sofi-Mahmudi and released under the MIT License (see LICENSE).
+
+The package also bundles the following third-party material.
+
+Lato font
+  Files: inst/fonts/Lato-Regular.ttf, inst/fonts/Lato-Bold.ttf,
+         inst/www/lato-regular.woff2, inst/www/lato-bold.woff2
+  Copyright (c) 2010-2014 by tyPoland Lukasz Dziedzic (team@latofonts.com),
+  with Reserved Font Name "Lato".
+  License: SIL Open Font License, Version 1.1 (inst/fonts/OFL.txt).
+  The woff2 files are the same fonts converted for the web.
+
+Country flags
+  Files: inst/extdata/flags/*.svg
+  From the flag-icons project (https://github.com/lipis/flag-icons),
+  Copyright (c) 2013 Panayiotis Lipiridis, released under the MIT License,
+  cropped to circles. krd.svg is the flag of Kurdistan from Wikimedia
+  Commons (public domain); ir.svg was drawn for this package.
+  License: MIT (inst/extdata/flags/LICENSE-flag-icons.txt).
+  See inst/extdata/flags/SOURCE.txt.
+
+World map
+  File: R/sysdata.rda
+  Derived from Natural Earth 1:50m admin 0 countries, which are in the
+  public domain (https://www.naturalearthdata.com/about/terms-of-use/).
+
+Data
+  psoriasis_nma: aggregate results of five published trials, as compiled
+  by David Phillippo and distributed as plaque_psoriasis_agd in the
+  multinma package; the trial publications are cited in the data.
+  clefts_qci and clefts_qci_world: from Sofi-Mahmudi et al. (2025),
+  PLOS ONE 20(1): e0317267, published under CC BY 4.0.

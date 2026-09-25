@@ -57,7 +57,7 @@
 #' @param reference The group the hazard ratios compare against. Defaults to
 #'   the first level.
 #' @param palette Colors for the groups, unnamed in level order or named by
-#'   group. The reference group defaults to a neutral grey.
+#'   group. The reference group defaults to a neutral gray.
 #' @param xlab,ylab Axis labels. `xlab` also names the time in the hover
 #'   card, so include its unit, such as `"Years since randomization"`.
 #' @param legend Draw a legend of the groups above the plot.

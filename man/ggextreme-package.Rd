@@ -18,11 +18,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ahmad Sofi-Mahmudi \email{ahmad.pub@gmail.com}
+\strong{Maintainer}: Ahmad Sofi-Mahmudi \email{a.sofimahmudi@gmail.com} [copyright holder]
 
 Authors:
 \itemize{
-  \item Ahmad Sofi-Mahmudi \email{ahmad.pub@gmail.com}
+  \item Ahmad Sofi-Mahmudi \email{a.sofimahmudi@gmail.com} [copyright holder]
 }
 
 }
